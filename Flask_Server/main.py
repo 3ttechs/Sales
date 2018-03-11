@@ -7,7 +7,7 @@ app = Flask(__name__)
 #http://localhost:5000/product/all
 @app.route('/product/all', methods=['GET'])
 def product_all():
-    query = 'select category, name from product'
+    query = 'select code, name from product_master'
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
@@ -15,18 +15,28 @@ def product_all():
 #http://localhost:5000/product/name='abc'
 @app.route('/product/name=<name>', methods=['GET'])
 def product_by_name(name):
-    query = 'select * from product where name = '+ name
+    query = 'select * from product_master where name = '+ name
     json_output = json.dumps(run_query(query,[name]))
     return json_output, 200
 
-#http://localhost:5000/invoice/id=1
-@app.route('/invoice/id=<id>', methods=['GET'])
-def invoice_by_id(id):
-    query = 'select * from invoice where id = '+ id
+#http://localhost:5000/invoice/invoice_no=1
+@app.route('/invoice/invoice_no=<id>', methods=['GET'])
+def invoice_by_id(invoice_no):
+    query = 'select * from invoice where invoice_no = '+ invoice_no
     json_output = json.dumps(run_query(query))
-    query = 'select * from items where invoice_id = '+ id
+    query = 'select * from items where   = '+ invoice_no
     json_output+= json.dumps(run_query(query))
     return json_output, 200
+
+#http://localhost:5000/invoice/add
+@app.route('/invoice/add', methods=['POST'])
+def invoice_add():
+    data = json.loads(request.data)
+    query = 'select count(*) as count from sales_person_master where login = "'+ data['login'] +'" and password = "' +data['password']+'"'
+    result = run_query(query);
+    count = result[0]['count']
+    return str(count), 200
+
 
 '''
 select invoice.id,invoice.date,invoice.time,invoice.sales_person,invoice.cutomer_phone,items.product_category,items.product_name,items.product_price,items.quantity,items.amount,items.tax,invoice.total_amount,invoice.total_tax,invoice.payment_type from invoice,items where invoice.date >= '2010-05-15' and invoice.date <= '2018-05-15' 
@@ -37,33 +47,41 @@ select invoice.id,invoice.date,invoice.time,invoice.sales_person,invoice.cutomer
 def report(report_type,from_date,to_date):
     if(str(report_type) == 'date'):
 
-        query = 'select invoice.date,' \
-                'round(sum(invoice.total_amount),2) as total_amount,' \
-                'round(sum(invoice.total_tax),2) as total_tax ' \
+        query = 'select invoice.invoice_date ,' \
+                'round(sum(invoice.sub_total),2) as sub_total,' \
+                'round(sum(invoice.discount),2) as discount ' \
+                'round(sum(invoice.vat),2) as vat,' \
+                'round(sum(invoice.total),2) as total ' \
                 'from invoice,items ' \
-                'where invoice.date >= '+  from_date + ' and invoice.date <= '+  to_date + ' group by invoice.date'
+                'where invoice.invoice_date  >= '+  from_date + ' and invoice.invoice_date  <= '+  to_date + ' group by invoice.invoice_date '
 
     elif(report_type=='sales_person'):
-        query = 'select invoice.sales_person, invoice.date,' \
-                'round(sum(invoice.total_amount),2) as total_amount,' \
-                'round(sum(invoice.total_tax),2) as total_tax ' \
+        query = 'select invoice.sales_person, invoice.invoice_date ,' \
+                'round(sum(invoice.sub_total),2) as sub_total,' \
+                'round(sum(invoice.discount),2) as discount ' \
+                'round(sum(invoice.vat),2) as vat,' \
+                'round(sum(invoice.total),2) as total ' \
                 'from invoice,items ' \
-                'where invoice.date >= '+  from_date + ' and invoice.date <= '+  to_date + ' group by invoice.sales_person'
+                'where invoice.invoice_date  >= '+  from_date + ' and invoice.invoice_date  <= '+  to_date + ' group by invoice.sales_person'
 
-    elif(report_type=='payment_type'):
-        query = 'select invoice.payment_type, invoice.date,' \
-                'round(sum(invoice.total_amount),2) as total_amount,' \
-                'round(sum(invoice.total_tax),2) as total_tax ' \
+    elif(report_type=='payment_mode'):
+        query = 'select invoice.payment_mode, invoice.invoice_date ,' \
+                'round(sum(invoice.sub_total),2) as sub_total,' \
+                'round(sum(invoice.discount),2) as discount ' \
+                'round(sum(invoice.vat),2) as vat,' \
+                'round(sum(invoice.total),2) as total ' \
                 'from invoice,items ' \
-                'where invoice.date >= '+  from_date + ' and invoice.date <= '+  to_date + ' group by invoice.payment_type'
+                'where invoice.invoice_date  >= '+  from_date + ' and invoice.invoice_date  <= '+  to_date + ' group by invoice.payment_mode'
 
     elif (report_type == 'category'):
-        query = 'select items.product_category as category, invoice.date, ' \
-                'round(sum(invoice.total_amount),2) as total_amount,' \
-                'round(sum(invoice.total_tax),2) as total_tax from invoice,items ' \
-                'where invoice.date >= ' + from_date + ' and invoice.date <= ' + to_date + \
-                ' and items.invoice_id=invoice.id group by items.product_category'
-
+        query = 'select items.product_category as category, invoice.invoice_date , ' \
+                'round(sum(invoice.sub_total),2) as sub_total,' \
+                'round(sum(invoice.discount),2) as discount ' \
+                'round(sum(invoice.vat),2) as vat,' \
+                'round(sum(invoice.total),2) as total ' \
+                'where invoice.invoice_date  >= ' + from_date + ' and invoice.invoice_date  <= ' + to_date + \
+                ' and items.invoice_no=invoice.invoice_no group by items.product_category'
+    print(query)
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
@@ -71,7 +89,7 @@ def report(report_type,from_date,to_date):
 # body : {"login": "Abdul","password":"abdul"}
 def sales_person_login():
     data = json.loads(request.data)
-    query = 'select count(*) as count from sales_person where name = "'+ data['login'] +'" and password = "' +data['password']+'"'
+    query = 'select count(*) as count from sales_person_master where login = "'+ data['login'] +'" and password = "' +data['password']+'"'
     result = run_query(query);
     count = result[0]['count']
     return str(count), 200
@@ -80,7 +98,7 @@ def sales_person_login():
 # body : {"login": "Admin","password":"admin"}
 def admin_login():
     data = json.loads(request.data)
-    query = 'select count(*) as count from admin where name = "'+ data['login'] +'" and password = "' +data['password']+'"'
+    query = 'select count(*) as count from admin_lookup where login = "'+ data['login'] +'" and password = "' +data['password']+'"'
     result = run_query(query);
     count = result[0]['count']
     return str(count), 200
