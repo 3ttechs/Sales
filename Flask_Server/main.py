@@ -12,6 +12,7 @@ def product_all():
     return json_output, 200
 
 
+
 #http://localhost:5000/product/name='abc'
 @app.route('/product/name=<name>', methods=['GET'])
 def product_by_name(name):
@@ -37,10 +38,8 @@ def invoice_add():
     count = result[0]['count']
     return str(count), 200
 
-
 '''
 select invoice.id,invoice.date,invoice.time,invoice.sales_person,invoice.cutomer_phone,items.product_category,items.product_name,items.product_price,items.quantity,items.amount,items.tax,invoice.total_amount,invoice.total_tax,invoice.payment_type from invoice,items where invoice.date >= '2010-05-15' and invoice.date <= '2018-05-15' 
-
 '''
 #http://localhost:5000/report/type=Date,from='2015-05-15',to='2018-05-15'
 @app.route('/report/type=<report_type>,from=<from_date>,to=<to_date>', methods=['GET'])
@@ -103,8 +102,6 @@ def admin_login():
     count = result[0]['count']
     return str(count), 200
 
-
-
 @app.route('/')
 def home():
     return('Smart Shopper Application')
@@ -118,7 +115,3 @@ def after_request(response):
 
 if __name__ == '__main__':
     app.run(host='localhost', port='5000')
-
-
-
-
