@@ -68,15 +68,82 @@ def invoice_items_by_id(invoice_no):
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
+''' ------------------------------------BODY JSON-------------------------------------------------------------
+{
+  "invoice": {
+    "sales_person_code": "Abdul",
+    "cutomer_name": "AA",
+    "cutomer_phone": 9448373533,
+    "cutomer_vat_no": "11",
+    "sub_total": 36.54,
+    "discount": 0.01,
+    "vat": 0.01,
+    "total": 11.02,
+    "payment_mode": 1
+  },
+  "items": [
+    {
+      "id": 1,
+      "product_code": "1",
+      "product_category": "Floral",
+      "product_name": "Diasy",
+      "product_price": 2.54,
+      "product_coo": "India",
+      "quantity": 12,
+      "discount": 0.02,
+      "amount": 25
+    },
+    {
+      "id": 2,
+      "product_code": "1",
+      "product_category": "Floral",
+      "product_name": "Diasy",
+      "product_price": 2.54,
+      "product_coo": "India",
+      "quantity": 12,
+      "discount": 0.02,
+      "amount": 25
+    }
+  ]
+}
+'''
 
 #http://localhost:5000/invoice/add
 @app.route('/invoice/add', methods=['POST'])
 def invoice_add():
     data = json.loads(request.data)
-    query = 'select count(*) as count from sales_person_master where login = "'+ data['login'] +'" and password = "' +data['password']+'"'
-    result = run_query(query);
-    count = result[0]['count']
-    return str(count), 200
+
+    sales_person_code = data['invoice']['sales_person_code']
+    cutomer_name = data['invoice']['cutomer_name']
+    cutomer_phone=data['invoice']['cutomer_phone']
+    cutomer_vat_no =data['invoice']['cutomer_vat_no']
+    sub_total = data['invoice']['sub_total']
+    discount = data['invoice']['discount']
+    vat= data['invoice']['vat']
+    total = data['invoice']['total']
+    payment_mode = data['invoice']['payment_mode']
+    query = 'INSERT INTO invoice (invoice_date, invoice_time,  sales_person_code,cutomer_name,cutomer_phone,cutomer_vat_no,sub_total,discount,vat,total,payment_mode) VALUES ' \
+        '( date(),time(), "' + sales_person_code + '","'+ cutomer_name +'",' + cutomer_phone +',"' +cutomer_vat_no+'",' +sub_total+',' +discount+',' +vat+',' +total+',"' +payment_mode+'" )'
+    print(query)
+    run_insert_query(query)
+    invoice_no = run_select_query('SELECT MAX(id) FROM invoice')[0][0]
+
+    num_items = len(data['items'])
+    for i in range(num_items):
+        product_code = data['items'][i]['product_code']
+        product_category = data['items'][i]['product_category']
+        product_name = data['items'][i]['product_name']
+        product_price = data['items'][i]['product_price']
+        product_coo = data['items'][i]['product_coo']
+        quantity = data['items'][i]['quantity']
+        discount = data['items'][i]['discount']
+        amount = data['items'][i]['amount']
+
+        query = 'INSERT INTO items (invoice_no,product_code,product_category,product_name,product_price,product_coo,quantity,discount,amount) ' \
+                'VALUES ('+str(invoice_no)+','+product_code+','+product_category+','+product_name+','+product_price+','+product_coo+','+quantity+','+discount+','+amount+');'
+        run_insert_query(query)
+
+    return '1', 200
 
 '''
 select invoice.id,invoice.date,invoice.time,invoice.sales_person,invoice.cutomer_phone,items.product_category,items.product_name,items.product_price,items.quantity,items.amount,items.tax,invoice.total_amount,invoice.total_tax,invoice.payment_type from invoice,items where invoice.date >= '2010-05-15' and invoice.date <= '2018-05-15' 

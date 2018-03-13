@@ -3,7 +3,7 @@ import sqlite3
 dbfile ='SmartShop.db'
 
 def run_select_query(query):
-    print ("Select Query : "+query)
+    #print ("Select Query : "+query)
     con = sqlite3.connect(dbfile)
     cur = con.cursor()
     cur.execute(query)
@@ -11,7 +11,7 @@ def run_select_query(query):
     return rows
 
 def run_insert_query(query):
-    print ("Insert Query : "+query)
+    #print ("Insert Query : "+query)
     con = sqlite3.connect(dbfile)
     cur = con.cursor()
     cur.execute(query)
