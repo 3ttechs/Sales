@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Add Product</ion-title>
+    <button ion-button clear (click)="logout()">
+      <ion-icon name="log-out"></ion-icon>
+    </button>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <form (submit)="doAddProduct()">
+    <ion-item>
+      <ion-label color="primary" fixed>Product</ion-label>
+      <ion-input [(ngModel)]="addProductData.product" name="product" type="search" placeholder="Product" clearInput></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label color="primary" fixed>Category</ion-label>
+      <ion-input [(ngModel)]="addProductData.category" name="category" type="search" placeholder="Category" clearInput></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label color="primary" fixed>Price</ion-label>
+      <ion-input [(ngModel)]="addProductData.price" name="price" type="number" placeholder="Price" clearInput></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label color="primary" fixed>Qty</ion-label>
+      <ion-input [(ngModel)]="addProductData.qty" name="qty" type="number" placeholder="Qty" clearInput></ion-input>
+    </ion-item>
+
+    <br/><br/>
+
+    <div padding>
+      <button ion-button color="primary" block type="submit">Add Item</button>
+    </div>
+
+    <div padding>
+      <button ion-button color="primary" block (click)="ToSummary()">Summary</button>
+    </div>
+  </form>
+</ion-content>
