@@ -1,5 +1,7 @@
 import sqlite3
-from flask import Flask, request,json
+from flask import Flask, request,json,send_from_directory,Response
+import logging, os
+
 from  db_utilities import *
 
 app = Flask(__name__)
@@ -39,7 +41,7 @@ def product_coo_all():
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
-#http://localhost:5000/company/company_id=1
+#http://localhost:5000/company/company_id='AB1234'
 @app.route('/company/company_id=<company_id>', methods=['GET'])
 def company_by_id(company_id):
     query = 'select * from company_lookup where company_id = '+ company_id
@@ -116,15 +118,15 @@ def invoice_add():
     sales_person_code = data['invoice']['sales_person_code']
     cutomer_name = data['invoice']['cutomer_name']
     cutomer_phone=data['invoice']['cutomer_phone']
-    cutomer_vat_no =data['invoice']['cutomer_vat_no']
+    cutomer_vat_no =str(data['invoice']['cutomer_vat_no'])
     sub_total = data['invoice']['sub_total']
     discount = data['invoice']['discount']
     vat= data['invoice']['vat']
     total = data['invoice']['total']
     payment_mode = data['invoice']['payment_mode']
-    query = 'INSERT INTO invoice (invoice_date, invoice_time,  sales_person_code,cutomer_name,cutomer_phone,cutomer_vat_no,sub_total,discount,vat,total,payment_mode) VALUES ' \
-        '( date(),time(), "' + sales_person_code + '","'+ cutomer_name +'",' + cutomer_phone +',"' +cutomer_vat_no+'",' +sub_total+',' +discount+',' +vat+',' +total+',"' +payment_mode+'" )'
-    print(query)
+    query = "INSERT INTO invoice (invoice_date, invoice_time,  sales_person_code,cutomer_name,cutomer_phone,cutomer_vat_no,sub_total,discount,vat,total,payment_mode) VALUES (date(),time(),'%s','%s',%d,'%s',%f,%f,%f,%f,%d  )"% (sales_person_code,cutomer_name,cutomer_phone,cutomer_vat_no,sub_total,discount,vat,total,payment_mode)
+    #print(query)
+
     run_insert_query(query)
     invoice_no = run_select_query('SELECT MAX(id) FROM invoice')[0][0]
 
@@ -138,9 +140,7 @@ def invoice_add():
         quantity = data['items'][i]['quantity']
         discount = data['items'][i]['discount']
         amount = data['items'][i]['amount']
-
-        query = 'INSERT INTO items (invoice_no,product_code,product_category,product_name,product_price,product_coo,quantity,discount,amount) ' \
-                'VALUES ('+str(invoice_no)+','+product_code+','+product_category+','+product_name+','+product_price+','+product_coo+','+quantity+','+discount+','+amount+');'
+        query = "INSERT INTO items (invoice_no,product_code,product_category,product_name,product_price,product_coo,quantity,discount,amount) VALUES  ('%s','%s','%s','%s',%f,'%s',%f,%f,%f)"% (invoice_no,product_code,product_category,product_name,product_price,product_coo,quantity,discount,amount)
         run_insert_query(query)
 
     return '1', 200
@@ -191,12 +191,12 @@ def report(report_type,from_date,to_date):
                 'from invoice,items ' \
                 'where invoice.invoice_date  >= ' + from_date + ' and invoice.invoice_date  <= ' + to_date + \
                 ' and items.invoice_no=invoice.id group by items.product_category'
-    print(query)
+    #print(query)
     json_output = json.dumps(run_query(query))
     return json_output, 200
 #http://localhost:5000/sales_person/login
 # body : {"login": "Abdul","password":"abdul"}
-@app.route('/sales_person/login', methods=['POST'])
+@app.route('/sales_person/login', methods=['GET'])
 def sales_person_login():
     data = json.loads(request.data)
     query = 'select count(*) as count from sales_person_master where login = "'+ data['login'] +'" and password = "' +data['password']+'"'
@@ -210,6 +210,7 @@ def sales_person_login():
 def admin_login():
     data = json.loads(request.data)
     query = 'select count(*) as count from admin_lookup where login = "'+ data['login'] +'" and password = "' +data['password']+'"'
+    print(query)
     result = run_query(query);
     count = result[0]['count']
     return str(count), 200
@@ -218,11 +219,53 @@ def admin_login():
 def home():
     return('Smart Shopper Application')
 
+
+file_handler = logging.FileHandler('server.log')
+app.logger.addHandler(file_handler)
+app.logger.setLevel(logging.INFO)
+
+PROJECT_HOME = os.path.dirname(os.path.realpath(__file__))
+UPLOAD_FOLDER = '{}/uploads/'.format(PROJECT_HOME)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def create_new_folder(local_dir):
+    newpath = local_dir
+    if not os.path.exists(newpath):
+        os.makedirs(newpath)
+    return newpath
+
+@app.route('/do_upload/desitnation_file_name=<file_name>', methods = ['POST'])
+def do_upload(file_name):
+    app.logger.info(PROJECT_HOME)
+    if request.method == 'POST' and request.files['image']:
+        app.logger.info(app.config['UPLOAD_FOLDER'])
+        img = request.files['image']
+        img_name = file_name
+        create_new_folder(app.config['UPLOAD_FOLDER'])
+        saved_path = os.path.join(app.config['UPLOAD_FOLDER'], img_name)
+        app.logger.info("saving {}".format(saved_path))
+        img.save(saved_path)
+        return send_from_directory(app.config['UPLOAD_FOLDER'],img_name, as_attachment=True)
+    else:
+    	return "Where is the image?"
+
+@app.route('/test_file_upload', methods=['GET'])
+def test_file_upload():
+    content = open('file_upload.html').read()
+    return Response(content, mimetype="text/html")
+
+
+
+
+
+
+
+
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin','*')
-    #response.headers.add('Access-Control-Allow-Headers','Origin,Accept,X-Requested-With','Content-Type')
-    response.headers.add('Access-Control-Allow-Methods','GET,PUT,POST,DELETE')
+    #response.headers.add('Access-Control-Allow-Headers','Origin,Accept, X-Requested-With','Content-Type')
+    response.headers.add('Access-Control-Allow-Methods','GET,PUT,POST,DELETE,OPTIONS')
     return response
 
 if __name__ == '__main__':
