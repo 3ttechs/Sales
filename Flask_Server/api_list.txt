@@ -2,6 +2,7 @@ GET
 ---
 
 http://localhost:5000/product/all
+http://localhost:5000/product/full_all
 http://localhost:5000/product_category/all
 http://localhost:5000/product_brand/all
 http://localhost:5000/product_type/all
@@ -70,6 +71,33 @@ http://localhost:5000/invoice/add
 }
 }
 
-
-
+http://localhost:5000/product/add
+ {
+ 	"product": {
+ 		"category": "Floral",
+ 		"code": "11",
+ 		"name": "Daisy",
+ 		"name_arabic": "Daisy",
+ 		"brand": "Marc Jacobs",
+ 		"product_type": "Perfume1",
+ 		"coo": "India",
+ 		"price": 2.54,
+ 		"image": "a.png",
+ 		"status": 1
+ 	}
+ }
+http://localhost:5000/product/update/product_code=1
+ {
+ 	"product": {
+ 		"category": "Floral",
+ 		"name": "Daisy",
+ 		"name_arabic": "Daisy",
+ 		"brand": "Marc Jacobs",
+ 		"product_type": "Perfume1",
+ 		"coo": "India",
+ 		"price": 2.54,
+ 		"image": "a.png",
+ 		"status": 1
+ 	}
+ }
 
