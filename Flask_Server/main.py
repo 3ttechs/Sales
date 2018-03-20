@@ -20,6 +20,13 @@ def product_full_all():
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
+#http://localhost:5000/stock/full_all
+@app.route('/stock/full_all', methods=['GET'])
+def stock_full_all():
+    query = 'select * from stock_master'
+    json_output = json.dumps(run_query(query))
+    return json_output, 200
+
 #http://localhost:5000/product_category/all
 @app.route('/product_category/all', methods=['GET'])
 def product_category_all():
@@ -209,6 +216,57 @@ def product_update(product_code):
     print(query)
     run_query(query)
     return '1', 200
+
+
+#http://localhost:5000/product/delete/id=1
+@app.route('/stock/product/id=<id>', methods=['GET'])
+def product_delete(id):
+    query = "DELETE FROM product_master where id="+str(id)
+    run_query(query)
+    return '1', 200
+
+
+'''
+ {
+ 	"stock": {
+ 		"stock_entry_date": "2016-03-09",
+ 		"product_code": "11",
+ 		"product_name": "Daisy",
+ 		"product_category": "Floral",
+ 		"product_brand": "Dior",
+ 		"product_type": "Perfume1",
+ 		"product_coo": "India",
+ 		"quantity": 2.54
+ 	}
+ }
+'''
+#http://localhost:5000/stock/add
+@app.route('/stock/add', methods=['POST'])
+def stock_add():
+    data = json.loads(request.data)
+    print(data)
+
+    stock_entry_date = data['stock']['stock_entry_date']
+    product_code=data['stock']['product_code']
+    product_name =data['stock']['product_name']
+    product_category = data['stock']['product_category']
+    product_brand = data['stock']['product_brand']
+    product_type= data['stock']['product_type']
+    product_coo = data['stock']['product_coo']
+    quantity = data['stock']['quantity']
+
+    query = "INSERT INTO stock_master (stock_entry_date,product_code,product_name,product_category,product_brand,product_type,product_coo,quantity) VALUES ('%s','%s','%s','%s','%s','%s','%s',%f)"% (stock_entry_date,product_code,product_name,product_category,product_brand,product_type,product_coo,quantity)
+    #print(query)
+    run_insert_query(query)
+    return '1', 200
+
+#http://localhost:5000/stock/delete/id=1
+@app.route('/stock/delete/id=<id>', methods=['GET'])
+def stock_delete(id):
+    query = "DELETE FROM stock_master where id="+str(id)
+    run_query(query)
+    return '1', 200
+
 
 #http://localhost:5000/report/type=date,from='2015-05-15',to='2018-05-15'
 #http://localhost:5000/report/type=sales_person_code,from='2015-05-15',to='2018-05-15'
