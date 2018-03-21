@@ -9,7 +9,7 @@ app = Flask(__name__)
 #http://localhost:5000/product/all
 @app.route('/product/all', methods=['GET'])
 def product_all():
-    query = 'select code, name from product_master'
+    query = 'select code, name, category from product_master'
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
@@ -68,6 +68,13 @@ def company_by_id(company_id):
 def product_by_name(name):
     query = 'select * from product_master where name = '+ name
     json_output = json.dumps(run_query(query,[name]))
+    return json_output, 200
+
+#http://localhost:5000/product/code='1'
+@app.route('/product/code=<code>', methods=['GET'])
+def product_by_code(code):
+    query = 'select * from product_master where code = '+ code
+    json_output = json.dumps(run_query(query))
     return json_output, 200
 
 #http://localhost:5000/invoice_header/invoice_no=1
@@ -268,14 +275,13 @@ def stock_delete(id):
     return '1', 200
 
 
-#http://localhost:5000/report/type=date,from='2015-05-15',to='2018-05-15'
-#http://localhost:5000/report/type=sales_person_code,from='2015-05-15',to='2018-05-15'
-#http://localhost:5000/report/type=payment_mode,from='2015-05-15',to='2018-05-15'
-#http://localhost:5000/report/type=category,from='2015-05-15',to='2018-05-15'
+#http://localhost:5000/report/type='date',from='2015-05-15',to='2018-05-15'
+#http://localhost:5000/report/type='sales_person',from='2015-05-15',to='2018-05-15'
+#http://localhost:5000/report/type='payment_mode',from='2015-05-15',to='2018-05-15'
+#http://localhost:5000/report/type='category',from='2015-05-15',to='2018-05-15'
 @app.route('/report/type=<report_type>,from=<from_date>,to=<to_date>', methods=['GET'])
 def report(report_type,from_date,to_date):
-    if(str(report_type) == 'date'):
-
+    if(str(report_type) == "'date'"):
         query = 'select invoice.invoice_date ,' \
                 'round(sum(invoice.sub_total),2) as sub_total,' \
                 'round(sum(invoice.discount),2) as discount, ' \
@@ -284,7 +290,7 @@ def report(report_type,from_date,to_date):
                 'from invoice,items ' \
                 'where invoice.invoice_date  >= '+  from_date + ' and invoice.invoice_date  <= '+  to_date + ' group by invoice.invoice_date '
 
-    elif(report_type=='sales_person_code'):
+    elif(report_type=="'sales_person'"):
         query = 'select invoice.sales_person_code, invoice.invoice_date ,' \
                 'round(sum(invoice.sub_total),2) as sub_total,' \
                 'round(sum(invoice.discount),2) as discount, ' \
@@ -293,7 +299,7 @@ def report(report_type,from_date,to_date):
                 'from invoice,items ' \
                 'where invoice.invoice_date  >= '+  from_date + ' and invoice.invoice_date  <= '+  to_date + ' group by invoice.sales_person_code'
 
-    elif(report_type=='payment_mode'):
+    elif(report_type=="'payment_mode'"):
         query = 'select invoice.payment_mode, invoice.invoice_date ,' \
                 'round(sum(invoice.sub_total),2) as sub_total,' \
                 'round(sum(invoice.discount),2) as discount, ' \
@@ -302,7 +308,7 @@ def report(report_type,from_date,to_date):
                 'from invoice,items ' \
                 'where invoice.invoice_date  >= '+  from_date + ' and invoice.invoice_date  <= '+  to_date + ' group by invoice.payment_mode'
 
-    elif (report_type == 'category'):
+    elif (report_type == "'category'"):
         query = 'select items.product_category as category, invoice.invoice_date , ' \
                 'round(sum(invoice.sub_total),2) as sub_total,' \
                 'round(sum(invoice.discount),2) as discount, ' \
