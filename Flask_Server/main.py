@@ -13,6 +13,20 @@ def product_all():
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
+#http://localhost:5000/product/full_all
+@app.route('/product/full_all', methods=['GET'])
+def product_full_all():
+    query = 'select * from product_master'
+    json_output = json.dumps(run_query(query))
+    return json_output, 200
+
+#http://localhost:5000/stock/full_all
+@app.route('/stock/full_all', methods=['GET'])
+def stock_full_all():
+    query = 'select * from stock_master'
+    json_output = json.dumps(run_query(query))
+    return json_output, 200
+
 #http://localhost:5000/product_category/all
 @app.route('/product_category/all', methods=['GET'])
 def product_category_all():
@@ -118,7 +132,7 @@ def invoice_add():
     sales_person_code = data['invoice']['sales_person_code']
     cutomer_name = data['invoice']['cutomer_name']
     cutomer_phone=data['invoice']['cutomer_phone']
-    cutomer_vat_no =str(data['invoice']['cutomer_vat_no'])
+    cutomer_vat_no =data['invoice']['cutomer_vat_no']
     sub_total = data['invoice']['sub_total']
     discount = data['invoice']['discount']
     vat= data['invoice']['vat']
@@ -146,8 +160,114 @@ def invoice_add():
     return '1', 200
 
 '''
-select invoice.id,invoice.date,invoice.time,invoice.sales_person,invoice.cutomer_phone,items.product_category,items.product_name,items.product_price,items.quantity,items.amount,items.tax,invoice.total_amount,invoice.total_tax,invoice.payment_type from invoice,items where invoice.date >= '2010-05-15' and invoice.date <= '2018-05-15' 
+ {
+ 	"product": {
+ 		"category": "Floral",
+ 		"code": "11",
+ 		"name": "Daisy",
+ 		"name_arabic": "Daisy",
+ 		"brand": "Marc Jacobs",
+ 		"product_type": "Perfume1",
+ 		"coo": "India",
+ 		"price": 2.54,
+ 		"image": "a.png",
+ 		"status": 1
+ 	}
+ }
 '''
+#http://localhost:5000/product/add
+@app.route('/product/add', methods=['POST'])
+def product_add():
+    data = json.loads(request.data)
+    print(data)
+
+    category = data['product']['category']
+    name=data['product']['name']
+    name_arabic =data['product']['name_arabic']
+    brand = data['product']['brand']
+    product_type = data['product']['product_type']
+    coo= data['product']['coo']
+    price = data['product']['price']
+    image = data['product']['image']
+    status = data['product']['status']
+
+    query = "INSERT INTO product_master (category, code, name, name_arabic, brand, product_type, coo, price, image, status) VALUES ('%s','%s','%s','%s','%s','%s','%s',%f,'%s',%d)"% (category, code, name, name_arabic, brand, product_type, coo, price, image, status)
+    #print(query)
+    run_insert_query(query)
+    return '1', 200
+
+#http://localhost:5000/product/update/product_code=1
+@app.route('/product/update/product_code=<product_code>', methods=['POST'])
+def product_update(product_code):
+    data = json.loads(request.data)
+    print(data)
+
+    category = data['product']['category']
+    name=data['product']['name']
+    name_arabic =data['product']['name_arabic']
+    brand = data['product']['brand']
+    product_type = data['product']['product_type']
+    coo= data['product']['coo']
+    price = data['product']['price']
+    image = data['product']['image']
+    status = data['product']['status']
+
+    query = "UPDATE product_master SET category ='%s', name='%s', name_arabic='%s', brand='%s', product_type='%s', coo='%s', price=%f, image='%s', status=%d WHERE code='%s'" % (category, name, name_arabic, brand, product_type, coo, price, image, status,product_code)
+    print(query)
+    run_query(query)
+    return '1', 200
+
+
+#http://localhost:5000/product/delete/id=1
+@app.route('/stock/product/id=<id>', methods=['GET'])
+def product_delete(id):
+    query = "DELETE FROM product_master where id="+str(id)
+    run_query(query)
+    return '1', 200
+
+
+'''
+ {
+ 	"stock": {
+ 		"stock_entry_date": "2016-03-09",
+ 		"product_code": "11",
+ 		"product_name": "Daisy",
+ 		"product_category": "Floral",
+ 		"product_brand": "Dior",
+ 		"product_type": "Perfume1",
+ 		"product_coo": "India",
+ 		"quantity": 2.54
+ 	}
+ }
+'''
+#http://localhost:5000/stock/add
+@app.route('/stock/add', methods=['POST'])
+def stock_add():
+    data = json.loads(request.data)
+    print(data)
+
+    stock_entry_date = data['stock']['stock_entry_date']
+    product_code=data['stock']['product_code']
+    product_name =data['stock']['product_name']
+    product_category = data['stock']['product_category']
+    product_brand = data['stock']['product_brand']
+    product_type= data['stock']['product_type']
+    product_coo = data['stock']['product_coo']
+    quantity = data['stock']['quantity']
+
+    query = "INSERT INTO stock_master (stock_entry_date,product_code,product_name,product_category,product_brand,product_type,product_coo,quantity) VALUES ('%s','%s','%s','%s','%s','%s','%s',%f)"% (stock_entry_date,product_code,product_name,product_category,product_brand,product_type,product_coo,quantity)
+    #print(query)
+    run_insert_query(query)
+    return '1', 200
+
+#http://localhost:5000/stock/delete/id=1
+@app.route('/stock/delete/id=<id>', methods=['GET'])
+def stock_delete(id):
+    query = "DELETE FROM stock_master where id="+str(id)
+    run_query(query)
+    return '1', 200
+
+
 #http://localhost:5000/report/type=date,from='2015-05-15',to='2018-05-15'
 #http://localhost:5000/report/type=sales_person_code,from='2015-05-15',to='2018-05-15'
 #http://localhost:5000/report/type=payment_mode,from='2015-05-15',to='2018-05-15'
@@ -196,11 +316,11 @@ def report(report_type,from_date,to_date):
     return json_output, 200
 #http://localhost:5000/sales_person/login
 # body : {"login": "Abdul","password":"abdul"}
-@app.route('/sales_person/login', methods=['GET'])
+@app.route('/sales_person/login', methods=['POST'])
 def sales_person_login():
     data = json.loads(request.data)
     query = 'select count(*) as count from sales_person_master where login = "'+ data['login'] +'" and password = "' +data['password']+'"'
-    result = run_query(query);
+    result = run_query(query)
     count = result[0]['count']
     return str(count), 200
 
@@ -211,7 +331,7 @@ def admin_login():
     data = json.loads(request.data)
     query = 'select count(*) as count from admin_lookup where login = "'+ data['login'] +'" and password = "' +data['password']+'"'
     print(query)
-    result = run_query(query);
+    result = run_query(query)
     count = result[0]['count']
     return str(count), 200
 
@@ -255,18 +375,12 @@ def test_file_upload():
     return Response(content, mimetype="text/html")
 
 
-
-
-
-
-
-
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin','*')
-    #response.headers.add('Access-Control-Allow-Headers','Origin,Accept, X-Requested-With','Content-Type')
+    response.headers.add('Access-Control-Allow-Headers','Origin,Accept,X-Requested-With,Content-Type')
     response.headers.add('Access-Control-Allow-Methods','GET,PUT,POST,DELETE,OPTIONS')
     return response
 
 if __name__ == '__main__':
-    app.run(host='localhost', port='5000')
+    app.run(host='localhost', port=5000)
