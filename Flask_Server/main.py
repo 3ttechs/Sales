@@ -12,6 +12,7 @@ def product_all():
     query = 'select code, name, category from product_master'
     json_output = json.dumps(run_query(query))
     return json_output, 200
+    #return Response(json_output, mimetype="application/json"), 200
 
 #http://localhost:5000/product/full_all
 @app.route('/product/full_all', methods=['GET'])
@@ -59,6 +60,13 @@ def product_coo_all():
 @app.route('/company/company_id=<company_id>', methods=['GET'])
 def company_by_id(company_id):
     query = 'select * from company_lookup where company_id = '+ company_id
+    json_output = json.dumps(run_query(query))
+    return json_output, 200
+
+#http://localhost:5000/product/category='Floral'
+@app.route('/product/category=<category>', methods=['GET'])
+def product_by_category(category):
+    query = 'select code, name from product_master where category = '+ category
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
@@ -207,8 +215,6 @@ def product_add():
 @app.route('/product/update/product_code=<product_code>', methods=['POST'])
 def product_update(product_code):
     data = json.loads(request.data)
-    print(data)
-
     category = data['product']['category']
     name=data['product']['name']
     name_arabic =data['product']['name_arabic']
@@ -218,9 +224,8 @@ def product_update(product_code):
     price = data['product']['price']
     image = data['product']['image']
     status = data['product']['status']
-
     query = "UPDATE product_master SET category ='%s', name='%s', name_arabic='%s', brand='%s', product_type='%s', coo='%s', price=%f, image='%s', status=%d WHERE code='%s'" % (category, name, name_arabic, brand, product_type, coo, price, image, status,product_code)
-    print(query)
+
     run_query(query)
     return '1', 200
 
