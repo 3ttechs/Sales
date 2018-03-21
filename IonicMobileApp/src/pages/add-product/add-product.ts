@@ -3,8 +3,6 @@ import { IonicPage } from 'ionic-angular';
 import { NavController, App, LoadingController, ToastController } from 'ionic-angular';
 
 import { WebServicesProvider } from '../../providers/web-services/web-services';
-import { SummaryPage } from '../summary/summary';
-import { LoginPage } from '../login/login';
 
 @IonicPage()
 @Component({
@@ -14,37 +12,51 @@ import { LoginPage } from '../login/login';
 export class AddProductPage {
 
   loading: any;
-  addProductData = { product:'', category:'', price:'', qty:'' };
   isLoggedIn: boolean = false;
+  public products: any;
 
-  constructor(public app: App, public navCtrl: NavController, public webService: WebServicesProvider, public loadingCtrl: LoadingController, private toastCtrl: ToastController) {
-    if(localStorage.getItem("token")) {
-      this.isLoggedIn = true;
-    }
+  selectedProduct: any;
+  addProductData = {product:'',category:'',price:'',qty:''};
+
+  constructor(public app: App, 
+    public navCtrl: NavController, 
+    public webService: WebServicesProvider, 
+    public loadingCtrl: LoadingController, 
+    private toastCtrl: ToastController) {
+  }
+
+  ionViewDidLoad() {
+    this.doFetchAllProducts();
+  }
+
+  doFetchAllProducts() {
+    this.loading = this.loadingCtrl.create({
+      content: 'Fetching data...'
+    });
+
+    this.loading.present().then(()=>{
+      this.webService.getAllProducts().then(result => {
+        this.products = result;
+        this.loading.dismiss();
+      });
+    });
+  }
+
+  doFetchProductList(){
+    //TODO : Fetch a list of products starting with the typed characters
+  }
+
+  doFetchProductDetails(){
+    //TODO : Fetch details of the selected product.
   }
 
   doAddProduct(){
     //Validate User here
-    alert(this.addProductData.product);
-    alert(this.addProductData.category);  }
-
-  logout() {
-    this.showLoader();
-    this.webService.logout().then((result) => {
-      this.loading.dismiss();
-      let nav = this.app.getRootNav();
-      nav.setRoot(LoginPage);
-    }, (err) => {
-      this.loading.dismiss();
-      this.presentToast(err);
-    });
-  }
-
-  showLoader(){
-    this.loading = this.loadingCtrl.create({
-        content: 'Authenticating...'
-    });
-    this.loading.present();
+    //alert(this.addProductData.product);
+    //alert(this.addProductData.category);  
+    //alert(this.addProductData.price);
+    //alert(this.addProductData.qty);
+    //TODO : Save all the values as an array object to be used in summary page.
   }
 
   presentToast(msg) {
@@ -62,13 +74,5 @@ export class AddProductPage {
     toast.present();
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad AddProductPage');
-  }
 
-  ToSummary()
-  {
-    //Validate User here
-    this.navCtrl.push(SummaryPage);
-  }
 }
