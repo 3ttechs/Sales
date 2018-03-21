@@ -21,10 +21,10 @@ http://localhost:5000/stock/delete/id=1
 
 GET for Reports
 ---------------
-http://localhost:5000/report/type=date,from='2015-05-15',to='2018-05-15'
-http://localhost:5000/report/type=sales_person_code,from='2015-05-15',to='2018-05-15'
-http://localhost:5000/report/type=payment_mode,from='2015-05-15',to='2018-05-15'
-http://localhost:5000/report/type=category,from='2015-05-15',to='2018-05-15'
+http://localhost:5000/report/type='date',from='2015-05-15',to='2018-05-15'
+http://localhost:5000/report/type='sales_person',from='2015-05-15',to='2018-05-15'
+http://localhost:5000/report/type='payment_mode',from='2015-05-15',to='2018-05-15'
+http://localhost:5000/report/type='category',from='2015-05-15',to='2018-05-15'
 
 POST
 ----

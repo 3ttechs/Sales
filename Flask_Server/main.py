@@ -316,7 +316,7 @@ def report(report_type,from_date,to_date):
     return json_output, 200
 #http://localhost:5000/sales_person/login
 # body : {"login": "Abdul","password":"abdul"}
-@app.route('/sales_person/login', methods=['GET'])
+@app.route('/sales_person/login', methods=['POST'])
 def sales_person_login():
     data = json.loads(request.data)
     query = 'select count(*) as count from sales_person_master where login = "'+ data['login'] +'" and password = "' +data['password']+'"'
