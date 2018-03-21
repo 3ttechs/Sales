@@ -1,23 +1,26 @@
 import { Component } from '@angular/core';
-import { NavController, App, LoadingController, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App, LoadingController, ToastController } from 'ionic-angular';
+import { AddProductPage } from '../add-product/add-product';
+import { SummaryPage } from '../summary/summary';
+import { LoginPage } from '../login/login';
 
 import { WebServicesProvider } from '../../providers/web-services/web-services';
-import { TabsPage } from '../tabs/tabs';
-import { LoginPage } from '../login/login';
-import { AddProductPage } from '../add-product/add-product'
 
+@IonicPage()
 @Component({
-  selector: 'page-home',
-  templateUrl: 'home.html'
+  selector: 'page-product-home',
+  templateUrl: 'product-home.html',
 })
-export class HomePage {
+export class ProductHomePage {
 
   loading: any;
   isLoggedIn: boolean = false;
-
-  constructor(public app: App, public navCtrl: NavController, public webService: WebServicesProvider, public loadingCtrl: LoadingController, private toastCtrl: ToastController) {
-    if(localStorage.getItem("token")) {
-      this.isLoggedIn = true;
+  public addProductTab = AddProductPage;
+  public summaryTab = SummaryPage;
+  
+  constructor(public app: App, public navCtrl: NavController, public webService: WebServicesProvider, public loadingCtrl: LoadingController, private toastCtrl: ToastController, public navParams: NavParams) {
+    if(!localStorage.getItem("token")) {
+      navCtrl.setRoot(LoginPage);
     }
   }
 
@@ -35,7 +38,7 @@ export class HomePage {
 
   showLoader(){
     this.loading = this.loadingCtrl.create({
-        content: 'Authenticating...'
+        content: 'Please wait...'
     });
     this.loading.present();
   }
@@ -55,10 +58,8 @@ export class HomePage {
     toast.present();
   }
 
-  NavigateToPurchase()
-  {
-    //Validate User here
-    this.navCtrl.push(AddProductPage);
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad ProductHomePage');
   }
 
 }

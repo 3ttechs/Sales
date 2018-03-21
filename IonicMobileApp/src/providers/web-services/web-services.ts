@@ -3,14 +3,8 @@ import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import 'rxjs/add/operator/map';
 
-/*
-  Generated class for the WebServicesProvider provider.
 
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
-
-let apiUrl = 'http://localhost:8080/api/';
+let apiUrl = 'http://localhost:5000';
 
 @Injectable()
 export class WebServicesProvider {
@@ -22,16 +16,25 @@ export class WebServicesProvider {
   login(credentials) {
     return new Promise((resolve, reject) => {
         let headers = new Headers();
+        headers.append('Accept', 'application/json');
         headers.append('Content-Type', 'application/json');
 
-        /*this.http.post(apiUrl+'login', JSON.stringify(credentials), {headers: headers})
+        let postParams = {"login": "Abdul","password":"abdul"}
+        //let postParams = {"login": credentials.login,"password": credentials.password}
+
+        this.http.post(apiUrl+'/sales_person/login', postParams, {headers: headers})
           .subscribe(res => {
             resolve(res.json());
           }, (err) => {
             reject(err);
-          });*/
-          resolve("true");  //TODO : need to replace this with actual login web service call
+          });
     });
+  }
+
+  getAllProducts() {
+    return new Promise(resolve => {
+      this.http.get(apiUrl + '/product/all').subscribe(res => resolve(res.json()))
+    })
   }
 
   logout(){
@@ -50,5 +53,4 @@ export class WebServicesProvider {
           resolve("true");
     });
   }
-
 }

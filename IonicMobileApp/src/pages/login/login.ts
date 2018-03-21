@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController, LoadingController, ToastController } from 'ionic-angular';
 import { WebServicesProvider } from '../../providers/web-services/web-services';
-import { TabsPage } from '../tabs/tabs';
+import { ProductHomePage } from '../product-home/product-home';
+import { AlertController } from 'ionic-angular';
 
 @Component({
   selector: 'page-login',
@@ -10,10 +11,15 @@ import { TabsPage } from '../tabs/tabs';
 export class LoginPage {
 
   loading: any;
-  loginData = { username:'', password:'' };
+  loginData = { login:'', password:'' };
   data: any;
 
-  constructor(public navCtrl: NavController, public webService: WebServicesProvider, public loadingCtrl: LoadingController, private toastCtrl: ToastController) {  
+  constructor(
+    public navCtrl: NavController, 
+    public webService: WebServicesProvider, 
+    public loadingCtrl: LoadingController, 
+    private toastCtrl: ToastController,
+    public alertCtrl: AlertController) {  
 
   }
 
@@ -22,8 +28,13 @@ export class LoginPage {
     this.webService.login(this.loginData).then((result) => {
       this.loading.dismiss();
       this.data = result;
-      localStorage.setItem('token', this.data.access_token);
-      this.navCtrl.setRoot(TabsPage);
+      if(result ===1){
+        localStorage.setItem('token', this.data);
+        this.navCtrl.setRoot(ProductHomePage);
+      }
+      else{
+        this.showAlert();
+      }
     }, (err) => {
       this.loading.dismiss();
       this.presentToast(err);
@@ -52,4 +63,12 @@ export class LoginPage {
     toast.present();
   }
   
+  showAlert() {
+    let alert = this.alertCtrl.create({
+      title: 'Login Error!',
+      subTitle: 'Invalid Credentials.',
+      buttons: ['OK']
+    });
+    alert.present();
+  }
 }

@@ -1,23 +1,26 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>Add Product</ion-title>
-    <button ion-button clear (click)="logout()">
-      <ion-icon name="log-out"></ion-icon>
-    </button>
-  </ion-navbar>
+  <ion-navbar></ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <form (submit)="doAddProduct()">
-    <ion-item>
-      <ion-label color="primary" fixed>Product</ion-label>
-      <ion-input [(ngModel)]="addProductData.product" name="product" type="search" placeholder="Product" clearInput></ion-input>
-    </ion-item>
 
-    <ion-item>
-      <ion-label color="primary" fixed>Category</ion-label>
-      <ion-input [(ngModel)]="addProductData.category" name="category" type="search" placeholder="Category" clearInput></ion-input>
-    </ion-item>
+    <ion-list>
+      <ion-item>
+        <ion-label>Product</ion-label>
+        <ion-select [(ngModel)]="addProductData.product">
+          <ion-option *ngFor="let item of products" [value] = item.name>{{item.name}}</ion-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+
+    <ion-list>
+      <ion-item>
+        <ion-label>Category</ion-label>
+        <ion-select [(ngModel)]="addProductData.category">
+          <ion-option *ngFor="let item of products" [value] = item.name>{{item.name}}</ion-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
 
     <ion-item>
       <ion-label color="primary" fixed>Price</ion-label>
@@ -32,11 +35,14 @@
     <br/><br/>
 
     <div padding>
-      <button ion-button color="primary" block type="submit">Add Item</button>
+      <button ion-button color="primary" block>Add Item</button>
     </div>
 
-    <div padding>
-      <button ion-button color="primary" block (click)="ToSummary()">Summary</button>
-    </div>
-  </form>
+
+  <!--<ion-list>
+      <button ion-item *ngFor="let item of products">
+          {{item.name}}
+      </button>
+  </ion-list>-->
+
 </ion-content>

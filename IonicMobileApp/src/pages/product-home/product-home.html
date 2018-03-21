@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Products</ion-title>
+    <ion-buttons end>
+      <button ion-button clear (click)="logout()">
+        <ion-icon name="log-out"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-tabs>
+  <ion-tab tabTitle="Add Product" [root]="addProductTab"></ion-tab>
+  <ion-tab tabTitle="Summary" [root]="summaryTab"></ion-tab>
+</ion-tabs>
+
