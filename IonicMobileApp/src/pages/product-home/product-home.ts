@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, LoadingController, ToastController } from 'ionic-angular';
-import { AddProductPage } from '../add-product/add-product';
 import { SummaryPage } from '../summary/summary';
 import { LoginPage } from '../login/login';
 
 import { WebServicesProvider } from '../../providers/web-services/web-services';
+import { CategoriesPage } from '../categories/categories';
+import { CartPage } from '../cart/cart';
 
 @IonicPage()
 @Component({
@@ -15,8 +16,9 @@ export class ProductHomePage {
 
   loading: any;
   isLoggedIn: boolean = false;
-  public addProductTab = AddProductPage;
+  public productTab = CategoriesPage;
   public summaryTab = SummaryPage;
+  public cartTab = CartPage;
   
   constructor(public app: App, public navCtrl: NavController, public webService: WebServicesProvider, public loadingCtrl: LoadingController, private toastCtrl: ToastController, public navParams: NavParams) {
     if(!localStorage.getItem("token")) {

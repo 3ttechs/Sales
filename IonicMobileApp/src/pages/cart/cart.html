@@ -1,0 +1,75 @@
+<ion-header>
+  <ion-navbar></ion-navbar>
+  <ion-toolbar color="secondary">
+    <ion-title>Cart</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content padding>
+  <ion-list>
+    <ion-item-sliding *ngFor="let item of shoppingList">
+      <ion-item>
+        <h2>{{item.category}} \\ {{item.productName}}</h2>
+        <h3>Details about {{item.productName}}</h3>
+      </ion-item>
+      <ion-item-options side="right">
+        <button ion-button color="primary" (click)="removeFromCart($event,item)">
+          <ion-icon name="trash"></ion-icon>
+          Remove
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <!--<ion-list>
+    <ion-item-sliding>
+      <ion-item>
+        <h2>Product1</h2>
+        <h3>Details about Product1</h3>
+      </ion-item>
+      <ion-item-options side="right">
+        <button ion-button color="primary">
+          <ion-icon name="trash"></ion-icon>
+          Remove
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+    <ion-item-sliding>
+      <ion-item>
+        <h2>Product2</h2>
+        <h3>Details about Product2</h3>
+      </ion-item>
+      <ion-item-options side="right">
+        <button ion-button color="primary">
+          <ion-icon name="trash"></ion-icon>
+          Remove
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+    <ion-item-sliding>
+      <ion-item>
+        <h2>Product3</h2>
+        <h3>Details about Product3</h3>
+      </ion-item>
+      <ion-item-options side="right">
+        <button ion-button color="primary">
+          <ion-icon name="trash"></ion-icon>
+          Remove
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+    <ion-item-sliding>
+      <ion-item>
+        <h2>Product4</h2>
+        <h3>Details about Product4</h3>
+      </ion-item>
+      <ion-item-options side="right">
+        <button ion-button color="primary">
+          <ion-icon name="trash"></ion-icon>
+          Remove
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>-->
+</ion-content>

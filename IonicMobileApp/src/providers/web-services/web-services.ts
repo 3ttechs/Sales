@@ -19,8 +19,8 @@ export class WebServicesProvider {
         headers.append('Accept', 'application/json');
         headers.append('Content-Type', 'application/json');
 
-        let postParams = {"login": "Abdul","password":"abdul"}
-        //let postParams = {"login": credentials.login,"password": credentials.password}
+        //let postParams = {"login": "Abdul","password":"abdul"}
+        let postParams = {"login": credentials.login,"password": credentials.password}
 
         this.http.post(apiUrl+'/sales_person/login', postParams, {headers: headers})
           .subscribe(res => {
@@ -31,9 +31,21 @@ export class WebServicesProvider {
     });
   }
 
-  getAllProducts() {
+  getAllCategories() {
     return new Promise(resolve => {
-      this.http.get(apiUrl + '/product/all').subscribe(res => resolve(res.json()))
+      this.http.get(apiUrl + '/product_category/all').subscribe(res => resolve(res.json()))
+    })
+  }
+
+  getAllProductsByCategory(category) {
+    return new Promise(resolve => {
+      this.http.get(apiUrl + '/product/category=' + '"'  + category + '"').subscribe(res => resolve(res.json())) 
+    })
+  }
+
+  getProductDetailsByCode(productCode){
+    return new Promise(resolve => {
+      this.http.get(apiUrl + '/product/code=' + '"'  + productCode + '"').subscribe(res => resolve(res.json()))
     })
   }
 

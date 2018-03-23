@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar color="primary">
-    <ion-title>Products</ion-title>
+    <ion-title>ARD AL ZAAFARAN TRADING L.L.C</ion-title>
     <ion-buttons end>
       <button ion-button clear (click)="logout()">
         <ion-icon name="log-out"></ion-icon>
@@ -10,7 +10,8 @@
 </ion-header>
 
 <ion-tabs>
-  <ion-tab tabTitle="Add Product" [root]="addProductTab"></ion-tab>
-  <ion-tab tabTitle="Summary" [root]="summaryTab"></ion-tab>
+  <ion-tab tabIcon="create" tabTitle="Add Product" [root]="productTab"></ion-tab>
+  <ion-tab tabIcon="cart" tabTitle="Cart" [root]="cartTab"></ion-tab>
+  <ion-tab tabIcon="list-box" tabTitle="Summary" [root]="summaryTab"></ion-tab>
 </ion-tabs>
 

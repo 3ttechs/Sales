@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-navbar></ion-navbar>
+  <ion-toolbar color="secondary">
+    <ion-title>Categories</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col col-4>
+          <ion-list>
+            <button ion-item *ngFor="let item of categories" (click)="categorySelected($event,item)">
+              <ion-avatar item-start>
+                <img src="{{'../../assets/imgs/' + item.category_name + '.gif'}}">
+              </ion-avatar>
+              {{item.category_name}}
+            </button>
+          </ion-list>
+      </ion-col>
+      <ion-col col-8>
+          <img src="{{'../../assets/imgs/' + selectedCategoryName + '_full.jpg'}}">
+          <h2>Nice description about {{selectedCategoryName}}.</h2>
+          Write any nice description about category here. Write any nice description about category here. Write any nice description about category here. Write any nice description about category here. 
+          <ion-buttons end>
+            <button ion-button (click)="navigateToProducts()">Select Products</button>
+          </ion-buttons>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  
+</ion-content>
+  

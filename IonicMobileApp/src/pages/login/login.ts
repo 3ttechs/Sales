@@ -57,7 +57,7 @@ export class LoginPage {
     });
 
     toast.onDidDismiss(() => {
-      console.log('Dismissed toast');
+      console.log('Toast Dismissed');
     });
 
     toast.present();
@@ -65,8 +65,8 @@ export class LoginPage {
   
   showAlert() {
     let alert = this.alertCtrl.create({
-      title: 'Login Error!',
-      subTitle: 'Invalid Credentials.',
+      //title: 'Login Error!',
+      subTitle: 'Wrong Login or Password.',
       buttons: ['OK']
     });
     alert.present();

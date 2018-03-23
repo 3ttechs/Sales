@@ -1,48 +1,39 @@
 <ion-header>
-  <ion-navbar></ion-navbar>
-</ion-header>
+    <ion-navbar></ion-navbar>
+    <ion-toolbar color="secondary">
+      <ion-buttons>
+        <button ion-button icon-only (click)="backToProducts()">
+          <ion-icon name="arrow-back"></ion-icon>
+        </button>
+      </ion-buttons>
+      <ion-title>{{selectedProduct.category}} / {{selectedProduct.productName}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
 <ion-content padding>
-
-    <ion-list>
-      <ion-item>
-        <ion-label>Product</ion-label>
-        <ion-select [(ngModel)]="addProductData.product">
-          <ion-option *ngFor="let item of products" [value] = item.name>{{item.name}}</ion-option>
-        </ion-select>
-      </ion-item>
-    </ion-list>
-
-    <ion-list>
-      <ion-item>
-        <ion-label>Category</ion-label>
-        <ion-select [(ngModel)]="addProductData.category">
-          <ion-option *ngFor="let item of products" [value] = item.name>{{item.name}}</ion-option>
-        </ion-select>
-      </ion-item>
-    </ion-list>
-
+  <ion-list no-lines>
     <ion-item>
-      <ion-label color="primary" fixed>Price</ion-label>
-      <ion-input [(ngModel)]="addProductData.price" name="price" type="number" placeholder="Price" clearInput></ion-input>
+      <ion-label>Category : {{selectedProduct.category}}</ion-label>
     </ion-item>
-
     <ion-item>
-      <ion-label color="primary" fixed>Qty</ion-label>
-      <ion-input [(ngModel)]="addProductData.qty" name="qty" type="number" placeholder="Qty" clearInput></ion-input>
+      <ion-label>Product : {{selectedProduct.productName}}</ion-label>
     </ion-item>
+    <ion-item>
+      <ion-label>Brand : {{productDetails.brand}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>Price : {{productDetails.price}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>Qty</ion-label>
+      <ion-input name="qty" [(ngModel)]="selectedItem.qty" type="number" placeholder="Qty" clearInput></ion-input>
+    </ion-item>
+  </ion-list>
+    
+  <br/><br/>
 
-    <br/><br/>
-
-    <div padding>
-      <button ion-button color="primary" block>Add Item</button>
-    </div>
-
-
-  <!--<ion-list>
-      <button ion-item *ngFor="let item of products">
-          {{item.name}}
-      </button>
-  </ion-list>-->
+  <div padding>
+    <button ion-button color="primary" block (click) = "addItemToCart()">Add Item</button>
+  </div>
 
 </ion-content>

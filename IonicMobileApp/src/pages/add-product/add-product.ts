@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage } from 'ionic-angular';
+import { IonicPage, NavParams } from 'ionic-angular';
 import { NavController, App, LoadingController, ToastController } from 'ionic-angular';
-
 import { WebServicesProvider } from '../../providers/web-services/web-services';
+import { ShoppingCartProvider } from '../../providers/shopping-cart/shopping-cart';
+import { AlertController } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -12,51 +13,54 @@ import { WebServicesProvider } from '../../providers/web-services/web-services';
 export class AddProductPage {
 
   loading: any;
-  isLoggedIn: boolean = false;
-  public products: any;
-
-  selectedProduct: any;
-  addProductData = {product:'',category:'',price:'',qty:''};
+  public selectedProduct: {category:'',productCode:'', productName:''};;
+  public selectedItem = {productCode:'',productName:'',category:'',price:'',qty:''};
+  public productDetails: any = {};
 
   constructor(public app: App, 
     public navCtrl: NavController, 
     public webService: WebServicesProvider, 
     public loadingCtrl: LoadingController, 
-    private toastCtrl: ToastController) {
+    private toastCtrl: ToastController,
+    private navParams: NavParams,
+    private shoppingCart: ShoppingCartProvider,
+    public alertCtrl: AlertController) {
+      this.selectedProduct = this.navParams.data;
   }
 
   ionViewDidLoad() {
-    this.doFetchAllProducts();
+    this.getProductDetailsByCode();
   }
 
-  doFetchAllProducts() {
+  getProductDetailsByCode(){
     this.loading = this.loadingCtrl.create({
-      content: 'Fetching data...'
+      content: 'Fetching Product Details...'
     });
 
     this.loading.present().then(()=>{
-      this.webService.getAllProducts().then(result => {
-        this.products = result;
+      this.webService.getProductDetailsByCode(this.selectedProduct.productCode).then(result => {
+        this.productDetails = result[0];
+        console.log(result[0]);
         this.loading.dismiss();
       });
     });
   }
 
-  doFetchProductList(){
-    //TODO : Fetch a list of products starting with the typed characters
-  }
+  addItemToCart(){
+    this.selectedItem.productCode = this.selectedProduct.productCode;
+    this.selectedItem.productName = this.selectedProduct.productName;
+    this.selectedItem.category = this.selectedProduct.category;
+    this.selectedItem.price = this.productDetails.price;
 
-  doFetchProductDetails(){
-    //TODO : Fetch details of the selected product.
-  }
+    this.loading = this.loadingCtrl.create({
+      content: 'Adding item...'
+    });
 
-  doAddProduct(){
-    //Validate User here
-    //alert(this.addProductData.product);
-    //alert(this.addProductData.category);  
-    //alert(this.addProductData.price);
-    //alert(this.addProductData.qty);
-    //TODO : Save all the values as an array object to be used in summary page.
+    this.loading.present().then(()=>{
+      this.shoppingCart.addItemToCart(this.selectedItem);
+      this.loading.dismiss();
+      this.showAlert();
+    });
   }
 
   presentToast(msg) {
@@ -74,5 +78,17 @@ export class AddProductPage {
     toast.present();
   }
 
+  backToProducts(){
+    this.navCtrl.pop();
+  }
+
+  showAlert() {
+    let alert = this.alertCtrl.create({
+      //title: 'Login Error!',
+      subTitle: 'Item Added.',
+      buttons: ['OK']
+    });
+    alert.present();
+  }
 
 }
