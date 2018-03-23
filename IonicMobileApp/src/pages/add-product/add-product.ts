@@ -14,7 +14,7 @@ export class AddProductPage {
 
   loading: any;
   public selectedProduct: {category:'',productCode:'', productName:''};;
-  public selectedItem = {productCode:'',productName:'',category:'',price:'',qty:''};
+  public selectedItem = {productCode:'',productName:'',category:'',price:'',qty:'', brand:'',amount:''};
   public productDetails: any = {};
 
   constructor(public app: App, 
@@ -51,6 +51,8 @@ export class AddProductPage {
     this.selectedItem.productName = this.selectedProduct.productName;
     this.selectedItem.category = this.selectedProduct.category;
     this.selectedItem.price = this.productDetails.price;
+    this.selectedItem.brand = this.productDetails.brand;
+    this.selectedItem.amount = String(Number(this.selectedItem.price) * Number(this.selectedItem.qty));
 
     this.loading = this.loadingCtrl.create({
       content: 'Adding item...'

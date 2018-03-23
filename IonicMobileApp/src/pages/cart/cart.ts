@@ -40,10 +40,28 @@ export class CartPage {
     });
   }
 
+  //Need to discuss this logic. Can either wait for hard delete from storage and pull latest records or do soft delete and later delete from storage
   removeFromCart($event,cartItem){
-    console.log(cartItem);
-    //TODO: implement delete item code
-    //find array matching typescript and remove it from shoppingList
-  }
+    this.loading = this.loadingCtrl.create({
+      content: 'Fetching Cart Items...'
+    });
 
+    //Removing local cashed copy to reflect the change immediatly.
+    var filteredShoppingList: any;
+    filteredShoppingList = this.shoppingList.filter(function(emp) {
+      if (emp.productCode == cartItem.productCode) { //if same item is added multiple times, both will get deleted together
+          return false;
+      }
+      return true;
+    });
+    this.shoppingList = filteredShoppingList;
+    
+    //Removing from the storage for permanent removal.
+    this.loading.present().then(()=>{
+      this.shoppingCart.removeItemFromCart(filteredShoppingList).then(result => {
+        //this.shoppingList = filteredShoppingList;  //Need to do this??
+      }).catch(err=>console.log(err));
+      this.loading.dismiss();
+    });
+  }
 }

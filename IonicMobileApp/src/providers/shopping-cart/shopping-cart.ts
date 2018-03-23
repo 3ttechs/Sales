@@ -29,10 +29,21 @@ export class ShoppingCartProvider {
 
   getItemsFromCart(){
     return new Promise((resolve,reject) => {
-      this.storagemodule.get("cartItems").then(res => resolve(res)).catch(err=>reject(err))})
+      this.storagemodule.get("cartItems").then(res => resolve(res)).catch(err=>reject(console.log(err)))})
   }
 
-  removeItemFromCart(){
-    
+  removeItemFromCart(filteredShoppingList){
+    return new Promise((resolve,reject) => {
+      this.cartItems.items = filteredShoppingList;
+      this.storagemodule.set("cartItems",this.cartItems);
+    })
+  }
+
+  placeOrder(){
+    return new Promise((resolve,reject) => {
+    this.cartItems = {"items":[]};
+    this.storagemodule.set("cartItems",this.cartItems);
+    resolve("true");
+    })
   }
 }

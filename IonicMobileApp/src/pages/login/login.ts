@@ -20,7 +20,6 @@ export class LoginPage {
     public loadingCtrl: LoadingController, 
     private toastCtrl: ToastController,
     public alertCtrl: AlertController) {  
-
   }
 
   doLogin() {

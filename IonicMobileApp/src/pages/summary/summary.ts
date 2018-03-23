@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, LoadingController } from 'ionic-angular';
+import { ShoppingCartProvider } from '../../providers/shopping-cart/shopping-cart';
 
 @IonicPage()
 @Component({
@@ -8,14 +9,71 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class SummaryPage {
 
-  private discount: any;
-  private totalAmount: any=0.00;
+  loading: any;
+  private shoppingList: any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  private subTotal: number=256.05;
+  private VAT: number=12.56;
+  private discount: number=0;
+  private total: number=268.61;
+  private paymentMode: string="Cash";
+  //private summaryItem: {SubTotal:0, VAT:0, Discount:0, Total:0, PaymentMode:'', CustName:'', CustPhone:''};
+
+  constructor(
+    public navCtrl: NavController, 
+    public navParams: NavParams,
+    public alertCtrl: AlertController,
+    private shoppingCart: ShoppingCartProvider,
+    private loadingCtrl: LoadingController) {
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SummaryPage');
-    this.totalAmount = 241.35+12.06-this.discount;
+    //this.calculateSummary();
+  }
+
+  calculateSummary(){
+    this.loading = this.loadingCtrl.create({
+      content: 'Calculating totals...'
+    });
+
+    this.loading.present().then(()=>{
+      this.shoppingCart.getItemsFromCart().then(result => {
+        console.log(result["items"]);
+        this.shoppingList = result["items"];
+        console.log(result["items"]);
+      }).catch(err=>console.log(err));
+
+      this.shoppingList.array.forEach(element => {
+        this.subTotal += Number(element.price);
+      });
+
+      this.VAT = Number(this.subTotal) * Number("0.05");
+
+      this.loading.dismiss();
+    });
+  }
+  
+  PlaceOrder(){
+    this.loading = this.loadingCtrl.create({
+      content: 'Placing order...'
+    });
+
+    this.loading.present().then(()=>{
+      this.shoppingCart.placeOrder().then(result => {
+        this.showAlert();
+      }).catch(err=>console.log(err));
+      this.loading.dismiss();
+      this.navCtrl.popToRoot();
+    });
+  }
+
+  showAlert() {
+    let alert = this.alertCtrl.create({
+      //title: 'Login Error!',
+      subTitle: 'Order Placed. Receipt number : 16589',
+      buttons: ['OK']
+    });
+    alert.present();
   }
 }
