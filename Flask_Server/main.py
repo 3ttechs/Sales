@@ -195,7 +195,7 @@ def invoice_add():
 def product_add():
     data = json.loads(request.data)
     print(data)
-
+    code = data['product']['code']
     category = data['product']['category']
     name=data['product']['name']
     name_arabic =data['product']['name_arabic']
