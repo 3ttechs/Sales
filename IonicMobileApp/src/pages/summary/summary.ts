@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, LoadingController } from 'ionic-angular';
 import { ShoppingCartProvider } from '../../providers/shopping-cart/shopping-cart';
+import { CategoriesPage } from '../categories/categories';
 
 @IonicPage()
 @Component({
@@ -64,7 +65,7 @@ export class SummaryPage {
         this.showAlert();
       }).catch(err=>console.log(err));
       this.loading.dismiss();
-      this.navCtrl.popToRoot();
+      this.navCtrl.setRoot(CategoriesPage);
     });
   }
 

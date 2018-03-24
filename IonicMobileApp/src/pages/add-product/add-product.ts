@@ -4,6 +4,7 @@ import { NavController, App, LoadingController, ToastController } from 'ionic-an
 import { WebServicesProvider } from '../../providers/web-services/web-services';
 import { ShoppingCartProvider } from '../../providers/shopping-cart/shopping-cart';
 import { AlertController } from 'ionic-angular';
+import { CategoriesPage } from '../categories/categories';
 
 @IonicPage()
 @Component({
@@ -62,6 +63,7 @@ export class AddProductPage {
       this.shoppingCart.addItemToCart(this.selectedItem);
       this.loading.dismiss();
       this.showAlert();
+      this.navCtrl.setRoot(CategoriesPage);
     });
   }
 
