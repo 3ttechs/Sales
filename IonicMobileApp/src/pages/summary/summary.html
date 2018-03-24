@@ -7,7 +7,7 @@
   <br/><br/><br/><br/><br/><br/>
     <ion-row>
       <ion-col col-3><ion-label class="labels" color="primary" >Sub Total</ion-label></ion-col> <!--Sum of all quantity * price of item-->
-      <ion-col col-3><ion-label class="values" color="primary" fixed>{{subTotal}}</ion-label></ion-col>
+      <ion-col col-3><ion-label class="values" color="primary" fixed>£ {{subTotal}}</ion-label></ion-col>
 
       <ion-col col-3><ion-label class="labels" color="primary">Payment Mode</ion-label></ion-col> <!--Select Basic-->
       <ion-col col-3><ion-label class="values" color="primary" fixed>{{paymentMode}}</ion-label></ion-col>
@@ -25,7 +25,7 @@
     </ion-row>
     <ion-row>
       <ion-col col-3><ion-label class="labels" color="primary" fixed>VAT</ion-label></ion-col> <!--Calculated 5% of Sub Total-->
-      <ion-col col-3><ion-label class="values" color="primary" fixed>{{VAT}}</ion-label></ion-col>
+      <ion-col col-3><ion-label class="values" color="primary" fixed>£ {{VAT}}</ion-label></ion-col>
 
       <ion-col col-3><ion-label class="labels" color="primary">Sales Person</ion-label></ion-col>
       <ion-col col-3><ion-label class="values" color="primary" fixed>Abdul</ion-label></ion-col>
@@ -34,7 +34,7 @@
 
     </ion-row>
     <ion-row>
-      <ion-col col-3><ion-label class="labels" color="primary" >Discount</ion-label></ion-col> <!--User input numeric-->
+      <ion-col col-3><ion-label class="labels" color="primary" >Discount (£) </ion-label></ion-col> <!--User input numeric-->
       <ion-col col-3><ion-input class="values" type="number" placeholder="0"></ion-input></ion-col>
 
       <ion-col col-3><ion-label class="labels" color="primary">Customer Name</ion-label></ion-col>
@@ -45,7 +45,7 @@
     <ion-row>
 	
       <ion-col col-3><ion-label class="labels" color="primary" fixed>Total</ion-label></ion-col> <!--Sub Total + VAT - Discount-->
-      <ion-col col-3><ion-label class="values" color="primary" fixed>{{total}}</ion-label></ion-col>
+      <ion-col col-3><ion-label class="values" color="primary" fixed>£ {{total}}</ion-label></ion-col>
 	
       <ion-col col-3><ion-label class="labels" color="primary">Customer Phone</ion-label></ion-col>
       <ion-col col-3><ion-input class="values" type="text" placeholder="Phone"></ion-input></ion-col>
