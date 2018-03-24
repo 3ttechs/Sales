@@ -2,7 +2,18 @@ page-summary {
 
 }
 
+.summaryPage{
+    background-color: rgb(255,254,254);
+
+	
+}
+
 .summaryPage .labels{
-    font-size: 1.5em;
+    font-size: 2em;
     color: black;
+}
+
+.summaryPage .values{
+    font-size: 2em;
+    color: blue;
 }

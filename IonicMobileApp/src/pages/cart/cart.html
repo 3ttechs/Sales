@@ -10,16 +10,25 @@
   <ion-list>
     <ion-item-sliding *ngFor="let item of shoppingList">
       <ion-item>
-        <h2>{{item.category}} \\ {{item.productName}}</h2>
+        <h1 style="color: red">{{item.category}} \\ {{item.productName}}</h1>
         <h3>Brand : {{item.brand}}, Price : {{item.price}}, Qty : {{item.qty}}, Amount : {{item.amount}}</h3>
       </ion-item>
+      <ion-item-options side="left">
+        <button ion-button color="secondary" (click)="removeFromCart($event,item)">
+          <ion-icon name="trash"></ion-icon>
+          Edit
+        </button>
+      </ion-item-options>
+
       <ion-item-options side="right">
         <button ion-button color="primary" (click)="removeFromCart($event,item)">
           <ion-icon name="trash"></ion-icon>
           Remove
         </button>
       </ion-item-options>
-    </ion-item-sliding>
+
+	  
+	  </ion-item-sliding>
   </ion-list>
 
   <!--<ion-list>

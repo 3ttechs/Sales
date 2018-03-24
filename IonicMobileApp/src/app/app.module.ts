@@ -16,7 +16,6 @@ import { CategoriesPage } from '../pages/categories/categories';
 import { ProductsPage } from '../pages/products/products';
 import { ShoppingCartProvider } from '../providers/shopping-cart/shopping-cart';
 import { CartPage } from '../pages/cart/cart';
-import { ScreenOrientation } from '@ionic-native/screen-orientation';
 
 @NgModule({
   declarations: [
