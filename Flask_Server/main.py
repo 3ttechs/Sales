@@ -1,6 +1,7 @@
 import sqlite3
-from flask import Flask, request,json,send_from_directory,Response
-import logging, os
+from flask import Flask, request,json,send_from_directory,Response,render_template
+import logging, os, subprocess
+import pdfkit
 
 from  db_utilities import *
 
@@ -99,18 +100,48 @@ def invoice_items_by_id(invoice_no):
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
+
+#http://localhost:5000/invoice_print/invoice_no=1
+@app.route('/invoice_print/invoice_no=<invoice_no>', methods=['GET'])
+def invoice_print_by_id(invoice_no):
+    query = 'select * from invoice where id = '+ invoice_no
+    invoice_header = json.loads(json.dumps(run_query(query)))
+
+    query = 'select * from items where invoice_no  = '+ invoice_no
+    invoice_items = json.loads(json.dumps(run_query(query)))
+    num_items = len(invoice_items)
+    data = render_template('invoice.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items)
+    path_wkthmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+    config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
+    pdfkit.from_string(data, 'invoice.pdf', configuration=config)
+    #os.startfile('invoice.pdf')
+    # AcroRd32.exe /t filename.pdf printername drivername portname
+    acroread = '"C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32.exe" /H /T'
+    printer=""
+    cmd = '%s %s' % (acroread, 'invoice.pdf')
+    #print (cmd)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    #stdout, stderr = proc.communicate()
+    #exit_code = proc.wait()
+    return '1', 200
+
+
+
 ''' ------------------------------------BODY JSON-------------------------------------------------------------
 {
   "invoice": {
-    "sales_person_code": "Abdul",
-    "cutomer_name": "AA",
-    "cutomer_phone": 9448373533,
-    "cutomer_vat_no": "11",
-    "sub_total": 36.54,
-    "discount": 0.01,
-    "vat": 0.01,
-    "total": 11.02,
-    "payment_mode": 1
+  "id": 2,
+  "sales_person_code": "ASDF",
+  "customer_name": "ABC Corp.",
+  "customer_phone": "99-99-99",
+  "customer_vat_no": "00-00",
+  "sub_total": 0.02,
+  "discount": 0.02,
+  "vat": 0.02,
+  "total": 25,
+  "payment_mode": 1,
+  "status": 1,
+  "notes": "-"
   },
   "items": [
     {
@@ -118,8 +149,11 @@ def invoice_items_by_id(invoice_no):
       "product_code": "1",
       "product_category": "Floral",
       "product_name": "Diasy",
-      "product_price": 2.54,
+	  "product_name_arabic": "Diasy",
+	  "product_brand": "Diasy",
+	  "product_type": "Diasy",
       "product_coo": "India",
+      "product_price": 2.54,
       "quantity": 12,
       "discount": 0.02,
       "amount": 25
@@ -129,14 +163,18 @@ def invoice_items_by_id(invoice_no):
       "product_code": "1",
       "product_category": "Floral",
       "product_name": "Diasy",
-      "product_price": 2.54,
+	  "product_name_arabic": "Diasy",
+	  "product_brand": "Diasy",
+	  "product_type": "Diasy",
       "product_coo": "India",
+      "product_price": 2.54,
       "quantity": 12,
       "discount": 0.02,
       "amount": 25
     }
   ]
 }
+
 '''
 
 #http://localhost:5000/invoice/add
@@ -145,17 +183,18 @@ def invoice_add():
     data = json.loads(request.data)
 
     sales_person_code = data['invoice']['sales_person_code']
-    cutomer_name = data['invoice']['cutomer_name']
-    cutomer_phone=data['invoice']['cutomer_phone']
-    cutomer_vat_no =data['invoice']['cutomer_vat_no']
+    customer_name = data['invoice']['customer_name']
+    customer_phone=data['invoice']['customer_phone']
+    customer_vat_no =data['invoice']['customer_vat_no']
     sub_total = data['invoice']['sub_total']
     discount = data['invoice']['discount']
     vat= data['invoice']['vat']
     total = data['invoice']['total']
     payment_mode = data['invoice']['payment_mode']
-    query = "INSERT INTO invoice (invoice_date, invoice_time,  sales_person_code,cutomer_name,cutomer_phone,cutomer_vat_no,sub_total,discount,vat,total,payment_mode) VALUES (date(),time(),'%s','%s',%d,'%s',%f,%f,%f,%f,%d  )"% (sales_person_code,cutomer_name,cutomer_phone,cutomer_vat_no,sub_total,discount,vat,total,payment_mode)
-    #print(query)
+    status = data['invoice']['status']
+    notes = data['invoice']['notes']
 
+    query = "INSERT INTO invoice (invoice_date, invoice_time,  sales_person_code,customer_name,customer_phone,customer_vat_no,sub_total,discount,vat,total,payment_mode,status,notes) VALUES (date(),time(),'%s','%s','%s','%s',%f,%f,%f,%f,%d , %d,'%s' )"% (sales_person_code,customer_name,customer_phone,customer_vat_no,sub_total,discount,vat,total,payment_mode,status,notes)
     run_insert_query(query)
     invoice_no = run_select_query('SELECT MAX(id) FROM invoice')[0][0]
 
@@ -164,16 +203,21 @@ def invoice_add():
         product_code = data['items'][i]['product_code']
         product_category = data['items'][i]['product_category']
         product_name = data['items'][i]['product_name']
-        product_price = data['items'][i]['product_price']
+        product_name_arabic = data['items'][i]['product_name_arabic']
+        product_brand = data['items'][i]['product_brand']
+        product_type = data['items'][i]['product_type']
         product_coo = data['items'][i]['product_coo']
+        product_price = data['items'][i]['product_price']
         quantity = data['items'][i]['quantity']
         discount = data['items'][i]['discount']
         amount = data['items'][i]['amount']
-        query = "INSERT INTO items (invoice_no,product_code,product_category,product_name,product_price,product_coo,quantity,discount,amount) VALUES  ('%s','%s','%s','%s',%f,'%s',%f,%f,%f)"% (invoice_no,product_code,product_category,product_name,product_price,product_coo,quantity,discount,amount)
+        query = "INSERT INTO items (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,discount,amount) VALUES  ('%s','%s','%s','%s','%s','%s','%s',%f,'%s',%f,%f,%f)"% (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,discount,amount)
         run_insert_query(query)
 
     return '1', 200
 
+
+# Invoice update by changing the status and adding comment
 '''
  {
  	"product": {

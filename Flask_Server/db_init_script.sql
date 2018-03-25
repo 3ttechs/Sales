@@ -69,7 +69,10 @@ CREATE TABLE invoice (
 	discount 			REAL,
 	vat 				REAL,
 	total 				REAL 	 NOT NULL,
-	payment_mode 		INTEGER  NOT NULL
+	payment_mode 		INTEGER  NOT NULL,
+    status              INTEGER,
+    comments           TEXT,
+    notes              TEXT	
 );
 
 CREATE TABLE items (
