@@ -1,8 +1,12 @@
 import sqlite3
-from flask import Flask, request,json,send_from_directory,Response
-import logging, os
-
+from flask import Flask, request,json,send_from_directory,Response,render_template,send_file
+import logging, os, subprocess
 from  db_utilities import *
+import pdfkit
+path_wkthmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
+acrobat_reader = "C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32.exe"
+
 
 app = Flask(__name__)
 
@@ -99,18 +103,46 @@ def invoice_items_by_id(invoice_no):
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
+
+
+
+#http://localhost:5000/invoice_print/invoice_no=1
+@app.route('/invoice_print/invoice_no=<invoice_no>', methods=['GET'])
+def invoice_print_by_id(invoice_no):
+    query = 'select * from invoice where id = '+ invoice_no
+    invoice_header = json.loads(json.dumps(run_query(query)))
+    query = 'select * from items where invoice_no  = '+ invoice_no
+    invoice_items = json.loads(json.dumps(run_query(query)))
+    num_items = len(invoice_items)
+    data = render_template('invoice.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items)
+    pdfkit.from_string(data, 'temp/invoice.pdf', configuration=config)
+    #os.startfile('invoice.pdf')
+    # AcroRd32.exe /t filename.pdf printername drivername portname
+    acroread = acrobat_reader +' /H /T'
+    printer=""
+    cmd = '%s %s' % (acroread, 'temp/invoice.pdf')
+    #print (cmd)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    #stdout, stderr = proc.communicate()
+    #exit_code = proc.wait()
+    return '1', 200
+
+
 ''' ------------------------------------BODY JSON-------------------------------------------------------------
 {
   "invoice": {
-    "sales_person_code": "Abdul",
-    "cutomer_name": "AA",
-    "cutomer_phone": 9448373533,
-    "cutomer_vat_no": "11",
-    "sub_total": 36.54,
-    "discount": 0.01,
-    "vat": 0.01,
-    "total": 11.02,
-    "payment_mode": 1
+  "id": 2,
+  "sales_person_code": "ASDF",
+  "customer_name": "ABC Corp.",
+  "customer_phone": "99-99-99",
+  "customer_vat_no": "00-00",
+  "sub_total": 0.02,
+  "discount": 0.02,
+  "vat": 0.02,
+  "total": 25,
+  "payment_mode": 1,
+  "status": 1,
+  "notes": "-"
   },
   "items": [
     {
@@ -118,9 +150,13 @@ def invoice_items_by_id(invoice_no):
       "product_code": "1",
       "product_category": "Floral",
       "product_name": "Diasy",
-      "product_price": 2.54,
+	  "product_name_arabic": "Diasy",
+	  "product_brand": "Diasy",
+	  "product_type": "Diasy",
       "product_coo": "India",
+      "product_price": 2.54,
       "quantity": 12,
+      "vat": 1.0,
       "discount": 0.02,
       "amount": 25
     },
@@ -129,14 +165,19 @@ def invoice_items_by_id(invoice_no):
       "product_code": "1",
       "product_category": "Floral",
       "product_name": "Diasy",
-      "product_price": 2.54,
+	  "product_name_arabic": "Diasy",
+	  "product_brand": "Diasy",
+	  "product_type": "Diasy",
       "product_coo": "India",
+      "product_price": 2.54,
       "quantity": 12,
+      "vat": 1.0,
       "discount": 0.02,
       "amount": 25
     }
   ]
 }
+
 '''
 
 #http://localhost:5000/invoice/add
@@ -145,17 +186,18 @@ def invoice_add():
     data = json.loads(request.data)
 
     sales_person_code = data['invoice']['sales_person_code']
-    cutomer_name = data['invoice']['cutomer_name']
-    cutomer_phone=data['invoice']['cutomer_phone']
-    cutomer_vat_no =data['invoice']['cutomer_vat_no']
+    customer_name = data['invoice']['customer_name']
+    customer_phone=data['invoice']['customer_phone']
+    customer_vat_no =data['invoice']['customer_vat_no']
     sub_total = data['invoice']['sub_total']
     discount = data['invoice']['discount']
     vat= data['invoice']['vat']
     total = data['invoice']['total']
     payment_mode = data['invoice']['payment_mode']
-    query = "INSERT INTO invoice (invoice_date, invoice_time,  sales_person_code,cutomer_name,cutomer_phone,cutomer_vat_no,sub_total,discount,vat,total,payment_mode) VALUES (date(),time(),'%s','%s',%d,'%s',%f,%f,%f,%f,%d  )"% (sales_person_code,cutomer_name,cutomer_phone,cutomer_vat_no,sub_total,discount,vat,total,payment_mode)
-    #print(query)
+    status = data['invoice']['status']
+    notes = data['invoice']['notes']
 
+    query = "INSERT INTO invoice (invoice_date, invoice_time,  sales_person_code,customer_name,customer_phone,customer_vat_no,sub_total,discount,vat,total,payment_mode,status,notes) VALUES (date(),time(),'%s','%s','%s','%s',%f,%f,%f,%f,%d , %d,'%s' )"% (sales_person_code,customer_name,customer_phone,customer_vat_no,sub_total,discount,vat,total,payment_mode,status,notes)
     run_insert_query(query)
     invoice_no = run_select_query('SELECT MAX(id) FROM invoice')[0][0]
 
@@ -164,16 +206,39 @@ def invoice_add():
         product_code = data['items'][i]['product_code']
         product_category = data['items'][i]['product_category']
         product_name = data['items'][i]['product_name']
-        product_price = data['items'][i]['product_price']
+        product_name_arabic = data['items'][i]['product_name_arabic']
+        product_brand = data['items'][i]['product_brand']
+        product_type = data['items'][i]['product_type']
         product_coo = data['items'][i]['product_coo']
+        product_price = data['items'][i]['product_price']
         quantity = data['items'][i]['quantity']
+        vat = data['items'][i]['vat']
         discount = data['items'][i]['discount']
         amount = data['items'][i]['amount']
-        query = "INSERT INTO items (invoice_no,product_code,product_category,product_name,product_price,product_coo,quantity,discount,amount) VALUES  ('%s','%s','%s','%s',%f,'%s',%f,%f,%f)"% (invoice_no,product_code,product_category,product_name,product_price,product_coo,quantity,discount,amount)
+        query = "INSERT INTO items (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,discount,amount,vat) VALUES  ('%s','%s','%s','%s','%s','%s','%s',%f,'%s',%f,%f,%f,%f)"% (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,discount,amount,vat)
         run_insert_query(query)
 
-    return '1', 200
+    return  str(invoice_no), 200
 
+
+# Invoice update by changing the status and adding comment
+'''
+{
+  "invoice": {
+  "status": 1,
+  "comments": "-"
+  }
+}
+'''
+#http://localhost:5000/invoice/update/invoice_no=1
+@app.route('/invoice/update/invoice_no=<invoice_no>', methods=['POST'])
+def invoice_update(invoice_no):
+    data = json.loads(request.data)
+    status = data['invoice']['status']
+    comments=data['invoice']['comments']
+    query = "UPDATE invoice SET status =%d, comments='%s' WHERE id=%s" % (status, comments, invoice_no)
+    run_insert_query(query)
+    return '1', 200
 '''
  {
  	"product": {
@@ -194,7 +259,6 @@ def invoice_add():
 @app.route('/product/add', methods=['POST'])
 def product_add():
     data = json.loads(request.data)
-    print(data)
     code = data['product']['code']
     category = data['product']['category']
     name=data['product']['name']
@@ -205,11 +269,15 @@ def product_add():
     price = data['product']['price']
     image = data['product']['image']
     status = data['product']['status']
-
+    data = run_select_query('select * from product_master where code = '+ code)
+    if (len(data)>0):
+        return '0', 200
     query = "INSERT INTO product_master (category, code, name, name_arabic, brand, product_type, coo, price, image, status) VALUES ('%s','%s','%s','%s','%s','%s','%s',%f,'%s',%d)"% (category, code, name, name_arabic, brand, product_type, coo, price, image, status)
     #print(query)
     run_insert_query(query)
-    return '1', 200
+    product_id = run_select_query('SELECT MAX(id) FROM product_master')[0][0]
+
+    return str(product_id), 200
 
 #http://localhost:5000/product/update/product_code=1
 @app.route('/product/update/product_code=<product_code>', methods=['POST'])
@@ -225,16 +293,14 @@ def product_update(product_code):
     image = data['product']['image']
     status = data['product']['status']
     query = "UPDATE product_master SET category ='%s', name='%s', name_arabic='%s', brand='%s', product_type='%s', coo='%s', price=%f, image='%s', status=%d WHERE code='%s'" % (category, name, name_arabic, brand, product_type, coo, price, image, status,product_code)
-
-    run_query(query)
+    run_insert_query(query)
     return '1', 200
 
-
-#http://localhost:5000/product/delete/id=1
-@app.route('/stock/product/id=<id>', methods=['GET'])
-def product_delete(id):
-    query = "DELETE FROM product_master where id="+str(id)
-    run_query(query)
+#http://localhost:5000/product/delete/code=1
+@app.route('/product/delete/code=<code>', methods=['GET'])
+def product_delete(code):
+    query = "DELETE FROM product_master where code="+str(code)
+    run_insert_query(query)
     return '1', 200
 
 
@@ -276,17 +342,10 @@ def stock_add():
 @app.route('/stock/delete/id=<id>', methods=['GET'])
 def stock_delete(id):
     query = "DELETE FROM stock_master where id="+str(id)
-    run_query(query)
+    run_insert_query(query)
     return '1', 200
 
-
-#http://localhost:5000/report/type='date',from='2015-05-15',to='2018-05-15'
-#http://localhost:5000/report/type='sales_person',from='2015-05-15',to='2018-05-15'
-#http://localhost:5000/report/type='payment_mode',from='2015-05-15',to='2018-05-15'
-#http://localhost:5000/report/type='category',from='2015-05-15',to='2018-05-15'
-@app.route('/report/type=<report_type>,from=<from_date>,to=<to_date>', methods=['GET'])
-def report(report_type,from_date,to_date):
-    if(str(report_type) == "'date'"):
+'''
         query = 'select invoice.invoice_date ,' \
                 'round(sum(invoice.sub_total),2) as sub_total,' \
                 'round(sum(invoice.discount),2) as discount, ' \
@@ -294,37 +353,149 @@ def report(report_type,from_date,to_date):
                 'round(sum(invoice.total),2) as total ' \
                 'from invoice,items ' \
                 'where invoice.invoice_date  >= '+  from_date + ' and invoice.invoice_date  <= '+  to_date + ' group by invoice.invoice_date '
+'''
+#http://localhost:5000/report/type='date',from='2015-05-15',to='2018-05-15',file_type='pdf','csv','none'
+#http://localhost:5000/report/type='sales_person',from='2015-05-15',to='2018-05-15',file_type='pdf','csv','none'
+#http://localhost:5000/report/type='payment_mode',from='2015-05-15',to='2018-05-15',file_type='pdf','csv','none'
+#http://localhost:5000/report/type='category',from='2015-05-15',to='2018-05-15',file_type='pdf','csv','none'
+@app.route('/report/type=<report_type>,from=<from_date>,to=<to_date>,file_type=<file_type>', methods=['GET'])
+def report(report_type,from_date,to_date,file_type):
+    if(str(report_type) == "'date'"):
+        cols = ["type", "invoice_date", "sub_total", "vat", "discount", "total"]
+        query = 'select distinct invoice_date from invoice  where invoice_date  >= ' + from_date + ' and invoice_date  <= '+  to_date + ' order by invoice_date'
+        invoice_date_list = run_query(query)
+        report_data =[]
+        for invoice_date in invoice_date_list:
+            print (invoice_date['invoice_date'])
+            query = 'select "" as type, invoice_date ,' \
+                    'round(sub_total,2) as sub_total,' \
+                    'round(discount,2) as discount, ' \
+                    'round(vat,2) as vat,' \
+                    'round(total,2) as total ' \
+                    'from invoice ' \
+                    'where invoice_date = "'+ invoice_date['invoice_date']+'"'
+            report_data = report_data + run_query(query)
+            query = 'select "Summary" as type,  invoice_date ,' \
+                    'round(sum(sub_total),2) as sub_total,' \
+                    'round(sum(discount),2) as discount, ' \
+                    'round(sum(vat),2) as vat,' \
+                    'round(sum(total),2) as total ' \
+                    'from invoice ' \
+                    'where invoice_date = "'+ invoice_date['invoice_date'] + '" group by invoice_date;'
+            report_data = report_data + run_query(query)
 
     elif(report_type=="'sales_person'"):
-        query = 'select invoice.sales_person_code, invoice.invoice_date ,' \
-                'round(sum(invoice.sub_total),2) as sub_total,' \
-                'round(sum(invoice.discount),2) as discount, ' \
-                'round(sum(invoice.vat),2) as vat,' \
-                'round(sum(invoice.total),2) as total ' \
-                'from invoice,items ' \
-                'where invoice.invoice_date  >= '+  from_date + ' and invoice.invoice_date  <= '+  to_date + ' group by invoice.sales_person_code'
+        cols = ["type","sales_person_code",  "invoice_date", "sub_total", "vat", "discount", "total"]
+        query = 'select distinct sales_person_code from invoice  where invoice.invoice_date  >= ' + from_date + ' and invoice.invoice_date  <= '+  to_date + ' order by sales_person_code'
+        sales_person_list = run_query(query)
+        report_data =[]
+        for sales_person in sales_person_list:
+            print (sales_person['sales_person_code'])
+            query = 'select "" as type, sales_person_code, invoice_date ,' \
+                    'round(sub_total,2) as sub_total,' \
+                    'round(discount,2) as discount, ' \
+                    'round(vat,2) as vat,' \
+                    'round(total,2) as total ' \
+                    'from invoice ' \
+                    'where  invoice_date  >= ' + from_date + ' and invoice_date  <= '+  to_date + ' and sales_person_code = "'+ sales_person['sales_person_code']+'" order by invoice_date'
+            report_data = report_data + run_query(query)
+            query = 'select "Summary" as type, sales_person_code, invoice_date ,' \
+                    'round(sum(sub_total),2) as sub_total,' \
+                    'round(sum(discount),2) as discount, ' \
+                    'round(sum(vat),2) as vat,' \
+                    'round(sum(total),2) as total ' \
+                    'from invoice ' \
+                    'where invoice_date  >= ' + from_date + ' and invoice_date  <= '+  to_date + ' and sales_person_code = "'+ sales_person['sales_person_code'] + '" group by sales_person_code order by invoice_date'
+            report_data = report_data + run_query(query)
+
 
     elif(report_type=="'payment_mode'"):
-        query = 'select invoice.payment_mode, invoice.invoice_date ,' \
-                'round(sum(invoice.sub_total),2) as sub_total,' \
-                'round(sum(invoice.discount),2) as discount, ' \
-                'round(sum(invoice.vat),2) as vat,' \
-                'round(sum(invoice.total),2) as total ' \
-                'from invoice,items ' \
-                'where invoice.invoice_date  >= '+  from_date + ' and invoice.invoice_date  <= '+  to_date + ' group by invoice.payment_mode'
+        cols = ["type","payment_mode",  "invoice_date", "sub_total", "vat", "discount", "total"]
+        query = 'select distinct payment_mode from invoice  where invoice_date  >= ' + from_date + ' and invoice_date  <= '+  to_date + ' order by payment_mode'
+        payment_mode_list = run_query(query)
+        report_data =[]
+        for payment_mode in payment_mode_list:
+            print (payment_mode['payment_mode'])
+            query = 'select "" as type, payment_mode, invoice_date ,' \
+                    'round(sub_total,2) as sub_total,' \
+                    'round(discount,2) as discount, ' \
+                    'round(vat,2) as vat,' \
+                    'round(total,2) as total ' \
+                    'from invoice ' \
+                    'where  invoice_date  >= ' + from_date + ' and invoice_date  <= '+  to_date + ' and payment_mode = '+ str(payment_mode['payment_mode'])+' order by invoice_date'
+            report_data = report_data + run_query(query)
+            query = 'select "Summary" as type, payment_mode, invoice_date ,' \
+                    'round(sum(sub_total),2) as sub_total,' \
+                    'round(sum(discount),2) as discount, ' \
+                    'round(sum(vat),2) as vat,' \
+                    'round(sum(total),2) as total ' \
+                    'from invoice ' \
+                    'where invoice_date  >= ' + from_date + ' and invoice_date  <= '+  to_date + ' and payment_mode = '+ str(payment_mode['payment_mode']) + ' group by payment_mode order by invoice_date'
+            report_data = report_data + run_query(query)
 
     elif (report_type == "'category'"):
-        query = 'select items.product_category as category, invoice.invoice_date , ' \
-                'round(sum(invoice.sub_total),2) as sub_total,' \
-                'round(sum(invoice.discount),2) as discount, ' \
-                'round(sum(invoice.vat),2) as vat,' \
-                'round(sum(invoice.total),2) as total ' \
-                'from invoice,items ' \
-                'where invoice.invoice_date  >= ' + from_date + ' and invoice.invoice_date  <= ' + to_date + \
-                ' and items.invoice_no=invoice.id group by items.product_category'
-    #print(query)
-    json_output = json.dumps(run_query(query))
+        cols = ["type","category",  "invoice_date", "sub_total", "vat", "discount", "total"]
+
+        query = 'select distinct items.product_category as category from invoice,items  where invoice.invoice_date  >= ' + from_date + ' and invoice.invoice_date  <= ' + to_date + ' and items.invoice_no=invoice.id order by items.product_category'
+        category_list = run_query(query)
+        report_data = []
+        for category in category_list:
+            print(category['category'])
+            query = 'select "" as type,items.product_category as category, invoice.invoice_date , ' \
+                    'round(invoice.sub_total,2) as sub_total,' \
+                    'round(invoice.discount,2) as discount, ' \
+                    'round(invoice.vat,2) as vat,' \
+                    'round(invoice.total,2) as total ' \
+                    'from invoice,items ' \
+                    'where invoice.invoice_date  >= ' + from_date + ' and invoice.invoice_date  <= ' + to_date + \
+                    ' and items.invoice_no=invoice.id and product_category = "' + category['category'] + '" order by invoice_date'
+            report_data = report_data + run_query(query)
+
+            query = 'select "Summary" as type, items.product_category as category, invoice.invoice_date , ' \
+                    'round(sum(invoice.sub_total),2) as sub_total,' \
+                    'round(sum(invoice.discount),2) as discount, ' \
+                    'round(sum(invoice.vat),2) as vat,' \
+                    'round(sum(invoice.total),2) as total ' \
+                    'from invoice,items ' \
+                    'where invoice.invoice_date  >= ' + from_date + ' and invoice.invoice_date  <= ' + to_date + \
+                    ' and items.invoice_no=invoice.id and product_category = "' + category['category'] + '" group by items.product_category order by invoice_date'
+            report_data = report_data + run_query(query)
+
+    if (file_type=="'pdf'"):
+        import pdfkit
+        report_json = json.loads(json.dumps((report_data)))
+        data = render_template('report.html', report_type=report_type,cols = cols, report_json=report_json )
+        pdfkit.from_string(data, 'temp/report.pdf', configuration=config)
+        return send_file('temp/report.pdf', as_attachment=True),200
+
+    if (file_type=="'csv'"):
+        fp = open("temp/file.csv", "w")
+        fp.write('Ard Al Zaafaran Trading - '+report_type +' wise Report\n\n')
+
+        for col in cols:
+            fp.write(col+',')
+        fp.write('\n')
+
+        for row in range(len(report_data)):
+            for col in cols:
+                fp.write(str(report_data[row][col])+',')
+            fp.write('\n')
+            if (report_data[row]['type'] == 'Summary'):
+                fp.write('\n')
+
+        fp.close()
+        return send_file('temp/file.csv', as_attachment=True),200
+
+
+    json_output = json.dumps(report_data)
     return json_output, 200
+
+
+#http://localhost:5000/product/file_download/code=2
+@app.route('/product/file_download/code=<code>', methods=['GET'])
+def product_file_download_by_code(code):
+    return send_file('images/'+code+'.jpg', as_attachment=True), 200
+
 #http://localhost:5000/sales_person/login
 # body : {"login": "Abdul","password":"abdul"}
 @app.route('/sales_person/login', methods=['POST'])
@@ -356,7 +527,7 @@ app.logger.addHandler(file_handler)
 app.logger.setLevel(logging.INFO)
 
 PROJECT_HOME = os.path.dirname(os.path.realpath(__file__))
-UPLOAD_FOLDER = '{}/uploads/'.format(PROJECT_HOME)
+UPLOAD_FOLDER = '{}/images/'.format(PROJECT_HOME)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def create_new_folder(local_dir):
@@ -365,7 +536,7 @@ def create_new_folder(local_dir):
         os.makedirs(newpath)
     return newpath
 
-@app.route('/do_upload/desitnation_file_name=<file_name>', methods = ['POST'])
+@app.route('/do_upload/destination_file_name=<file_name>', methods = ['POST'])
 def do_upload(file_name):
     app.logger.info(PROJECT_HOME)
     if request.method == 'POST' and request.files['image']:
@@ -382,7 +553,7 @@ def do_upload(file_name):
 
 @app.route('/test_file_upload', methods=['GET'])
 def test_file_upload():
-    content = open('file_upload.html').read()
+    content = open('templates/file_upload.html').read()
     return Response(content, mimetype="text/html")
 
 

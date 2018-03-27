@@ -71,8 +71,7 @@ export class SummaryPage {
 
   showAlert() {
     let alert = this.alertCtrl.create({
-      //title: 'Login Error!',
-      subTitle: 'Order Placed. Receipt number : 16589',
+      subTitle: 'Order Placed. Invoice number : 16589',
       buttons: ['OK']
     });
     alert.present();

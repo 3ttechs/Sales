@@ -10,8 +10,16 @@
     </ion-toolbar>
   </ion-header>
 
+
+
 <ion-content padding>
   <ion-list>
+  <br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
     <ion-item>
       <ion-label>Category : {{selectedProduct.category}}</ion-label>
     </ion-item>
@@ -22,7 +30,7 @@
       <ion-label>Brand : {{productDetails.brand}}</ion-label>
     </ion-item>
     <ion-item>
-      <ion-label>Price : {{productDetails.price}}</ion-label>
+      <ion-label>Price : £  {{productDetails.price}}</ion-label>
     </ion-item>
     <ion-item>
       <ion-label>Qty</ion-label>
@@ -32,8 +40,10 @@
     
   <br/><br/>
 
-  <div padding>
-    <button ion-button color="primary" block (click) = "addItemToCart()">Add Item</button>
-  </div>
 
+    <ion-row>
+        <ion-col col-4></ion-col>
+        <ion-col col-4><br/><br/><button ion-button color="primary" block (click)="addItemToCart()">Add Item</button></ion-col>
+        <ion-col col-4></ion-col>
+    </ion-row>
 </ion-content>

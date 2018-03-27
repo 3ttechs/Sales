@@ -19,16 +19,16 @@ http://localhost:5000/product/code='1'
 http://localhost:5000/invoice_header/invoice_no=1
 http://localhost:5000/invoice_items/invoice_no=1
 
-ttp://localhost:5000/product/delete/id=1
+http://localhost:5000/product/delete/code=1
 http://localhost:5000/stock/delete/id=1
 
 
 GET for Reports
 ---------------
-http://localhost:5000/report/type='date',from='2015-05-15',to='2018-05-15'
-http://localhost:5000/report/type='sales_person',from='2015-05-15',to='2018-05-15'
-http://localhost:5000/report/type='payment_mode',from='2015-05-15',to='2018-05-15'
-http://localhost:5000/report/type='category',from='2015-05-15',to='2018-05-15'
+#http://localhost:5000/report/type='date',from='2015-05-15',to='2018-05-15',file_type='pdf','csv','none'
+#http://localhost:5000/report/type='sales_person',from='2015-05-15',to='2018-05-15',file_type='pdf','csv','none'
+#http://localhost:5000/report/type='payment_mode',from='2015-05-15',to='2018-05-15',file_type='pdf','csv','none'
+#http://localhost:5000/report/type='category',from='2015-05-15',to='2018-05-15',file_type='pdf','csv','none'
 
 POST
 ----
@@ -41,43 +41,53 @@ body : {"login": "Admin","password":"admin"}
 response : 1 or 0
 
 http://localhost:5000/invoice/add
-{"invoice": {
+{
+  "invoice": {
   "id": 2,
-  "product_code": "1",
-  "product_category": "Floral",
-  "product_name": "Diasy",
-  "product_price": 2.54,
-  "product_coo": "India",
-  "quantity": 12,
+  "sales_person_code": "ASDF",
+  "customer_name": "ABC Corp.",
+  "customer_phone": "99-99-99",
+  "customer_vat_no": "00-00",
+  "sub_total": 0.02,
   "discount": 0.02,
-  "amount": 25
-},
-
-{"items":[
-   {
+  "vat": 0.02,
+  "total": 25,
+  "payment_mode": 1,
+  "status": 1,
+  "notes": "-"
+  },
+  "items": [
+    {
       "id": 1,
       "product_code": "1",
       "product_category": "Floral",
       "product_name": "Diasy",
-      "product_price": 2.54,
+	  "product_name_arabic": "Diasy",
+	  "product_brand": "Diasy",
+	  "product_type": "Diasy",
       "product_coo": "India",
+      "product_price": 2.54,
       "quantity": 12,
+      "vat": 1.0,
       "discount": 0.02,
       "amount": 25
-   },
-   {
+    },
+    {
       "id": 2,
       "product_code": "1",
       "product_category": "Floral",
       "product_name": "Diasy",
-      "product_price": 2.54,
+	  "product_name_arabic": "Diasy",
+	  "product_brand": "Diasy",
+	  "product_type": "Diasy",
       "product_coo": "India",
+      "product_price": 2.54,
       "quantity": 12,
+      "vat": 1.0,
       "discount": 0.02,
       "amount": 25
-   }
-]
-}
+    }
+  ]
 }
 
 http://localhost:5000/product/add
