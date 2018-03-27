@@ -490,6 +490,12 @@ def report(report_type,from_date,to_date,file_type):
     json_output = json.dumps(report_data)
     return json_output, 200
 
+
+#http://localhost:5000/product/file_download/code=2
+@app.route('/product/file_download/code=<code>', methods=['GET'])
+def product_file_download_by_code(code):
+    return send_file('images/'+code+'.jpg', as_attachment=True), 200
+
 #http://localhost:5000/sales_person/login
 # body : {"login": "Abdul","password":"abdul"}
 @app.route('/sales_person/login', methods=['POST'])
@@ -521,7 +527,7 @@ app.logger.addHandler(file_handler)
 app.logger.setLevel(logging.INFO)
 
 PROJECT_HOME = os.path.dirname(os.path.realpath(__file__))
-UPLOAD_FOLDER = '{}/uploads/'.format(PROJECT_HOME)
+UPLOAD_FOLDER = '{}/images/'.format(PROJECT_HOME)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def create_new_folder(local_dir):
@@ -530,7 +536,7 @@ def create_new_folder(local_dir):
         os.makedirs(newpath)
     return newpath
 
-@app.route('/do_upload/desitnation_file_name=<file_name>', methods = ['POST'])
+@app.route('/do_upload/destination_file_name=<file_name>', methods = ['POST'])
 def do_upload(file_name):
     app.logger.info(PROJECT_HOME)
     if request.method == 'POST' and request.files['image']:
