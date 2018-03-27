@@ -19,16 +19,16 @@ http://localhost:5000/product/code='1'
 http://localhost:5000/invoice_header/invoice_no=1
 http://localhost:5000/invoice_items/invoice_no=1
 
-ttp://localhost:5000/product/delete/id=1
+http://localhost:5000/product/delete/code=1
 http://localhost:5000/stock/delete/id=1
 
 
 GET for Reports
 ---------------
-http://localhost:5000/report/type='date',from='2015-05-15',to='2018-05-15'
-http://localhost:5000/report/type='sales_person',from='2015-05-15',to='2018-05-15'
-http://localhost:5000/report/type='payment_mode',from='2015-05-15',to='2018-05-15'
-http://localhost:5000/report/type='category',from='2015-05-15',to='2018-05-15'
+#http://localhost:5000/report/type='date',from='2015-05-15',to='2018-05-15',file_type='pdf','csv','none'
+#http://localhost:5000/report/type='sales_person',from='2015-05-15',to='2018-05-15',file_type='pdf','csv','none'
+#http://localhost:5000/report/type='payment_mode',from='2015-05-15',to='2018-05-15',file_type='pdf','csv','none'
+#http://localhost:5000/report/type='category',from='2015-05-15',to='2018-05-15',file_type='pdf','csv','none'
 
 POST
 ----
@@ -68,6 +68,7 @@ http://localhost:5000/invoice/add
       "product_coo": "India",
       "product_price": 2.54,
       "quantity": 12,
+      "vat": 1.0,
       "discount": 0.02,
       "amount": 25
     },
@@ -82,6 +83,7 @@ http://localhost:5000/invoice/add
       "product_coo": "India",
       "product_price": 2.54,
       "quantity": 12,
+      "vat": 1.0,
       "discount": 0.02,
       "amount": 25
     }
