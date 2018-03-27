@@ -11,6 +11,7 @@ export class CategoriesPage {
 
   loading: any;
   public categories: any;
+  public filteredCategories: any;
   private selectedCategory: any;
   private selectedCategoryName: string="floral";
 
@@ -34,6 +35,7 @@ export class CategoriesPage {
     this.loading.present().then(()=>{
       this.webService.getAllCategories().then(result => {
         this.categories = result;
+        this.filteredCategories = result;
         this.loading.dismiss();
       });
     });
@@ -46,6 +48,20 @@ export class CategoriesPage {
   
   navigateToProducts(){
     this.navCtrl.push(ProductsPage,this.selectedCategory);
-    
+  }
+
+  filterItems(event){
+    // Reset items back to all of the items
+    this.filteredCategories = this.categories;
+
+    // set val to the value of the searchbar
+    let val = event.target.value;
+
+    // if the value is an empty string don't filter the items
+    if (val && val.trim() != '') {
+      this.filteredCategories = this.categories.filter((item) => {
+        return (item.category_name.toLowerCase().indexOf(val.toLowerCase()) > -1);
+      })
+    }
   }
 }

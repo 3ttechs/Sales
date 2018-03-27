@@ -9,8 +9,9 @@
   <ion-grid>
     <ion-row>
       <ion-col col-4>
+          <ion-searchbar (ionInput)="filterItems($event)"></ion-searchbar>
           <ion-list>
-            <button ion-item *ngFor="let item of categories" (click)="categorySelected($event,item)">
+            <button ion-item *ngFor="let item of filteredCategories" (click)="categorySelected($event,item)">
               <ion-avatar item-start>
                 <img src="{{'../../assets/imgs/' + item.category_name + '.gif'}}">
               </ion-avatar>

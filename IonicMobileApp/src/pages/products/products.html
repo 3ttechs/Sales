@@ -15,8 +15,9 @@
   <ion-grid>
     <ion-row>
       <ion-col col-4>
+        <ion-searchbar (ionInput)="filterItems($event)"></ion-searchbar>
         <ion-list>
-          <button ion-item *ngFor="let item of products" (click)="productSelected($event,item)">
+          <button ion-item *ngFor="let item of filteredProducts" (click)="productSelected($event,item)">
             <ion-avatar item-start>
               <img src="../../assets/imgs/floral.gif">
             </ion-avatar>
