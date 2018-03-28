@@ -9,12 +9,13 @@
 <ion-content padding>
   <ion-list>
     <ion-item-sliding *ngFor="let item of shoppingList">
+
       <ion-item>
         <h1 style="color: orange; font-size: 1.5em;">{{item.category}} \\ {{item.productName}}</h1>
-        <h2 tyle="color: grey; font-size: 1em;">Brand : {{item.brand}}, Price : {{item.price}}, Qty : {{item.qty}}</h2>
-		<h2 style="color: purple; font-size: 1em; text-align: right">£ {{item.amount | number : 0 }}</h2>
-				
+        <h2 tyle="color: grey; font-size: 1em;">Brand : {{item.brand}}, Price : {{item.price}}, Qty : {{item.qty}}, Discount : {{item.discount}}</h2>
+		    <h2 style="color: purple; font-size: 1em; text-align: right">£ {{item.amount | number : 0 }}</h2>
       </ion-item>
+      
       <ion-item-options side="left">
         <button ion-button color="secondary" (click)="removeFromCart($event,item)">
           <ion-icon name="trash"></ion-icon>
@@ -29,58 +30,6 @@
         </button>
       </ion-item-options>
 
-	  
 	  </ion-item-sliding>
   </ion-list>
-
-  <!--<ion-list>
-    <ion-item-sliding>
-      <ion-item>
-        <h2>Product1</h2>
-        <h3>Details about Product1</h3>
-      </ion-item>
-      <ion-item-options side="right">
-        <button ion-button color="primary">
-          <ion-icon name="trash"></ion-icon>
-          Remove
-        </button>
-      </ion-item-options>
-    </ion-item-sliding>
-    <ion-item-sliding>
-      <ion-item>
-        <h2>Product2</h2>
-        <h3>Details about Product2</h3>
-      </ion-item>
-      <ion-item-options side="right">
-        <button ion-button color="primary">
-          <ion-icon name="trash"></ion-icon>
-          Remove
-        </button>
-      </ion-item-options>
-    </ion-item-sliding>
-    <ion-item-sliding>
-      <ion-item>
-        <h2>Product3</h2>
-        <h3>Details about Product3</h3>
-      </ion-item>
-      <ion-item-options side="right">
-        <button ion-button color="primary">
-          <ion-icon name="trash"></ion-icon>
-          Remove
-        </button>
-      </ion-item-options>
-    </ion-item-sliding>
-    <ion-item-sliding>
-      <ion-item>
-        <h2>Product4</h2>
-        <h3>Details about Product4</h3>
-      </ion-item>
-      <ion-item-options side="right">
-        <button ion-button color="primary">
-          <ion-icon name="trash"></ion-icon>
-          Remove
-        </button>
-      </ion-item-options>
-    </ion-item-sliding>
-  </ion-list>-->
 </ion-content>
