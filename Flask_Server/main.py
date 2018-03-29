@@ -345,6 +345,70 @@ def stock_delete(id):
     run_insert_query(query)
     return '1', 200
 
+
+
+'''
+ {
+ 	"sales_person": {
+ 		"name": "Ali S",
+ 		"code": "AS11",
+ 		"contact_number": "99999999",
+ 		"login": "Ali",
+ 		"password": "ali"
+ 	}
+ }
+'''
+
+
+#http://localhost:5000/sales_person/add
+@app.route('/sales_person/add', methods=['POST'])
+def sales_person_add():
+    data = json.loads(request.data)
+
+    name = data['sales_person']['name']
+    code=data['sales_person']['code']
+    contact_number =data['sales_person']['contact_number']
+    login = data['sales_person']['login']
+    password = data['sales_person']['password']
+
+
+    # check for unique constraint
+
+    data = run_select_query('select * from sales_person_master where login = "'+ login+'"')
+    if (len(data)>0):
+        return '0', 200
+
+    data = run_select_query('select * from sales_person_master where code = "'+ code+'"')
+    if (len(data)>0):
+        return '0', 200
+
+    query = "INSERT INTO sales_person_master (name,code,contact_number,login,password) VALUES ('%s','%s','%s','%s','%s')"% (name,code,contact_number,login,password)
+    #print(query)
+    run_insert_query(query)
+    return '1', 200
+
+#http://localhost:5000/sales_person/delete/id=1
+@app.route('/sales_person/delete/id=<id>', methods=['GET'])
+def sales_person_delete(id):
+    query = "DELETE FROM sales_person_master where id="+str(id)
+    run_insert_query(query)
+    return '1', 200
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 '''
         query = 'select invoice.invoice_date ,' \
                 'round(sum(invoice.sub_total),2) as sub_total,' \
