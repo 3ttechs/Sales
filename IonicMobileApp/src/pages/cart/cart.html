@@ -1,17 +1,81 @@
 <ion-header>
   <ion-navbar></ion-navbar>
-  <ion-toolbar color="secondary">
-    <ion-title>Cart</ion-title>
+  <ion-toolbar>
+    <ion-grid>
+      <ion-row>
+        <ion-col col-10>
+          <h3>Total Invoice Amount</h3>
+        </ion-col>
+        <ion-col col-2>
+          <h3>Dh 345/-</h3>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </ion-toolbar>
 </ion-header>
 
-
-<ion-content padding>
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col>PCode</ion-col>
+      <ion-col>Description</ion-col>
+      <ion-col>Price</ion-col>
+      <ion-col>Qty</ion-col>
+      <ion-col>Discount</ion-col>
+      <ion-col>Amount</ion-col>
+    </ion-row>
+    <ion-row *ngFor="let item of shoppingList">
+      <ion-col>{{item.code}}</ion-col>
+      <ion-col>{{item.name}}</ion-col>
+      <ion-col>{{item.price}}</ion-col>
+      <ion-col><ion-input name="qty" type="number" placeholder="Qty" clearInput></ion-input></ion-col>
+      <ion-col><ion-input name="discount" type="number" placeholder="Discount" clearInput></ion-input></ion-col>
+      <ion-col>{{item.amount}}</ion-col>
+    </ion-row>
+  </ion-grid>
+  <!--<ion-grid>
+    <ion-row>
+      <ion-col>PCode</ion-col>
+      <ion-col>Description</ion-col>
+      <ion-col>Price</ion-col>
+      <ion-col>Qty</ion-col>
+      <ion-col>Discount</ion-col>
+      <ion-col>Amount</ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-scroll style="width:100%;height:400px" scrollY="true">
+          <ion-list scroll="true">
+            <ion-item *ngFor="let item of shoppingList">
+              <ion-grid>
+                <ion-row>
+                  <ion-col>{{item.code}}</ion-col>
+                  <ion-col>{{item.name}}</ion-col>
+                  <ion-col>{{item.price}}</ion-col>
+                  <ion-col>
+                    {{item.qty}}
+                    
+                  </ion-col>
+                  <ion-col>{{item.discount}}</ion-col>
+                  <ion-col>{{item.amount}}</ion-col>
+                </ion-row>
+              </ion-grid> 
+            </ion-item>
+          </ion-list>
+        </ion-scroll> 
+      </ion-col>
+    </ion-row>
+  </ion-grid> -->
+  <ion-buttons end>
+    <button ion-button (click)="AddToCartPopUp()">Add to Cart</button>
+  </ion-buttons>
+</ion-content>
+<!--<ion-content padding>
   <ion-list>
     <ion-item-sliding *ngFor="let item of shoppingList">
 
       <ion-item>
-        <h1 style="color: orange; font-size: 1.5em;">{{item.category}} \\ {{item.productName}}</h1>
+        <h1 style="color: orange; font-size: 1.5em;">{{item.category}} \\ {{item.name}}</h1>
         <h2 tyle="color: grey; font-size: 1em;">Brand : {{item.brand}}, Price : {{item.price}}, Qty : {{item.qty}}, Discount : {{item.discount}}</h2>
 		    <h2 style="color: purple; font-size: 1em; text-align: right">£ {{item.amount | number : 0 }}</h2>
       </ion-item>
@@ -32,4 +96,4 @@
 
 	  </ion-item-sliding>
   </ion-list>
-</ion-content>
+</ion-content>-->

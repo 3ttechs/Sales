@@ -1,18 +1,67 @@
 <ion-header>
-    <ion-navbar></ion-navbar>
-    <ion-toolbar color="secondary">
-      <ion-buttons>
-        <button ion-button icon-only (click)="backToProducts()">
-          <ion-icon name="arrow-back"></ion-icon>
-        </button>
-      </ion-buttons>
-      <ion-title>{{selectedProduct.category}} / {{selectedProduct.productName}}</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-
+  <ion-navbar></ion-navbar>
+  <ion-toolbar color="secondary">
+    <ion-buttons>
+      <button ion-button icon-only (click)="backToProducts()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>Add Quantity</ion-title>
+  </ion-toolbar>
+</ion-header>
 
 <ion-content padding>
+    <ion-grid>
+        <ion-row>
+          <ion-col col-3></ion-col>
+          <ion-col col-6>
+    
+            <br/><br/><br/><br/><br/>
+            <ion-card class="cardShadow">
+              <div style="background:#488aff;">
+                <ion-card-header></ion-card-header>
+              </div>
+              <ion-card-content>
+                <ion-list>
+                  <ion-item>
+                    <ion-label fixed>Category : </ion-label>
+                    <ion-label fixed>category</ion-label>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label fixed>Product : </ion-label>
+                    <ion-label fixed>productName</ion-label>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label fixed>Brand : </ion-label>
+                    <ion-label fixed>productDetails.brand</ion-label>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label fixed>Price : </ion-label>
+                    <ion-label fixed>£ productDetails.price</ion-label>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label fixed>Qty : </ion-label>
+                    
+                  </ion-item>
+                  <ion-item>
+                      <ion-label fixed>Discount : </ion-label>
+                      
+                    </ion-item>
+                </ion-list>
+                            
+                <br/><br/>
+                    
+                <button ion-button color="primary" block (click)="addItemToCart()">Add Item</button>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col col-3></ion-col>
+        </ion-row>
+      </ion-grid>
+</ion-content>  
+
+
+<!--<ion-content padding>
   <ion-grid>
     <ion-row>
       <ion-col col-3></ion-col>
@@ -60,4 +109,4 @@
       <ion-col col-3></ion-col>
     </ion-row>
   </ion-grid>
-</ion-content>
+</ion-content>-->

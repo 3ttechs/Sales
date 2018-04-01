@@ -30,7 +30,7 @@ export class AddProductPage {
   }
 
   ionViewDidLoad() {
-    this.getProductDetailsByCode();
+    //this.getProductDetailsByCode();
   }
 
   getProductDetailsByCode(){

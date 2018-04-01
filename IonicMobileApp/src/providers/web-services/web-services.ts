@@ -31,9 +31,9 @@ export class WebServicesProvider {
     });
   }
 
-  getAllCategories() {
+  getAllProducts() {
     return new Promise(resolve => {
-      this.http.get(apiUrl + '/product_category/all').subscribe(res => resolve(res.json()))
+      this.http.get(apiUrl + '/product/full_all').subscribe(res => resolve(res.json()))
     })
   }
 

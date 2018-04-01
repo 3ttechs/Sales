@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController, App, LoadingController } from 'ionic-angular';
 import { WebServicesProvider } from '../../providers/web-services/web-services';
-import { ProductsPage } from '../products/products';
+import { ShoppingCartProvider } from '../../providers/shopping-cart/shopping-cart';
+import { AlertController } from 'ionic-angular';
 
 @Component({
   selector: 'page-categories',
@@ -10,58 +11,151 @@ import { ProductsPage } from '../products/products';
 export class CategoriesPage {
 
   loading: any;
-  public categories: any;
-  public filteredCategories: any;
-  private selectedCategory: any;
-  private selectedCategoryName: string="floral";
+  public products: any;
+  public filteredProducts: any;
+  private filterValues = {category:'',brand:'',pcode:'',pname:''};
+  private selectedItem: any;
 
   constructor(public app: App, 
     public navCtrl: NavController, 
     public webService: WebServicesProvider, 
-    public loadingCtrl: LoadingController) {
+    public loadingCtrl: LoadingController,
+    private shoppingCart: ShoppingCartProvider,
+    public alertCtrl: AlertController) {
   }
 
   ionViewDidLoad() {
     if(localStorage.getItem("token")) {
-      this.doFetchAllCategories();
+      this.doFetchAllProducts();
     }
   }
 
-  doFetchAllCategories() {
+  doFetchAllProducts() {
     this.loading = this.loadingCtrl.create({
-      content: 'Fetching Categories...'
+      content: 'Fetching Products...'
     });
 
     this.loading.present().then(()=>{
-      this.webService.getAllCategories().then(result => {
-        this.categories = result;
-        this.filteredCategories = result;
+      this.webService.getAllProducts().then(result => {
+        this.products = result;
+        this.filteredProducts = result;
         this.loading.dismiss();
       });
     });
   }
 
-  categorySelected($event,category){
-    this.selectedCategory = category;
-    this.selectedCategoryName = category.category_name;
-  }
-  
-  navigateToProducts(){
-    this.navCtrl.push(ProductsPage,this.selectedCategory);
+  noneSelected(){
+    //if non selected, disable the add to cart button
+    if(this.selectedItem == null)
+      return true;
+    else
+      return false;
   }
 
-  filterItems(event){
-    // Reset items back to all of the items
-    this.filteredCategories = this.categories;
+  itemSelected($event, item){
+    this.selectedItem = item;
+  }
 
+  filterByCategory(event){
     // set val to the value of the searchbar
     let val = event.target.value;
 
-    // if the value is an empty string don't filter the items
-    if (val && val.trim() != '') {
-      this.filteredCategories = this.categories.filter((item) => {
-        return (item.category_name.toLowerCase().indexOf(val.toLowerCase()) > -1);
-      })
-    }
+    //Updating new value to the filterValues
+    this.filterValues.category = val;
+
+    //Call common method to filter the list
+    this.filterItems();
+  }
+
+  filterByBrand(event){
+    // set val to the value of the searchbar
+    let val = event.target.value;
+
+    //Updating new value to the filterValues
+    this.filterValues.brand = val;
+
+    //Call common method to filter the list
+    this.filterItems();
+  }
+
+  filterByProductCode(event){
+    // set val to the value of the searchbar
+    let val = event.target.value;
+
+    //Updating new value to the filterValues
+    this.filterValues.pcode = val;
+
+    //Call common method to filter the list
+    this.filterItems();
+  }
+
+  filterByProductDescription(event){
+    // set val to the value of the searchbar
+    let val = event.target.value;
+
+    //Updating new value to the filterValues
+    this.filterValues.pname = val;
+
+    //Call common method to filter the list
+    this.filterItems();
+  }
+
+  filterItems(){
+    this.filteredProducts = this.products.filter((item) => {
+      return (
+        item.category.toLowerCase().indexOf(this.filterValues.category.toLowerCase()) > -1 &&
+        item.brand.toLowerCase().indexOf(this.filterValues.brand.toLowerCase()) > -1 &&
+        item.code.toLowerCase().indexOf(this.filterValues.pcode.toLowerCase()) > -1 &&
+        item.name.toLowerCase().indexOf(this.filterValues.pname.toLowerCase()) > -1
+      );
+    })
+  }
+
+  AddToCartPopUp() {
+    let alert = this.alertCtrl.create({
+      title: this.selectedItem.code,
+      inputs: [
+        {
+          name: 'qty',
+          placeholder: 'Quantity',
+          type: 'number'
+        },
+        {
+          name: 'discount',
+          placeholder: 'Discount',
+          type: 'number'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+          }
+        },
+        {
+          text: 'Add',
+          handler: data => {
+            this.selectedItem.discount = data.discount;
+            this.selectedItem.qty = data.qty;
+            this.addItemToCart();
+          }
+        }
+      ]
+    });
+    alert.present();
+  }
+
+  addItemToCart(){
+    this.selectedItem.amount = String((Number(this.selectedItem.price) * Number(this.selectedItem.qty)) - Number(this.selectedItem.discount));
+
+    this.loading = this.loadingCtrl.create({
+      content: 'Adding item...'
+    });
+
+    this.loading.present().then(()=>{
+      this.shoppingCart.addItemToCart(this.selectedItem);
+      this.loading.dismiss();
+      this.navCtrl.setRoot(CategoriesPage);
+    });
   }
 }

@@ -34,7 +34,7 @@ export class CartPage {
     this.loading.present().then(()=>{
       this.shoppingCart.getItemsFromCart().then(result => {
         this.shoppingList = result["items"];
-        console.log(result["items"]);
+        console.log(this.shoppingList);
       }).catch(err=>console.log(err));
       this.loading.dismiss();
     });

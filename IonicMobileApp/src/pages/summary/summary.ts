@@ -17,7 +17,55 @@ export class SummaryPage {
   private discount: number=0;
   private total: number=0;
   private paymentMode: string;
-  //private summaryItem: {SubTotal:0, VAT:0, Discount:0, Total:0, PaymentMode:'', CustName:'', CustPhone:''};
+  
+  private summaryItem: {
+    "invoice": {
+      "id": 2,
+      "sales_person_code": "ASDF",
+      "customer_name": "ABC Corp.",
+      "customer_phone": "99-99-99",
+      "customer_vat_no": "00-00",
+      "sub_total": 0.02,
+      "discount": 0.02,
+      "vat": 0.02,
+      "total": 25,
+      "payment_mode": 1,
+      "status": 1,
+      "notes": "-"
+      },
+    "items": [
+      {
+        "id": 1,
+        "product_code": "1",
+        "product_category": "Floral",
+        "product_name": "Diasy",
+        "product_name_arabic": "Diasy",
+        "product_brand": "Diasy",
+        "product_type": "Diasy",
+        "product_coo": "India",
+        "product_price": 2.54,
+        "quantity": 12,
+        "vat": 1.0,
+        "discount": 0.02,
+        "amount": 25
+      },
+      {
+        "id": 2,
+        "product_code": "1",
+        "product_category": "Floral",
+        "product_name": "Diasy",
+        "product_name_arabic": "Diasy",
+        "product_brand": "Diasy",
+        "product_type": "Diasy",
+        "product_coo": "India",
+        "product_price": 2.54,
+        "quantity": 12,
+        "vat": 1.0,
+        "discount": 0.02,
+        "amount": 25
+      }
+    ]
+  };
 
   constructor(
     public navCtrl: NavController, 
