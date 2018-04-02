@@ -110,8 +110,6 @@ def invoice_items_by_id(invoice_no):
 #http://localhost:5000/invoice_print/invoice_no=1
 @app.route('/invoice_print/invoice_no=<invoice_no>', methods=['GET'])
 def invoice_print_by_id(invoice_no):
-def invoice_print_by_id(invoice_no):
-
     query = 'select * from invoice where id = '+ invoice_no
     invoice_header = json.loads(json.dumps(run_query(query)))
     query = 'select * from items where invoice_no  = '+ invoice_no
