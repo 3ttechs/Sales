@@ -19,7 +19,6 @@ export class ShoppingCartProvider {
   addItemToCart(selectedItem){
     new Promise((resolve)=>{
       this.storagemodule.get("cartItems").then(res=>{
-        console.log(res);
         if(res != null) this.cartItems = res;
         this.cartItems.items.push(selectedItem);
         this.storagemodule.set("cartItems",this.cartItems);
@@ -39,11 +38,12 @@ export class ShoppingCartProvider {
     })
   }
 
-  placeOrder(){
+  clearCart(){
     return new Promise((resolve,reject) => {
-    this.cartItems = {"items":[]};
-    this.storagemodule.set("cartItems",this.cartItems);
-    resolve("true");
+      //Clearing Cart Items
+      this.cartItems = {"items":[]};
+      this.storagemodule.set("cartItems",this.cartItems);
+      resolve("true");
     })
   }
 }

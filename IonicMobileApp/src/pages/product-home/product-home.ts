@@ -19,6 +19,7 @@ export class ProductHomePage {
   public productTab = CategoriesPage;
   public summaryTab = SummaryPage;
   public cartTab = CartPage;
+  private userName = '';
   
   constructor(public app: App, public navCtrl: NavController, public webService: WebServicesProvider, public loadingCtrl: LoadingController, private toastCtrl: ToastController, public navParams: NavParams) {
     if(!localStorage.getItem("token")) {
@@ -62,6 +63,7 @@ export class ProductHomePage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ProductHomePage');
+    this.userName = localStorage.getItem("user");
   }
 
 }

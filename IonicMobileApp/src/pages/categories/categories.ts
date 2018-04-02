@@ -44,8 +44,8 @@ export class CategoriesPage {
     });
   }
 
+  //if non selected, disable the add to cart button
   noneSelected(){
-    //if non selected, disable the add to cart button
     if(this.selectedItem == null)
       return true;
     else
@@ -58,44 +58,36 @@ export class CategoriesPage {
 
   filterByCategory(event){
     // set val to the value of the searchbar
-    let val = event.target.value;
-
+    let val = event.target.value==null?'':event.target.value;
     //Updating new value to the filterValues
     this.filterValues.category = val;
-
     //Call common method to filter the list
     this.filterItems();
   }
 
   filterByBrand(event){
     // set val to the value of the searchbar
-    let val = event.target.value;
-
+    let val = event.target.value==null?'':event.target.value;
     //Updating new value to the filterValues
     this.filterValues.brand = val;
-
     //Call common method to filter the list
     this.filterItems();
   }
 
   filterByProductCode(event){
     // set val to the value of the searchbar
-    let val = event.target.value;
-
+    let val = event.target.value==null?'':event.target.value;
     //Updating new value to the filterValues
     this.filterValues.pcode = val;
-
     //Call common method to filter the list
     this.filterItems();
   }
 
   filterByProductDescription(event){
     // set val to the value of the searchbar
-    let val = event.target.value;
-
+    let val = event.target.value==null?'':event.target.value;
     //Updating new value to the filterValues
     this.filterValues.pname = val;
-
     //Call common method to filter the list
     this.filterItems();
   }
@@ -113,7 +105,7 @@ export class CategoriesPage {
 
   AddToCartPopUp() {
     let alert = this.alertCtrl.create({
-      title: this.selectedItem.code,
+      title: 'Code: ' + this.selectedItem.code,
       inputs: [
         {
           name: 'qty',
@@ -135,8 +127,8 @@ export class CategoriesPage {
         {
           text: 'Add',
           handler: data => {
-            this.selectedItem.discount = data.discount;
-            this.selectedItem.qty = data.qty;
+            this.selectedItem.discount = data.discount <=0?0:data.discount;
+            this.selectedItem.qty = data.qty <=0?1:data.qty; 
             this.addItemToCart();
           }
         }
@@ -146,16 +138,17 @@ export class CategoriesPage {
   }
 
   addItemToCart(){
-    this.selectedItem.amount = String((Number(this.selectedItem.price) * Number(this.selectedItem.qty)) - Number(this.selectedItem.discount));
+    this.selectedItem.Vat = String((Number(this.selectedItem.price) * Number(this.selectedItem.qty)) * 0.05);
+    this.selectedItem.amount = String((Number(this.selectedItem.price) * Number(this.selectedItem.qty)) + Number(this.selectedItem.Vat) - Number(this.selectedItem.discount));
 
     this.loading = this.loadingCtrl.create({
       content: 'Adding item...'
     });
 
     this.loading.present().then(()=>{
+      console.log(this.selectedItem);
       this.shoppingCart.addItemToCart(this.selectedItem);
       this.loading.dismiss();
-      this.navCtrl.setRoot(CategoriesPage);
     });
   }
 }
