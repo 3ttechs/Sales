@@ -65,4 +65,34 @@ export class WebServicesProvider {
           resolve("true");
     });
   }
+
+  placeOrder(summaryItem){
+    return new Promise((resolve,reject) => {
+      let headers = new Headers();
+      headers.append('Accept', 'application/json');
+      headers.append('Content-Type', 'application/json');
+
+      console.log(JSON.stringify(summaryItem));
+
+      this.http.post(apiUrl+'/invoice/add', JSON.stringify(summaryItem), {headers: headers})
+        .subscribe(res => {
+          resolve(res.json());
+        }, (err) => {
+          console.log(err);
+          reject(err);
+        });
+    })
+  }
+
+  printOrder(invoiceNumber){
+    return new Promise((resolve,reject) =>{
+      this.http.get(apiUrl + '/invoice_print/invoice_no=' + invoiceNumber)
+        .subscribe(res=>{
+          resolve(res.json());
+        },(err) => {
+          console.log(err);
+          reject(err);
+        });
+    })
+  }
 }

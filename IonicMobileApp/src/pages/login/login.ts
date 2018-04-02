@@ -27,8 +27,10 @@ export class LoginPage {
     this.webService.login(this.loginData).then((result) => {
       this.loading.dismiss();
       this.data = result;
+      console.log(result);
       if(result ===1){
         localStorage.setItem('token', this.data);
+        localStorage.setItem('user',this.loginData.login);
         this.navCtrl.setRoot(ProductHomePage);
       }
       else{

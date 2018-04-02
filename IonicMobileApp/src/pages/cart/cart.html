@@ -17,83 +17,24 @@
 <ion-content>
   <ion-grid>
     <ion-row>
-      <ion-col>PCode</ion-col>
+      <ion-col>Code</ion-col>
       <ion-col>Description</ion-col>
       <ion-col>Price</ion-col>
       <ion-col>Qty</ion-col>
+      <ion-col>VAT</ion-col>
       <ion-col>Discount</ion-col>
       <ion-col>Amount</ion-col>
+      <ion-col></ion-col>
     </ion-row>
-    <ion-row *ngFor="let item of shoppingList">
+    <ion-row *ngFor="let item of shoppingList; let i = index;">
       <ion-col>{{item.code}}</ion-col>
       <ion-col>{{item.name}}</ion-col>
       <ion-col>{{item.price}}</ion-col>
-      <ion-col><ion-input name="qty" type="number" placeholder="Qty" clearInput></ion-input></ion-col>
-      <ion-col><ion-input name="discount" type="number" placeholder="Discount" clearInput></ion-input></ion-col>
-      <ion-col>{{item.amount}}</ion-col>
+      <ion-col><ion-input name="qty" type="number" placeholder="Qty" [(ngModel)]="item.qty" clearInput></ion-input></ion-col>
+      <ion-col>{{(item.price * item.qty * 0.05).toFixed(3)}}</ion-col>
+      <ion-col><ion-input name="discount" type="number" placeholder="Discount" [(ngModel)]="item.discount" clearInput></ion-input></ion-col>
+      <ion-col>{{((item.price * item.qty ) + (item.price * item.qty * 0.05) - item.discount).toFixed(3)}}</ion-col>
+      <ion-col><button ion-button icon-only (click)="removeFromCart($event,item)"><ion-icon name="trash"></ion-icon></button></ion-col>
     </ion-row>
   </ion-grid>
-  <!--<ion-grid>
-    <ion-row>
-      <ion-col>PCode</ion-col>
-      <ion-col>Description</ion-col>
-      <ion-col>Price</ion-col>
-      <ion-col>Qty</ion-col>
-      <ion-col>Discount</ion-col>
-      <ion-col>Amount</ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col>
-        <ion-scroll style="width:100%;height:400px" scrollY="true">
-          <ion-list scroll="true">
-            <ion-item *ngFor="let item of shoppingList">
-              <ion-grid>
-                <ion-row>
-                  <ion-col>{{item.code}}</ion-col>
-                  <ion-col>{{item.name}}</ion-col>
-                  <ion-col>{{item.price}}</ion-col>
-                  <ion-col>
-                    {{item.qty}}
-                    
-                  </ion-col>
-                  <ion-col>{{item.discount}}</ion-col>
-                  <ion-col>{{item.amount}}</ion-col>
-                </ion-row>
-              </ion-grid> 
-            </ion-item>
-          </ion-list>
-        </ion-scroll> 
-      </ion-col>
-    </ion-row>
-  </ion-grid> -->
-  <ion-buttons end>
-    <button ion-button (click)="AddToCartPopUp()">Add to Cart</button>
-  </ion-buttons>
 </ion-content>
-<!--<ion-content padding>
-  <ion-list>
-    <ion-item-sliding *ngFor="let item of shoppingList">
-
-      <ion-item>
-        <h1 style="color: orange; font-size: 1.5em;">{{item.category}} \\ {{item.name}}</h1>
-        <h2 tyle="color: grey; font-size: 1em;">Brand : {{item.brand}}, Price : {{item.price}}, Qty : {{item.qty}}, Discount : {{item.discount}}</h2>
-		    <h2 style="color: purple; font-size: 1em; text-align: right">£ {{item.amount | number : 0 }}</h2>
-      </ion-item>
-      
-      <ion-item-options side="left">
-        <button ion-button color="secondary" (click)="removeFromCart($event,item)">
-          <ion-icon name="trash"></ion-icon>
-          Edit
-        </button>
-      </ion-item-options>
-
-      <ion-item-options side="right">
-        <button ion-button color="primary" (click)="removeFromCart($event,item)">
-          <ion-icon name="trash"></ion-icon>
-          Remove
-        </button>
-      </ion-item-options>
-
-	  </ion-item-sliding>
-  </ion-list>
-</ion-content>-->

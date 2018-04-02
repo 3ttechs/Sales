@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, LoadingController } from 'ionic-angular';
 import { ShoppingCartProvider } from '../../providers/shopping-cart/shopping-cart';
+import { WebServicesProvider } from '../../providers/web-services/web-services';
+import { CategoriesPage } from '../categories/categories';
 
 @IonicPage()
 @Component({
@@ -15,73 +17,61 @@ export class SummaryPage {
   private subTotal: number=0;
   private VAT: number=0;
   private discount: number=0;
-  private total: number=0;
-  private paymentMode: string;
+  private total: number=this.subTotal - this.discount;
+  private customerName: string='';
+  private customerPhone: string='';
+  private customerVatNo: string='';
+  private paymentMode: string="1";
+  private customerNotes: string='';
+  private invoiceNumber: string;
+  private userName = '';
   
-  private summaryItem: {
-    "invoice": {
-      "id": 2,
-      "sales_person_code": "ASDF",
-      "customer_name": "ABC Corp.",
-      "customer_phone": "99-99-99",
-      "customer_vat_no": "00-00",
-      "sub_total": 0.02,
-      "discount": 0.02,
-      "vat": 0.02,
-      "total": 25,
-      "payment_mode": 1,
-      "status": 1,
-      "notes": "-"
+  private summaryItem = {
+    invoice: {
+      id: 0,
+      sales_person_code: '',
+      customer_name: '',
+      customer_phone: '',
+      customer_vat_no: '',
+      sub_total: 0,
+      discount: 0,
+      vat: 0,
+      total: 0,
+      payment_mode: 1,
+      status: 1,
+      notes: "-"
       },
-    "items": [
-      {
-        "id": 1,
-        "product_code": "1",
-        "product_category": "Floral",
-        "product_name": "Diasy",
-        "product_name_arabic": "Diasy",
-        "product_brand": "Diasy",
-        "product_type": "Diasy",
-        "product_coo": "India",
-        "product_price": 2.54,
-        "quantity": 12,
-        "vat": 1.0,
-        "discount": 0.02,
-        "amount": 25
-      },
-      {
-        "id": 2,
-        "product_code": "1",
-        "product_category": "Floral",
-        "product_name": "Diasy",
-        "product_name_arabic": "Diasy",
-        "product_brand": "Diasy",
-        "product_type": "Diasy",
-        "product_coo": "India",
-        "product_price": 2.54,
-        "quantity": 12,
-        "vat": 1.0,
-        "discount": 0.02,
-        "amount": 25
-      }
-    ]
+    items: []
   };
+
+  private summarySubItem = [];
 
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
     public alertCtrl: AlertController,
     private shoppingCart: ShoppingCartProvider,
+    public webService: WebServicesProvider, 
     private loadingCtrl: LoadingController) {
   }
 
   ionViewDidLoad() {
-    //console.log('ionViewDidLoad SummaryPage');
+    this.userName = localStorage.getItem("user");
   }
 
+  //Event that gets triggered every time user enters the page
   ionViewDidEnter() {
     this.calculateSummary();
   }
+
+  //if non selected, disable the add to cart button
+  noneSelected(){
+    if(this.subTotal == 0)
+      return true;
+    else
+      return false;
+  }
+
 
   calculateSummary(){
     this.loading = this.loadingCtrl.create({
@@ -93,13 +83,29 @@ export class SummaryPage {
         this.shoppingList = result["items"];
 
         this.subTotal = 0;
+        this.VAT = 0;
 
         this.shoppingList.forEach(element => {
-          this.subTotal += (Number(element.price) * Number(element.qty) - Number(element.discount));
+          this.subTotal += Number(element.amount);
+          this.VAT += Number(element.Vat);
+          this.summarySubItem.push({
+            id: element.id,
+            product_code: element.code,
+            product_category: element.category,
+            product_name: element.name,
+            product_name_arabic: element.name,
+            product_brand: element.brand,
+            product_type: element.product_type,
+            product_coo: element.coo,
+            product_price: element.price,
+            quantity: Number(element.qty),
+            vat: Number(Number(element.price) * Number(element.qty) * 0.05),
+            discount: Number(element.discount),
+            amount: Number(element.amount)});
         });
 
-        this.VAT = Number(this.subTotal) * Number("0.05");
-        this.total = this.subTotal + this.VAT- this.discount;
+        this.total = this.subTotal - this.discount;
+        this.summaryItem.items = this.summarySubItem;
 
       }).catch(err=>console.log(err));
 
@@ -112,20 +118,43 @@ export class SummaryPage {
       content: 'Placing order...'
     });
 
-    console.log(this.discount);
-
     this.loading.present().then(()=>{
-      //this.shoppingCart.placeOrder().then(result => {
-      //  this.showAlert();
-      //}).catch(err=>console.log(err));
-      this.loading.dismiss();
-      //this.navCtrl.setRoot(CategoriesPage);
+      this.summaryItem.invoice.sales_person_code = localStorage.getItem("user");
+      this.summaryItem.invoice.customer_name = this.customerName;
+      this.summaryItem.invoice.customer_phone = this.customerPhone;
+      this.summaryItem.invoice.customer_vat_no = this.customerVatNo;
+      this.summaryItem.invoice.sub_total = this.subTotal;
+      this.summaryItem.invoice.vat = this.VAT;
+      this.summaryItem.invoice.discount = Number(this.discount);
+      this.summaryItem.invoice.total = this.total;
+      this.summaryItem.invoice.notes = this.customerNotes;
+      this.summaryItem.invoice.payment_mode = Number(this.paymentMode);
+
+      this.webService.placeOrder(this.summaryItem).then(result => {
+        this.invoiceNumber = String(result);
+
+        //Clear Cart Method
+        this.shoppingCart.clearCart().then(result => {console.log(result);}).catch(err=>console.log(err));
+
+        //Call the print method
+        this.webService.printOrder(this.invoiceNumber).then(result =>{console.log(result);}).catch(err=>console.log(err));
+
+        //Show the invoice number popup
+        this.showAlert();
+
+        this.loading.dismiss();
+
+      }).catch(err=>{console.log(err); this.loading.dismiss();});
+
+      //to be removed
+      this.shoppingCart.clearCart();
+
     });
   }
 
   showAlert() {
     let alert = this.alertCtrl.create({
-      subTitle: 'Order Placed. Invoice number : 16589',
+      subTitle: 'Order Placed. Invoice number : ' + this.invoiceNumber,
       buttons: ['OK']
     });
     alert.present();

@@ -19,11 +19,18 @@ export class CartPage {
   }
 
   ionViewDidLoad() {
-    //this.getItemsFromCart();
   }
 
   ionViewDidEnter() {
     this.getItemsFromCart();
+  }
+
+  ionViewWillLeave(){
+    this.shoppingList.forEach(element => {
+      element.Vat = Number(element.price) * Number(element.qty) * 0.05;
+      element.amount = (Number(element.price) * Number(element.qty)) + element.Vat - Number(element.discount);
+    });
+    this.UpdateCart();
   }
 
   getItemsFromCart(){
@@ -34,7 +41,6 @@ export class CartPage {
     this.loading.present().then(()=>{
       this.shoppingCart.getItemsFromCart().then(result => {
         this.shoppingList = result["items"];
-        console.log(this.shoppingList);
       }).catch(err=>console.log(err));
       this.loading.dismiss();
     });
@@ -49,17 +55,31 @@ export class CartPage {
     //Removing local cashed copy to reflect the change immediatly.
     var filteredShoppingList: any;
     filteredShoppingList = this.shoppingList.filter(function(emp) {
-      if (emp.productCode == cartItem.productCode) { //if same item is added multiple times, both will get deleted together
+      if (emp.code == cartItem.code) { //if same item is added multiple times, both will get deleted together
           return false;
       }
       return true;
     });
+    console.log(filteredShoppingList);
     this.shoppingList = filteredShoppingList;
     
     //Removing from the storage for permanent removal.
-    this.loading.present().then(()=>{
+    /*this.loading.present().then(()=>{
       this.shoppingCart.removeItemFromCart(filteredShoppingList).then(result => {
         //this.shoppingList = filteredShoppingList;  //Need to do this??
+      }).catch(err=>console.log(err));
+      this.loading.dismiss();
+    });*/this.loading.dismiss();
+  }
+
+  UpdateCart(){
+    this.loading = this.loadingCtrl.create({
+      content: 'Updating Cart Items...'
+    });
+
+    //We are replacing storage cart item with the updated cart item
+    this.loading.present().then(()=>{
+      this.shoppingCart.removeItemFromCart(this.shoppingList).then(result => {
       }).catch(err=>console.log(err));
       this.loading.dismiss();
     });
