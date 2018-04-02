@@ -15,6 +15,7 @@
         line-height: 24px;
         font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
         color: #555;
+
     }
     
     .invoice-box table {
@@ -43,13 +44,14 @@
     }
     
     .invoice-box table tr.information table td {
-        padding-bottom: 40px;
+        font-size: 10px;
     }
     
     .invoice-box table tr.heading td {
         background: #eee;
         border-bottom: 1px solid #ddd;
         font-weight: bold;
+        text-align: left;
     }
     
     .invoice-box table tr.details td {
@@ -80,6 +82,7 @@
             width: 100%;
             display: block;
             text-align: center;
+            font-size: 5px;
         }
     }
     
@@ -99,59 +102,74 @@
     </style>
 </head>
 
-<body>
-    <div class="invoice-box">
+
+
+
+
     <table>
-        <tr>
-            <td class="information">
-             <!--<img src="templates\download.png" style="width:15%; ">-->
-            <H2> Ard Al Zaafaran Trading</H2><br>
-                Gold Market, Mushed Bazar,  <br>
-                Near Al Khaiyam Hotel, Deira, Dubai<br>
-                Tel: +971 4 2253127, Fax: +971 4 2254617<br>
-                Mobile: +971 50 5063031<br><br>
-            </td>
+        <tr><td class="information">
+            Branch 1<br> Tel. 04-22-2215<br> Fax. 04-2202216<br>
+            Opp. Al Ras Metro Station<br>
+            Mob: 050-6577196<br><br>
 
-            <td>
-                Invoice #: <b>{{ invoice_header["id"] }}</b><br>
-                Date: <b>{{ invoice_header["invoice_date"] }}</b><br><br>
+            Branch 2<br> Tel. : 04-2295552<br> Fax. : 04-2264771<br>
+            Gold Market,<br>
+            Al Badoor Street
+            <H3>Invoice No : {{invoice_header['id']}}</H3>
 
-            <B>Customer:</B><br>
-                {{ invoice_header["cutomer_name"] }}<br>
-                Phone: {{ invoice_header["cutomer_phone"] }}<br>
-                Vat No : {{ invoice_header["cutomer_vat_no"] }}		<br><br>
 
-                Sales Person: <b>{{ invoice_header["sales_person_code"] }}</b><br>
-                Payment Mode: <b>{{ invoice_header["payment_mode"] }}</b> <br><br>
-            </td>
-        </tr>
+        </td><td  class="information" width = '60%' align ='center'>
+                        <H1>
+أرض الزعفران للتجارة ذ.م.م.</H1>
+            <H1> Ard Al Zaafaran Trading</H1>
+
+        الهاتف. : 04-2253127 ، فاكس: 04-2254617 P.O. المربع: 28068 <br> مرشد بازار ، ديرة ، دبي -  U.A.E<br>
+            TRN : 100316484300003<br><br>
+
+        Tel. : 04-2253127, Fax : 04-2254617 P.O. Box : 28068 <br> Murshid Bazar, Deira, Dubai - U.A.E<br>
+            TRN : 100316484300003<br>
+            <H3><U>TAX INVOICE</U></H3>
+        </td><td  class="information">
+            Branch 1<br> Tel. 04-22-2215<br> Fax. 04-2202216<br>
+            Opp. Al Ras Metro Station<br>
+            Mob: 050-6577196<br><br>
+
+            Branch 2<br> Tel. : 04-2295552<br> Fax. : 04-2264771<br>
+            Gold Market,<br>
+            Al Badoor Street
+            <H3>Date : {{invoice_header['invoice_date']}}</H3>
+        </td></tr>
+        <tr><td colspan ='3'> Mr./M/s <B>{{invoice_header['customer_name']}},  VAT Number : {{invoice_header['customer_vat_no']}}</B></td></tr>
     </table>
 
+<body>
+    <div class="invoice-box">
+        
             <table cellpadding="0" cellspacing="0">
-            <tr class="heading">
-                <td width="100px">Category</td>
-                <td width="100px">Name</td>
-                <td width="100px">Code</td>
-                <td width="100px">Price (£)</td>
-                <td width="100px">Qty</td>
-                <td width="100px">Discount (£)</td>
-                <td width="100px">Amount (£)</td>
+            <tr class="heading" >
+                <td width="10px" align = 'center'>No.</td>
+                <td align = 'center'>Description</td>
+                <td width="100px" align = 'center'>Qty</td>
+                <td width="100px" align = 'center'>Rate</td>
+                <td width="100px" align = 'center'>Discount</td>
+                <td width="100px" align = 'center'>Vat</td>
+                <td width="100px" align = 'center'>Amount</td>
             </tr>
 
             {% for i in range(num_items) %}
 
             <tr class="item">
-                <td>{{ invoice_items[i]['product_category'] }}</td>
-                <td>{{ invoice_items[i]['product_name'] }}</td>
-                <td>{{ invoice_items[i]['product_code'] }}</td>
-                <td>{{ invoice_items[i]['product_price'] }}</td>
+                <td>{{ i+1 }}</td>
+                <td style="text-align:left;">{{ invoice_items[i]['product_name'] }}</td>
                 <td>{{ invoice_items[i]['quantity'] }}</td>
+                <td>{{ invoice_items[i]['product_price'] }}</td>
                 <td>{{ invoice_items[i]['discount'] }}</td>
+                <td>{{ invoice_items[i]['vat'] }}</td>
                 <td>{{ invoice_items[i]['amount'] }}</td>
             </tr>
                 {% endfor %}
 
-            <tr >
+            <tr class="item">
                 <td></td>
                 <td></td>
                 <td></td>
@@ -160,7 +178,7 @@
                 <td>Sub Total</td>
                 <td>£ {{ invoice_header["sub_total"] }}</td>
             </tr>
-            <tr >
+            <tr class="item">
                 <td></td>
                 <td></td>
                 <td></td>
@@ -168,7 +186,7 @@
                 <td></td>
                 <td>VAT</td>
                 <td>£ {{ invoice_header["vat"] }}</td>
-            <tr >
+            <tr class="item">
                 <td></td>
                 <td></td>
                 <td></td>
@@ -177,15 +195,15 @@
                 <td>Discount</td>
                 <td>£ {{ invoice_header["discount"] }}</td>
             </tr>
-            <tr >
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>Total</td>
+            <tr class="item">
+                <td colspan = '5'>Total : {{total_string}}</td>
+                <td style="text-align:left;">Total</td>
                 <td><B>£ {{ invoice_header["total"] }}</B></td>
             </tr>
+        </table>
+<br><br><br>
+        <table>
+            <tr><td>Receiver's Sign</td><td>For ARD AL ZAAFARAN TRADING</td></tr>
         </table>
     </div>
 </body>

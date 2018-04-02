@@ -3,6 +3,8 @@ from flask import Flask, request,json,send_from_directory,Response,render_templa
 import logging, os, subprocess
 from  db_utilities import *
 import pdfkit
+from num2words import num2words
+
 path_wkthmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
 config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
 acrobat_reader = "C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32.exe"
@@ -103,9 +105,6 @@ def invoice_items_by_id(invoice_no):
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
-
-
-
 #http://localhost:5000/invoice_print/invoice_no=1
 @app.route('/invoice_print/invoice_no=<invoice_no>', methods=['GET'])
 def invoice_print_by_id(invoice_no):
@@ -114,7 +113,10 @@ def invoice_print_by_id(invoice_no):
     query = 'select * from items where invoice_no  = '+ invoice_no
     invoice_items = json.loads(json.dumps(run_query(query)))
     num_items = len(invoice_items)
-    data = render_template('invoice.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items)
+    query = 'select total from invoice where id = '+ invoice_no
+    total_string = json.loads(json.dumps(run_query(query)))
+    total_string = num2words(total_string[0]['total']).title()
+    data = render_template('invoice.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items,total_string=total_string)
     pdfkit.from_string(data, 'temp/invoice.pdf', configuration=config)
     #os.startfile('invoice.pdf')
     # AcroRd32.exe /t filename.pdf printername drivername portname
@@ -184,6 +186,7 @@ def invoice_print_by_id(invoice_no):
 @app.route('/invoice/add', methods=['POST'])
 def invoice_add():
     data = json.loads(request.data)
+    print(data)
 
     sales_person_code = data['invoice']['sales_person_code']
     customer_name = data['invoice']['customer_name']
@@ -198,6 +201,7 @@ def invoice_add():
     notes = data['invoice']['notes']
 
     query = "INSERT INTO invoice (invoice_date, invoice_time,  sales_person_code,customer_name,customer_phone,customer_vat_no,sub_total,discount,vat,total,payment_mode,status,notes) VALUES (date(),time(),'%s','%s','%s','%s',%f,%f,%f,%f,%d , %d,'%s' )"% (sales_person_code,customer_name,customer_phone,customer_vat_no,sub_total,discount,vat,total,payment_mode,status,notes)
+    print(query)
     run_insert_query(query)
     invoice_no = run_select_query('SELECT MAX(id) FROM invoice')[0][0]
 
@@ -216,6 +220,7 @@ def invoice_add():
         discount = data['items'][i]['discount']
         amount = data['items'][i]['amount']
         query = "INSERT INTO items (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,discount,amount,vat) VALUES  ('%s','%s','%s','%s','%s','%s','%s',%f,'%s',%f,%f,%f,%f)"% (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,discount,amount,vat)
+        print(query)
         run_insert_query(query)
 
     return  str(invoice_no), 200
@@ -371,9 +376,7 @@ def sales_person_add():
     login = data['sales_person']['login']
     password = data['sales_person']['password']
 
-
     # check for unique constraint
-
     data = run_select_query('select * from sales_person_master where login = "'+ login+'"')
     if (len(data)>0):
         return '0', 200
@@ -394,20 +397,12 @@ def sales_person_delete(id):
     run_insert_query(query)
     return '1', 200
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#http://localhost:5000/sales_person/all
+@app.route('/sales_person/all', methods=['GET'])
+def sales_person_all():
+    query = 'select name, code, contact_number, login, password  from sales_person_master'
+    json_output = json.dumps(run_query(query))
+    return json_output, 200
 
 '''
         query = 'select invoice.invoice_date ,' \
@@ -630,3 +625,4 @@ def after_request(response):
 
 if __name__ == '__main__':
     app.run(host='localhost', port=5000)
+    #app.run(host='192.168.0.3', port=5000)
