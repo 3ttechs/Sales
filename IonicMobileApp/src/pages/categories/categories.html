@@ -3,19 +3,19 @@
   <ion-toolbar>
     <ion-grid class="vertical-align-content">
       <ion-row>
-        <ion-col col-2>
+        <ion-col col-2 style="text-align:right;">
           <h3>Category : </h3>
         </ion-col>
         <ion-col col-2>
           <ion-searchbar (ionInput)="filterByCategory($event)"></ion-searchbar>
         </ion-col> 
-        <ion-col col-2>
+        <ion-col col-2 style="text-align:right;">
             <h3>Brand : </h3>
         </ion-col> 
         <ion-col col-2>
           <ion-searchbar (ionInput)="filterByBrand($event)"></ion-searchbar>
         </ion-col> 
-        <ion-col col-2>
+        <ion-col col-2 style="text-align:right;">
             <h3>Code : </h3>
         </ion-col> 
         <ion-col col-2>
@@ -23,7 +23,7 @@
         </ion-col>   
       </ion-row>
       <ion-row>
-        <ion-col col-3><h3>Product Description</h3></ion-col>
+        <ion-col col-3 style="text-align:right;"><h3>Product Description : </h3></ion-col>
         <ion-col><ion-searchbar (ionInput)="filterByProductDescription($event)"></ion-searchbar></ion-col>
       </ion-row>
     </ion-grid> 
@@ -31,7 +31,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid>
+  <ion-grid class="CategoryGrid">
     <ion-row>
       <ion-col>Category</ion-col>
       <ion-col>Brand</ion-col>
@@ -43,7 +43,7 @@
       <ion-col>
         <ion-scroll style="width:100%;height:400px" scrollY="true">
           <ion-list scroll="true">
-            <button ion-item *ngFor="let item of filteredProducts" (click)="itemSelected($event,item)">
+            <button ion-item *ngFor="let item of filteredProducts" (click)="itemSelected($event,item)" ng-class="{item.selected: selected}">
               <ion-grid>
                 <ion-row>
                   <ion-col>{{item.category}}</ion-col>

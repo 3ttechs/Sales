@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, LoadingController } from 'ionic-angular';
+import { NavController, NavParams, LoadingController, AlertController } from 'ionic-angular';
 import { ShoppingCartProvider } from '../../providers/shopping-cart/shopping-cart';
 
 @Component({
@@ -15,7 +15,8 @@ export class CartPage {
     public navCtrl: NavController, 
     public navParams: NavParams,
     private shoppingCart: ShoppingCartProvider,
-    private loadingCtrl: LoadingController) {
+    private loadingCtrl: LoadingController,
+    public alertCtrl: AlertController) {
   }
 
   ionViewDidLoad() {
@@ -24,13 +25,22 @@ export class CartPage {
   ionViewDidEnter() {
     this.getItemsFromCart();
   }
-
+ 
   ionViewWillLeave(){
     this.shoppingList.forEach(element => {
       element.Vat = Number(element.price) * Number(element.qty) * 0.05;
       element.amount = (Number(element.price) * Number(element.qty)) + element.Vat - Number(element.discount);
     });
     this.UpdateCart();
+  }
+
+  showAlert() {
+    let alert = this.alertCtrl.create({
+      title: 'Invalid entries!',
+      subTitle: 'Invalid Values, please correct.',
+      buttons: ['OK']
+    });
+    alert.present();
   }
 
   getItemsFromCart(){
@@ -64,12 +74,12 @@ export class CartPage {
     this.shoppingList = filteredShoppingList;
     
     //Removing from the storage for permanent removal.
-    /*this.loading.present().then(()=>{
+    this.loading.present().then(()=>{
       this.shoppingCart.removeItemFromCart(filteredShoppingList).then(result => {
         //this.shoppingList = filteredShoppingList;  //Need to do this??
       }).catch(err=>console.log(err));
       this.loading.dismiss();
-    });*/this.loading.dismiss();
+    });
   }
 
   UpdateCart(){

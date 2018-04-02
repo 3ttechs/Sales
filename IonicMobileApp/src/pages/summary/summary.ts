@@ -14,10 +14,11 @@ export class SummaryPage {
   loading: any;
   private shoppingList: any;
 
-  private subTotal: number=0;
-  private VAT: number=0;
-  private discount: number=0;
-  private total: number=this.subTotal - this.discount;
+  private summaryPageObject = {subTotal:0,VAT:0,Discount:0,Total:0};
+  //private subTotal: number=0;
+  //private VAT: number=0;
+  //private discount: number=0;
+  //private total: number=0;
   private customerName: string='';
   private customerPhone: string='';
   private customerVatNo: string='';
@@ -66,7 +67,7 @@ export class SummaryPage {
 
   //if non selected, disable the add to cart button
   noneSelected(){
-    if(this.subTotal == 0)
+    if(this.summaryPageObject.subTotal == 0)
       return true;
     else
       return false;
@@ -82,12 +83,12 @@ export class SummaryPage {
       this.shoppingCart.getItemsFromCart().then(result => {
         this.shoppingList = result["items"];
 
-        this.subTotal = 0;
-        this.VAT = 0;
+        this.summaryPageObject.subTotal = 0;
+        this.summaryPageObject.VAT = 0;
 
         this.shoppingList.forEach(element => {
-          this.subTotal += Number(element.amount);
-          this.VAT += Number(element.Vat);
+          this.summaryPageObject.subTotal += Number(element.amount);
+          this.summaryPageObject.VAT += Number(element.Vat);
           this.summarySubItem.push({
             id: element.id,
             product_code: element.code,
@@ -104,7 +105,6 @@ export class SummaryPage {
             amount: Number(element.amount)});
         });
 
-        this.total = this.subTotal - this.discount;
         this.summaryItem.items = this.summarySubItem;
 
       }).catch(err=>console.log(err));
@@ -123,10 +123,10 @@ export class SummaryPage {
       this.summaryItem.invoice.customer_name = this.customerName;
       this.summaryItem.invoice.customer_phone = this.customerPhone;
       this.summaryItem.invoice.customer_vat_no = this.customerVatNo;
-      this.summaryItem.invoice.sub_total = this.subTotal;
-      this.summaryItem.invoice.vat = this.VAT;
-      this.summaryItem.invoice.discount = Number(this.discount);
-      this.summaryItem.invoice.total = this.total;
+      this.summaryItem.invoice.sub_total = this.summaryPageObject.subTotal;
+      this.summaryItem.invoice.vat = Number(this.summaryPageObject.VAT);
+      this.summaryItem.invoice.discount = Number(this.summaryPageObject.Discount);
+      this.summaryItem.invoice.total = Number(this.summaryPageObject.Total);
       this.summaryItem.invoice.notes = this.customerNotes;
       this.summaryItem.invoice.payment_mode = Number(this.paymentMode);
 
