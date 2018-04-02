@@ -148,6 +148,7 @@ export class CategoriesPage {
     this.loading.present().then(()=>{
       console.log(this.selectedItem);
       this.shoppingCart.addItemToCart(this.selectedItem);
+	  this.selectedItem = null;
       this.loading.dismiss();
     });
   }

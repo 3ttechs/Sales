@@ -85,6 +85,8 @@ export class SummaryPage {
 
         this.summaryPageObject.subTotal = 0;
         this.summaryPageObject.VAT = 0;
+        this.summarySubItem = [];
+		
 
         this.shoppingList.forEach(element => {
           this.summaryPageObject.subTotal += Number(element.amount);
@@ -123,10 +125,11 @@ export class SummaryPage {
       this.summaryItem.invoice.customer_name = this.customerName;
       this.summaryItem.invoice.customer_phone = this.customerPhone;
       this.summaryItem.invoice.customer_vat_no = this.customerVatNo;
-      this.summaryItem.invoice.sub_total = this.summaryPageObject.subTotal;
+      this.summaryItem.invoice.sub_total = Number(this.summaryPageObject.subTotal);
       this.summaryItem.invoice.vat = Number(this.summaryPageObject.VAT);
       this.summaryItem.invoice.discount = Number(this.summaryPageObject.Discount);
-      this.summaryItem.invoice.total = Number(this.summaryPageObject.Total);
+      this.summaryItem.invoice.total = Number(Number(this.summaryPageObject.subTotal) - Number(this.summaryPageObject.Discount));
+	  console.log(this.summaryItem.invoice.total);
       this.summaryItem.invoice.notes = this.customerNotes;
       this.summaryItem.invoice.payment_mode = Number(this.paymentMode);
 

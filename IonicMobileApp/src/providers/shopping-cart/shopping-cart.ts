@@ -10,21 +10,25 @@ export class ShoppingCartProvider {
   constructor(private storagemodule: Storage) {
     console.log('Hello ShoppingCartProvider Provider');
   }
-
-  /*addItemToCart(selectedItem){
+/*
+  addItemToCart(selectedItem){
     console.log(selectedItem);
     this.storagemodule.set(selectedItem.productCode,JSON.stringify(selectedItem));
-  }*/
-
+  }
+*/
+  
   addItemToCart(selectedItem){
     new Promise((resolve)=>{
       this.storagemodule.get("cartItems").then(res=>{
         if(res != null) this.cartItems = res;
         this.cartItems.items.push(selectedItem);
+
         this.storagemodule.set("cartItems",this.cartItems);
-      })
+
+      }) 
     })
   }
+  
 
   getItemsFromCart(){
     return new Promise((resolve,reject) => {

@@ -17,3 +17,42 @@ page-summary {
     font-size: 1.5em;
     color: purple;
 }
+
+
+page-summary {    
+     #rounded {
+        width: 100%;
+        height: 100px;
+        -moz-border-radius: 50px;
+        -webkit-border-radius: 50px;
+        border-radius: 10px;
+        margin-bottom: 10px;  
+		background-color: #eeeeee;
+    }
+     #rounded2 {
+        width: 100%;
+        height: 50px;
+        -moz-border-radius: 50px;
+        -webkit-border-radius: 50px;
+        border-radius: 10px;
+        margin-bottom: 10px;  
+		background-color: #eeeeee;
+    }
+	
+     #rounded1 {
+        width: 100%;
+        height: 100px;
+        -moz-border-radius: 50px;
+        -webkit-border-radius: 50px;
+        border-radius: 10px;
+        margin-bottom: 10px;  
+        text-align: center;  
+        vertical-align: middle;  
+		justify-content: center; /* align horizontal */
+		align-items: center; /* align vertical */
+		
+		background-color: #abcdef;
+		}
+
+}
+

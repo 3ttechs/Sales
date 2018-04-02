@@ -4,6 +4,8 @@ import logging, os, subprocess
 from  db_utilities import *
 import pdfkit
 from num2words import num2words
+import random
+
 
 path_wkthmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
 config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
@@ -108,6 +110,8 @@ def invoice_items_by_id(invoice_no):
 #http://localhost:5000/invoice_print/invoice_no=1
 @app.route('/invoice_print/invoice_no=<invoice_no>', methods=['GET'])
 def invoice_print_by_id(invoice_no):
+def invoice_print_by_id(invoice_no):
+
     query = 'select * from invoice where id = '+ invoice_no
     invoice_header = json.loads(json.dumps(run_query(query)))
     query = 'select * from items where invoice_no  = '+ invoice_no
@@ -117,12 +121,15 @@ def invoice_print_by_id(invoice_no):
     total_string = json.loads(json.dumps(run_query(query)))
     total_string = num2words(total_string[0]['total']).title()
     data = render_template('invoice.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items,total_string=total_string)
-    pdfkit.from_string(data, 'temp/invoice.pdf', configuration=config)
+    s = "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    pdf_filename = "invoice_"+ "".join(random.sample(s, 10))+'.pdf'
+    print(pdf_filename)
+    pdfkit.from_string(data, 'temp/'+pdf_filename, configuration=config)
     #os.startfile('invoice.pdf')
     # AcroRd32.exe /t filename.pdf printername drivername portname
     acroread = acrobat_reader +' /H /T'
     printer=""
-    cmd = '%s %s' % (acroread, 'temp/invoice.pdf')
+    cmd = '%s %s' % (acroread, 'temp/'+pdf_filename)
     #print (cmd)
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     #stdout, stderr = proc.communicate()
