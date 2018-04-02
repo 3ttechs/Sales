@@ -9,7 +9,7 @@
     <ion-row>
 	      <ion-col col-1><ion-label class="labels" color="primary"></ion-label></ion-col>	
 
-      <ion-col col-2><ion-label class="labels" color="primary" >Sub Total (£)</ion-label></ion-col> <!--Sum of all quantity * price of item-->
+      <ion-col col-2><ion-label class="labels" color="primary" >Sub Total (Dhs)</ion-label></ion-col> <!--Sum of all quantity * price of item-->
       <ion-col col-3><ion-label class="labels" color="primary" fixed>{{this.summaryPageObject.subTotal.toFixed(3)}}</ion-label></ion-col>
 
       <ion-col col-2><ion-label class="labels" color="primary">Payment Mode</ion-label></ion-col> <!--Select Basic-->
@@ -23,10 +23,10 @@
     </ion-row>
     <ion-row>
       <ion-col col-1><ion-label class="labels" color="primary"></ion-label></ion-col>	
-      <ion-col col-2><ion-label class="labels" color="primary" fixed>VAT (£)</ion-label></ion-col> <!--Calculated 5% of Sub Total-->
+      <ion-col col-2><ion-label class="labels" color="primary" fixed>VAT (Dhs)</ion-label></ion-col> <!--Calculated 5% of Sub Total-->
       <ion-col col-3><ion-label class="labels" color="primary" fixed>{{this.summaryPageObject.VAT.toFixed(3)}}</ion-label></ion-col>
 	  
-	        <ion-col col-2><ion-label class="labels" color="primary" >Discount (£) </ion-label></ion-col> <!--User input numeric-->
+	        <ion-col col-2><ion-label class="labels" color="primary" >Discount (Dhs) </ion-label></ion-col> <!--User input numeric-->
       <ion-col col-2><ion-input id="rounded2" class="values"  type="number" [(ngModel)]="this.summaryPageObject.Discount" placeholder="{{discount}}"></ion-input></ion-col>
 
 
@@ -54,7 +54,7 @@
 
     <ion-row>
 	      <ion-col col-1><ion-label class="labels" color="primary"></ion-label></ion-col>
-      <ion-col col-3><ion-label   class="labels" color="primary" fixed>Total (£)</ion-label></ion-col> <!--Sub Total + VAT - Discount-->
+      <ion-col col-3><ion-label   class="labels" color="primary" fixed>Total (Dhs)</ion-label></ion-col> <!--Sub Total + VAT - Discount-->
       <ion-col col-3><ion-label  style="font-size: 50px;"  color="primary" >{{(this.summaryPageObject.subTotal - this.summaryPageObject.Discount).toFixed(3)}}</ion-label></ion-col>
 	
 

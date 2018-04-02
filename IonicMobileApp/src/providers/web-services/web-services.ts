@@ -4,7 +4,8 @@ import { Http, Headers } from '@angular/http';
 import 'rxjs/add/operator/map';
 
 
-let apiUrl = 'http://localhost:5000';
+//let apiUrl = 'http://localhost:5000';
+let apiUrl = 'http://192.168.1.1:5000';
 
 @Injectable()
 export class WebServicesProvider {
