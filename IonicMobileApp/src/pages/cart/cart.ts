@@ -30,6 +30,13 @@ export class CartPage {
     this.shoppingList.forEach(element => {
       element.Vat = Number(element.price) * Number(element.qty) * 0.05;
       element.amount = (Number(element.price) * Number(element.qty)) + element.Vat - Number(element.discount);
+      if(element.amount < 0)
+      {
+        element.qty = 0;
+        element.discount = 0;
+        element.amount = 0;
+        element.Vat = 0;
+      }
     });
     this.UpdateCart();
   }
@@ -42,6 +49,7 @@ export class CartPage {
     });
     alert.present();
   }
+
 
   getItemsFromCart(){
     this.loading = this.loadingCtrl.create({
