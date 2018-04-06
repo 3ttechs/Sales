@@ -1,0 +1,4 @@
+host: "localhost"
+port: 5000
+wkhtmltopdf: "C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe"
+acrobat_reader: "C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32.exe"

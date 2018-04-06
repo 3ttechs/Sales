@@ -6,10 +6,12 @@ import pdfkit
 from num2words import num2words
 import random
 
+host = "localhost"
+port="5000"
+wkhtmltopdf= 'C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'
+acrobat_reader= 'C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32.exe'
 
-path_wkthmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
-config = pdfkit.configuration(wkhtmltopdf=path_wkthmltopdf)
-acrobat_reader = "C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32.exe"
+config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf)
 
 
 app = Flask(__name__)
@@ -126,6 +128,7 @@ def invoice_print_by_id(invoice_no):
     #os.startfile('invoice.pdf')
     # AcroRd32.exe /t filename.pdf printername drivername portname
     acroread = acrobat_reader +' /H /T'
+    print (acroread)
     printer=""
     cmd = '%s %s' % (acroread, 'temp/'+pdf_filename)
     #print (cmd)
@@ -620,7 +623,6 @@ def test_file_upload():
     content = open('templates/file_upload.html').read()
     return Response(content, mimetype="text/html")
 
-
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin','*')
@@ -628,6 +630,29 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods','GET,PUT,POST,DELETE,OPTIONS')
     return response
 
+def load_properties(filepath, sep=':', comment_char='#'):
+    """
+    Read the file passed as parameter as a properties file.
+    """
+    props = {}
+    with open(filepath, "rt") as f:
+        for line in f:
+            l = line.strip()
+            if l and not l.startswith(comment_char):
+                key_value = l.split(sep)
+                key = key_value[0].strip()
+                value = sep.join(key_value[1:]).strip().strip('"')
+                props[key] = value
+    return props
+
+
 if __name__ == '__main__':
-    app.run(host='localhost', port=5000)
+    props = load_properties('config_file.txt')
+    for prop in props:
+        if(prop=='host'): host =props[prop]
+        if(prop=='port'): port =props[prop]
+        if(prop=='wkhtmltopdf'): wkhtmltopdf =props[prop]
+        if(prop=='acrobat_reader'): acrobat_reader =props[prop]
+
+    app.run(host=host, port=port)
     #app.run(host='192.168.0.3', port=5000)
