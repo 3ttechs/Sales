@@ -43,7 +43,7 @@
       <ion-col>
         <ion-scroll style="width:100%;height:250px" scrollY="true">
           <ion-list scroll="true">
-            <button ion-item *ngFor="let item of filteredProducts" (click)="itemSelected($event,item)" ng-class="{item.selected: selected}">
+            <ion-item *ngFor="let item of filteredProducts" (click)="itemSelected($event,item)">
               <ion-grid>
                 <ion-row style="font-size: 15px;font-family: Helvetica;">
                   <ion-col >{{item.category}}</ion-col>
@@ -53,7 +53,7 @@
                   <ion-col>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{item.price}}</ion-col>
                 </ion-row>
               </ion-grid> 
-            </button>
+            </ion-item>
           </ion-list>
         </ion-scroll> 
       </ion-col>
