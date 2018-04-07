@@ -147,6 +147,7 @@ export class SummaryPage {
 
         this.loading.dismiss();
 
+        this.navCtrl.parent.select(0);
       }).catch(err=>{console.log(err); this.loading.dismiss();});
 
       //to be removed
