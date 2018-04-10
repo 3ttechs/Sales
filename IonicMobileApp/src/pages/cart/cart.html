@@ -1,40 +1,28 @@
 <ion-header>
   <ion-navbar></ion-navbar>
-  <ion-toolbar>
-    <ion-grid>
-      <ion-row>
-        <ion-col col-10>
-          <h3></h3>
-        </ion-col>
-        <ion-col col-2>
-          <h3></h3>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-grid class='CartGrid'>
-    <ion-row style="color: white;background-color: #aaaaaa" >
-      <ion-col><h6><B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Code</B></h6></ion-col>
-      <ion-col><h6><B>Description</B></h6></ion-col>
-      <ion-col><h6><B>Price (Dhs)</B></h6></ion-col>
-      <ion-col><h6><B>Qty</B></h6></ion-col>
-      <ion-col><h6><B>VAT (Dhs)</B></h6></ion-col>
-      <!--<ion-col><h6><B>Discount (Dhs)</B></h6></ion-col>-->
-      <ion-col><h6><B>Amount (Dhs)</B></h6></ion-col>
+  <ion-grid>
+    <ion-row class="gridheader">
+      <ion-col><h5>Code</h5></ion-col>
+      <ion-col><h5>Description</h5></ion-col>
+      <ion-col><h5>Price (Dhs)</h5></ion-col>
+      <ion-col><h5>Qty</h5></ion-col>
+      <ion-col><h5>VAT (Dhs)</h5></ion-col>
+      <!--<ion-col><h4><B>Discount (Dhs)</h4></ion-col>-->
+      <ion-col><h5>Amount (Dhs)</h5></ion-col>
       <ion-col></ion-col>
     </ion-row>
-    <ion-row *ngFor="let item of shoppingList; let i = index;" style="font-size: 15px;font-family: Helvetica; justify-content: bottom; ">
-      <ion-col style="justify-content: bottom;"><h6>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{item.code}}</h6></ion-col>
-      <ion-col><h6>{{item.name}}</h6></ion-col>
-      <ion-col><h6>{{item.price}}</h6></ion-col>
-      <ion-col style="color: blue"><ion-input name="qty" type="number" placeholder="Qty" [(ngModel)]="item.qty" clearInput></ion-input></ion-col>
-      <ion-col ><h6>{{(item.price * item.qty * 0.05).toFixed(3)}}</h6></ion-col>
+    <ion-row *ngFor="let item of shoppingList; let i = index;" class="gridrows">
+      <ion-col class="cart_col">{{item.code}}</ion-col>
+      <ion-col class="cart_col">{{item.name}}</ion-col>
+      <ion-col class="cart_col">{{item.price}}</ion-col>
+      <ion-col><ion-input  class="userinput" name="qty" type="number" placeholder="Qty" [(ngModel)]="item.qty" clearInput></ion-input></ion-col>
+      <ion-col class="cart_col">{{(item.price * item.qty * 0.05).toFixed(3)}}</ion-col>
       <!--<ion-col style="color: blue"><ion-input name="discount" type="number" placeholder="Discount" [(ngModel)]="item.discount" clearInput></ion-input></ion-col>-->
-      <ion-col><h6>{{((item.price * item.qty ) + (item.price * item.qty * 0.05) - item.discount).toFixed(3)}}</h6></ion-col>
-      <ion-col><button ion-button icon-only (click)="removeFromCart($event,item)"><ion-icon name="trash"></ion-icon></button></ion-col>
+      <ion-col class="cart_col">{{((item.price * item.qty ) + (item.price * item.qty * 0.05) - item.discount).toFixed(3)}}</ion-col>
+      <ion-col><button color="primary" style="font-size:70%;" ion-button round (click)="removeFromCart($event,item)"><ion-icon name="trash"> Delete</ion-icon></button></ion-col>
     </ion-row>
   </ion-grid>
 </ion-content>

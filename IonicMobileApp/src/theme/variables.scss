@@ -5,6 +5,9 @@
 // roboto, and noto sans fonts
 $font-path: "../assets/fonts";
 
+$font-family-md-base: "Roboto";
+$font-family-ios-base: "Roboto";
+$font-family-wp-base: "Roboto";
 
 // The app direction is used to include
 // rtl styles in your app. For more info, please see:
@@ -42,13 +45,12 @@ $app-direction: ltr;
 );*/
 $colors: (
   primary:    #691A99,
-  secondary:  rgb(239, 196, 248),
+  secondary:  rgb(131, 73, 167),
+  tertiary:   rgb(209, 180, 228),
   danger:     #f53d3d,
-  light:      #f4f4f4,
-  dark:       #222,
-  mygreen:    #68EFAD 
+  light:      #f4f4f4,  
+  dark:       #222, 
 );
-
 
 // App iOS Variables
 // --------------------------------------------------

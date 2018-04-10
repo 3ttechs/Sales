@@ -1,10 +1,26 @@
-.CategoryGrid{
-    font-family: sans-serif;
-    padding: 0px;
+
+//.searchbar-ios .searchbar-input::-webkit-input-placeholder { color: rgb(68, 68, 71) !important}
+//.searchbar-md .searchbar-input::-webkit-input-placeholder { color: rgb(68, 68, 71) !important}
+
+//$searchbar-ios-background-color : white;
+//$searchbar-ios-input-text-color: black;
+//$searchbar-ios-input-background-color : blue;
+//$searchbar-ios-input-clear-icon-color:    blue;
+//$searchbar-ios-input-search-icon-color:   purple;
+
+.gridheader{
+    background-color: color($colors,primary);
+    color: color($colors,light);
+    padding-left: 16px;
+}
+
+.categories_col{
+    padding-top: 10px;
+    font-size: 17px;
 }
 
 ion-item:hover { 
-    background-color: #68EFAD !important; 
+    background-color: color($colors,tertiary);
 }
 
 .roboto {

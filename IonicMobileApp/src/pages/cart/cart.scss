@@ -1,24 +1,32 @@
-page-cart {
-
-}
-.Cart .h1{
-    font-size: 2em;
-    color: red;
-}
-
-page-cart {
-
+.gridheader{
+    background-color: color($colors,primary);
+    color: color($colors,light);
+    padding-left: 16px;
+    margin-bottom: 11px; //To push first record below. To keep it consistant with Categories grid size.
 }
 
-.vertical-align-content > *
-{
-     display: flex!important;
-     align-content: center!important;
-     align-items: center!important;
+.gridrows{
+    height:45px;
+    margin-bottom: 11px;
+    padding-left: 16px;
+    border-bottom-color:color($colors,tertiary);
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
 }
 
-.CartGrid{
-    font-family: sans-serif;
-
+.cart_col{
+    padding-top: 10px;
+    font-size: 17px;
 }
+
+.userinput{
+    color: color($colors,light);
+    border-radius: 10px;
+    background-color: color($colors,secondary);
+    width: 100px;
+    height: 30px;
+}
+
+
+
 

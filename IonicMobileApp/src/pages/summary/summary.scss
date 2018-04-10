@@ -1,3 +1,39 @@
+
+.summary{
+    background-color: color($colors,secondary);
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.summarylabels{
+    color: color($colors,light);
+}
+
+.divider{
+    border-bottom-width: 2px;
+    border-bottom-color: color($colors,primary);
+    border-bottom-style: dashed;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.userinputs1{
+    font-size: 25px;
+    background-color: color($colors,tertiary);
+    border-radius: 10px;
+    margin: 5px;
+}
+
+.userinputs2{
+    font-size: 25px;
+    background-color: color($colors,tertiary);
+    border-radius: 10px;
+    margin: 5px;
+}
+
+
+
+/*
 page-summary {
 
 }
@@ -48,11 +84,11 @@ page-summary {
         margin-bottom: 10px;  
         text-align: center;  
         vertical-align: middle;  
-		justify-content: center; /* align horizontal */
-		align-items: center; /* align vertical */
+		justify-content: center; 
+		align-items: center; 
 		
 		background-color: #abcdef;
 		}
 
-}
+}*/
 
