@@ -1,19 +1,12 @@
-page-categories {
-
-}
-
-.vertical-align-content > *
-{
-     display: flex!important;
-     align-content: center!important;
-     align-items: center!important;
-}
-
 .CategoryGrid{
     font-family: sans-serif;
-
+    padding: 0px;
 }
 
 ion-item:hover { 
-    background-color: #d6ebf8 !important; 
+    background-color: #68EFAD !important; 
+}
+
+.roboto {
+    font-family: 'Roboto', sans-serif !important;
 }
