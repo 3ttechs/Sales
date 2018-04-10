@@ -1,3 +1,8 @@
+'''
+Compilation Steps: 
+pyinstaller main.py
+'''
+
 import sqlite3
 from flask import Flask, request,json,send_from_directory,Response,render_template,send_file
 import logging, os, subprocess
@@ -12,7 +17,6 @@ wkhtmltopdf= 'C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'
 acrobat_reader= 'C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32.exe'
 
 config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf)
-
 
 app = Flask(__name__)
 

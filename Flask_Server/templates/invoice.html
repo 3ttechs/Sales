@@ -151,7 +151,6 @@
                 <td align = 'center'>Description</td>
                 <td width="100px" align = 'center'>Qty</td>
                 <td width="100px" align = 'center'>Rate</td>
-                <td width="100px" align = 'center'>Discount</td>
                 <td width="100px" align = 'center'>Vat</td>
                 <td width="100px" align = 'center'>Amount</td>
             </tr>
@@ -163,14 +162,12 @@
                 <td style="text-align:left;">{{ invoice_items[i]['product_name'] }}</td>
                 <td>{{ invoice_items[i]['quantity'] }}</td>
                 <td>{{ invoice_items[i]['product_price'] }}</td>
-                <td>{{ invoice_items[i]['discount'] }}</td>
                 <td>{{ invoice_items[i]['vat'] }}</td>
                 <td>{{ invoice_items[i]['amount'] }}</td>
             </tr>
                 {% endfor %}
 
             <tr class="item">
-                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -183,11 +180,9 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td></td>
                 <td>VAT</td>
                 <td>Dhs {{ invoice_header["vat"] }}</td>
             <tr class="item">
-                <td></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -196,7 +191,7 @@
                 <td>Dhs {{ invoice_header["discount"] }}</td>
             </tr>
             <tr class="item">
-                <td colspan = '5'>Total : {{total_string}}</td>
+                <td colspan = '4'>Total : {{total_string}}</td>
                 <td style="text-align:left;">Total</td>
                 <td><B>Dhs {{ invoice_header["total"] }}</B></td>
             </tr>
