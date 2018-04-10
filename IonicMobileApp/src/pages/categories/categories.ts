@@ -45,11 +45,15 @@ export class CategoriesPage {
   }
 
   //if non selected, disable the add to cart button
-  noneSelected(){
-    if(this.selectedItem == null)
-      return true;
+  noneSelected(item){
+    if(this.selectedItem != null){
+      if(this.selectedItem.code == item.code)
+        return false;
+      else
+        return true;
+    }
     else
-      return false;
+      return true;
   }
 
   itemSelected($event, item){
