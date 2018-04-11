@@ -9,7 +9,7 @@
 //$searchbar-ios-input-search-icon-color:   purple;
 
 .gridheader{
-    background-color: color($colors,primary);
+    background-color: color($colors,secondary);
     color: color($colors,light);
     padding-left: 16px;
 }
@@ -25,4 +25,8 @@ ion-item:hover {
 
 .roboto {
     font-family: 'Roboto', sans-serif !important;
+}
+
+.button-inner{
+    font-family: "Roboto" !important;
 }

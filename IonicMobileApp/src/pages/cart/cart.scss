@@ -1,5 +1,5 @@
-.gridheader{
-    background-color: color($colors,primary);
+.gridheadercart{
+    background-color: color($colors,secondary);
     color: color($colors,light);
     padding-left: 16px;
     margin-bottom: 11px; //To push first record below. To keep it consistant with Categories grid size.
@@ -9,8 +9,8 @@
     height:45px;
     margin-bottom: 11px;
     padding-left: 16px;
-    border-bottom-color:color($colors,tertiary);
-    border-bottom-width: 1px;
+    border-bottom-color:color($colors,lightgry);
+    border-bottom-width: 0.1px;
     border-bottom-style: solid;
 }
 
@@ -20,13 +20,16 @@
 }
 
 .userinput{
-    color: color($colors,light);
+    color: color($colors,primary);
     border-radius: 10px;
-    background-color: color($colors,secondary);
+    background-color: color($colors,lightgry);
     width: 100px;
     height: 30px;
 }
 
+.button-inner{
+    font-family: "Roboto" !important;
+}
 
 
 

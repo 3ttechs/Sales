@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar></ion-navbar>
-  <ion-toolbar color="secondary">
+  <ion-toolbar color="light">
     <ion-grid>
       <ion-row>
         <ion-col>
@@ -44,7 +44,7 @@
                   <ion-col class="categories_col">{{item.code}}</ion-col>
                   <ion-col class="categories_col">{{item.name}}</ion-col>
                   <ion-col class="categories_col">{{item.price}}</ion-col>
-                  <ion-col><button color="primary" style="font-size:70%;" ion-button round (click)="AddToCartPopUp()" [hidden]="noneSelected(item)"><ion-icon name="basket"> Add to Cart</ion-icon></button></ion-col>
+                  <ion-col><button color="mygreen" style="font-size:75%;" ion-button round (click)="AddToCartPopUp()" [hidden]="noneSelected(item)">Add to Cart</button></ion-col>
                 </ion-row>
               </ion-grid> 
             </ion-item>

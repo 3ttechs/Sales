@@ -1,3 +1,6 @@
+.pagebackground{
+    background-color: color($colors,secondary);
+}
 
 .summary{
     background-color: color($colors,secondary);
@@ -24,13 +27,8 @@
     margin: 5px;
 }
 
-.userinputs2{
-    font-size: 25px;
-    background-color: color($colors,tertiary);
-    border-radius: 10px;
-    margin: 5px;
-}
-
+//.searchbar-ios .searchbar-input::-webkit-input-placeholder { color: rgb(68, 68, 71) !important}
+//.searchbar-md .searchbar-input::-webkit-input-placeholder { color: rgb(68, 68, 71) !important}
 
 
 /*
