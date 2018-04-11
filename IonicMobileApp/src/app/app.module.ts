@@ -5,7 +5,6 @@ import { MyApp } from './app.component';
 import { HttpModule } from '@angular/http';
 import { IonicStorageModule } from '@ionic/storage';
 import { LoginPage } from '../pages/login/login';
-import { AddProductPage } from '../pages/add-product/add-product';
 import { SummaryPage } from '../pages/summary/summary';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -16,17 +15,18 @@ import { CategoriesPage } from '../pages/categories/categories';
 import { ProductsPage } from '../pages/products/products';
 import { ShoppingCartProvider } from '../providers/shopping-cart/shopping-cart';
 import { CartPage } from '../pages/cart/cart';
+import { AboutPage } from '../pages/about/about';
 
 @NgModule({
   declarations: [
     MyApp,
     LoginPage,
     ProductHomePage,
-    AddProductPage,
     CategoriesPage,
     ProductsPage,
     SummaryPage,
-    CartPage
+    CartPage,
+    AboutPage
   ],
   imports: [
     BrowserModule,
@@ -40,11 +40,11 @@ import { CartPage } from '../pages/cart/cart';
     MyApp,
     LoginPage,
     ProductHomePage,
-    AddProductPage,
     CategoriesPage,
     ProductsPage,
     SummaryPage,
-    CartPage
+    CartPage,
+    AboutPage
   ],
   providers: [
     StatusBar,

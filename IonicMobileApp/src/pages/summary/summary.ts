@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController, LoadingController } from 'ionic-angular';
 import { ShoppingCartProvider } from '../../providers/shopping-cart/shopping-cart';
 import { WebServicesProvider } from '../../providers/web-services/web-services';
-import { CategoriesPage } from '../categories/categories';
 
 @IonicPage()
 @Component({
@@ -15,10 +14,6 @@ export class SummaryPage {
   private shoppingList: any;
 
   private summaryPageObject = {subTotal:0,VAT:0,Discount:0,Total:0};
-  //private subTotal: number=0;
-  //private VAT: number=0;
-  //private discount: number=0;
-  //private total: number=0;
   private customerName: string='';
   private customerPhone: string='';
   private customerVatNo: string='';
