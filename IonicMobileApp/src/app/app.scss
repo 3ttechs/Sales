@@ -21,6 +21,9 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
+.pagebackground{
+    background-color: color($colors, tertiary);
+}
 
 //Common custom CSS applied at global level.
 ion-navbar{
@@ -47,4 +50,13 @@ ion-navbar{
 .ion-icon{
     font-family: "Roboto" !important;
     font-size: 10px;
+}
+
+.buttonStyleShadow{
+    font-size:75% !important;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.buttonShadow{
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 }

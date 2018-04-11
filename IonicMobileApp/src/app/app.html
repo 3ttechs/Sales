@@ -3,7 +3,7 @@
         <ion-toolbar color="primary"><ion-title>Menu</ion-title></ion-toolbar>
     </ion-header>
 
-    <ion-content style="background-color:rgb(209, 180, 228);">
+    <ion-content class="pagebackground">
         <ion-list>
             <button color="secondary" menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
                 {{p.title}}

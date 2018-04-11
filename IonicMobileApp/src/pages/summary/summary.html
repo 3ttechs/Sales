@@ -44,7 +44,7 @@
           </ion-row>
           <ion-row>
             <ion-col class="summarylabels"><h1>Total (Dhs) : {{(this.summaryPageObject.subTotal - this.summaryPageObject.Discount).toFixed(3)}}</h1></ion-col>
-            <ion-col><button ion-button style="font-size:170%;"  color="primary" block (click)="PlaceOrder()" [hidden]="noneSelected()">Place Order</button></ion-col>
+            <ion-col><button ion-button class="buttonShadow" color="primary" block (click)="PlaceOrder()" [hidden]="noneSelected()">Place Order</button></ion-col>
           </ion-row>
         </ion-grid>
       </ion-col>

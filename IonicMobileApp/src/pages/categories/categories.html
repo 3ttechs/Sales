@@ -44,7 +44,7 @@
                   <ion-col class="categories_col">{{item.code}}</ion-col>
                   <ion-col class="categories_col">{{item.name}}</ion-col>
                   <ion-col class="categories_col">{{item.price}}</ion-col>
-                  <ion-col><button color="mygreen" style="font-size:75%;" ion-button round (click)="AddToCartPopUp()" [hidden]="noneSelected(item)">Add to Cart</button></ion-col>
+                  <ion-col><button color="mygreen" class="buttonStyleShadow" ion-button strong round (click)="AddToCartPopUp()" [hidden]="noneSelected(item)">Add to Cart</button></ion-col>
                 </ion-row>
               </ion-grid> 
             </ion-item>
