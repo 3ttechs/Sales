@@ -1,6 +1,6 @@
 import sqlite3
 
-dbfile ='SmartShop.db'
+dbfile ='SmartShop_latest.db'
 
 def run_select_query(query):
     #print ("Select Query : "+query)

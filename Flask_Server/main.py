@@ -588,6 +588,25 @@ def admin_login():
     count = result[0]['count']
     return str(count), 200
 
+#http://localhost:5000/store/details/login="Abdul"
+@app.route('/store/details/login=<login>', methods=['GET'])
+def store_details(login):
+    query = 'select inv_stores.storeid, inv_stores.storename, inv_stores.addressone,inv_stores.addresstwo, inv_stores.city, inv_stores.zip, inv_stores.phone from inv_stores, user_store_map, sales_person_master where sales_person_master.login = ' +login + ' and sales_person_master.id = user_store_map.userid and inv_stores.storeid = user_store_map.storeid; '
+    print(query)
+    json_output = json.dumps(run_query(query))
+    return json_output, 200
+
+
+
+#http://localhost:5000/product/full_all_new/storename='SharjaStore'
+@app.route('/product/full_all_new/storename=<storename>', methods=['GET'])
+def full_available_all(storename):
+    query = 'select pm.id,pm.code,pm.barcode,pm.name,pm.category,pm.brand,pm.product_type,pm.coo,pm.price,ifnull(A.GRN_QTY,0)+ifnull(E.RET_QTY,0)+ifnull(C.TRF_IN_QTY,0)-ifnull(B.TRF_OUT_QTY,0)-ifnull(D.INV_QTY,0) BAL_QTY from product_master pm left join ( select sku,sum(qtyreceived) GRN_QTY from receipt_header rh,receipt_details rd where rh.receiptkey=rd.receiptkey and rh.storename="SharjaStore" and rh.status=1 group by sku ) A on pm.code=A.sku LEFT JOIN ( select sku,sum(quantity) TRF_OUT_QTY from transfer_header th,transfer_details td where th.documentno=td.documentno and th.transferfrom="SharjaStore" group by sku ) B on pm.code=B.sku LEFT JOIN ( select sku,sum(quantity) TRF_IN_QTY from transfer_header th,transfer_details td where th.documentno=td.documentno and th.transferto="SharjaStore" group by sku ) C  on pm.code=C.sku LEFT JOIN ( select product_code,sum(quantity)  INV_QTY from invoice inv , items it where inv.id = it.invoice_no and inv.storename="SharjaStore" group by product_code) D  on pm.code=D.product_code LEFT JOIN ( select sku,sum(quantity) RET_QTY from returned_items where storename= '+ storename +' group by sku) E  on pm.code=E.sku; '
+    json_output = json.dumps(run_query(query))
+    return json_output, 200
+
+
+
 @app.route('/')
 def home():
     return('Smart Shopper Application')
