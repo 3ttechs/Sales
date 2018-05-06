@@ -31,6 +31,12 @@ export class WebServicesProvider {
     });
   }
 
+  getLoggedinUserDetails(user){
+    return new Promise(resolve => {
+      this.http.get(apiUrl + '/store/details/login=' + '"'  + user + '"').subscribe(res => resolve(res.json())) 
+    })
+  }
+
   getAllProducts() {
     return new Promise(resolve => {
       this.http.get(apiUrl + '/product/full_all').subscribe(res => resolve(res.json()))

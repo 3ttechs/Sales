@@ -677,5 +677,5 @@ if __name__ == '__main__':
         if(prop=='wkhtmltopdf'): wkhtmltopdf =props[prop]
         if(prop=='acrobat_reader'): acrobat_reader =props[prop]
 
-    app.run(host=host, port=port)
-    #app.run(host='192.168.0.3', port=5000)
+    #app.run(host=host, port=port)
+    app.run(host='localhost', port=5000)

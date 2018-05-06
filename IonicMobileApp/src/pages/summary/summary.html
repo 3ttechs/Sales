@@ -19,14 +19,27 @@
               <ion-select style="padding-left:0px;" [(ngModel)]="paymentMode">
                 <ion-option value="1" selected="true">Cash</ion-option>
                 <ion-option value="2">Card</ion-option>
+                <ion-option value="3">Bank</ion-option>
               </ion-select>
             </ion-col>
           </ion-row>
           <ion-row>
-            <ion-col class="summarylabels"><h3>VAT (Dhs)</h3></ion-col>
-            <ion-col class="summarylabels"><h3>{{this.summaryPageObject.VAT.toFixed(3)}}</h3></ion-col>
+            <ion-col class="summarylabels"><h3>Tax Option</h3></ion-col>
+            <ion-col class="userinputs1">
+              <ion-select style="padding-left:0px;" [(ngModel)]="paymentMode">
+                <ion-option value="1" selected="true">Non taxable</ion-option>
+                <ion-option value="2">Taxable - VAT Inclusive</ion-option>
+                <ion-option value="3">Taxable - 5% Extra VAT</ion-option>
+              </ion-select>
+            </ion-col>
             <ion-col class="summarylabels"><h3>Discount (Dhs)</h3></ion-col>
             <ion-col class="userinputs1"><ion-input style="width:100%;" id="rounded2" class="values"  type="number" [(ngModel)]="this.summaryPageObject.Discount" placeholder="{{discount}}"></ion-input></ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col class="summarylabels"><h3>VAT (Dhs)</h3></ion-col>
+            <ion-col class="summarylabels"><h3>{{this.summaryPageObject.VAT.toFixed(3)}}</h3></ion-col>
+            <ion-col class="summarylabels"></ion-col>
+            <ion-col class="summarylabels"></ion-col>
           </ion-row>
           <ion-row>
             <ion-col class="divider"></ion-col>

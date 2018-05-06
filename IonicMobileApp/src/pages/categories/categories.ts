@@ -13,7 +13,7 @@ export class CategoriesPage {
   loading: any;
   public products: any;
   public filteredProducts: any;
-  private filterValues = {category:'',brand:'',pcode:'',pname:''};
+  private filterValues = {category:'',brand:'',pcode:'',barcode:'',pname:''};
   private selectedItem: any;
 
   constructor(public app: App, 
@@ -87,6 +87,15 @@ export class CategoriesPage {
     this.filterItems();
   }
 
+  filterByProductBarcode(event){
+    // set val to the value of the searchbar
+    let val = event.target.value==null?'':event.target.value;
+    //Updating new value to the filterValues
+    this.filterValues.barcode = val;
+    //Call common method to filter the list
+    this.filterItems();
+  }
+
   filterByProductDescription(event){
     // set val to the value of the searchbar
     let val = event.target.value==null?'':event.target.value;
@@ -102,6 +111,7 @@ export class CategoriesPage {
         item.category.toLowerCase().indexOf(this.filterValues.category.toLowerCase()) > -1 &&
         item.brand.toLowerCase().indexOf(this.filterValues.brand.toLowerCase()) > -1 &&
         item.code.toLowerCase().indexOf(this.filterValues.pcode.toLowerCase()) > -1 &&
+        item.code.toLowerCase().indexOf(this.filterValues.barcode.toLowerCase()) > -1 &&
         item.name.toLowerCase().indexOf(this.filterValues.pname.toLowerCase()) > -1
       );
     })

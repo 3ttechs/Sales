@@ -15,6 +15,9 @@
       </ion-row>
       <ion-row>
         <ion-col>
+          <ion-searchbar placeholder="Barcode" (ionInput)="filterByProductBarcode($event)"></ion-searchbar>
+        </ion-col>
+        <ion-col>
           <ion-searchbar placeholder="Description" (ionInput)="filterByProductDescription($event)"></ion-searchbar>
         </ion-col>
       </ion-row>
@@ -28,8 +31,10 @@
       <ion-col><h4>Category</h4></ion-col>
       <ion-col><h4>Brand</h4></ion-col>
       <ion-col><h4>Code</h4></ion-col>
+      <ion-col><h4>Barcode</h4></ion-col>
       <ion-col><h4>Description</h4></ion-col>
       <ion-col><h4>Price (Dhs)</h4></ion-col>
+      <ion-col><h4>Available</h4></ion-col>
       <ion-col></ion-col>
     </ion-row>
     <ion-row >
@@ -42,8 +47,10 @@
                   <ion-col class="categories_col">{{item.category}}</ion-col>
                   <ion-col class="categories_col">{{item.brand}}</ion-col>
                   <ion-col class="categories_col">{{item.code}}</ion-col>
+                  <ion-col class="categories_col">{{item.barcode}}</ion-col>
                   <ion-col class="categories_col">{{item.name}}</ion-col>
                   <ion-col class="categories_col">{{item.price}}</ion-col>
+                  <ion-col class="categories_col">{{item.available}}</ion-col>
                   <ion-col><button color="mygreen" class="buttonStyleShadow" ion-button strong round (click)="AddToCartPopUp()" [hidden]="noneSelected(item)">Add to Cart</button></ion-col>
                 </ion-row>
               </ion-grid> 

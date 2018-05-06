@@ -31,6 +31,7 @@ export class LoginPage {
       if(result ===1){
         localStorage.setItem('token', this.data);
         localStorage.setItem('user',this.loginData.login);
+        this.getLoggedinUserDetails(this.loginData.login);
         this.navCtrl.setRoot(ProductHomePage);
       }
       else{
@@ -39,6 +40,13 @@ export class LoginPage {
     }, (err) => {
       this.loading.dismiss();
       this.presentToast(err);
+    });
+  }
+
+  getLoggedinUserDetails(user){
+    this.webService.getLoggedinUserDetails(user).then((result) => {
+      localStorage.setItem('store',result[0].storename);
+      console.log(result[0].storename);
     });
   }
 
