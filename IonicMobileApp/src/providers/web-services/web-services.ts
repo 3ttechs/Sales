@@ -37,9 +37,9 @@ export class WebServicesProvider {
     })
   }
 
-  getAllProducts() {
+  getAllProducts(storename) {
     return new Promise(resolve => {
-      this.http.get(apiUrl + '/product/full_all').subscribe(res => resolve(res.json()))
+      this.http.get(apiUrl + '/product/full_all_new/storename=' + '"'  + storename + '"').subscribe(res => resolve(res.json()))
     })
   }
 

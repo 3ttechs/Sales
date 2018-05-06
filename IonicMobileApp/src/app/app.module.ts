@@ -12,7 +12,6 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { ProductHomePage } from '../pages/product-home/product-home';
 import { WebServicesProvider } from '../providers/web-services/web-services';
 import { CategoriesPage } from '../pages/categories/categories';
-import { ProductsPage } from '../pages/products/products';
 import { ShoppingCartProvider } from '../providers/shopping-cart/shopping-cart';
 import { CartPage } from '../pages/cart/cart';
 import { AboutPage } from '../pages/about/about';
@@ -23,7 +22,6 @@ import { AboutPage } from '../pages/about/about';
     LoginPage,
     ProductHomePage,
     CategoriesPage,
-    ProductsPage,
     SummaryPage,
     CartPage,
     AboutPage
@@ -41,7 +39,6 @@ import { AboutPage } from '../pages/about/about';
     LoginPage,
     ProductHomePage,
     CategoriesPage,
-    ProductsPage,
     SummaryPage,
     CartPage,
     AboutPage

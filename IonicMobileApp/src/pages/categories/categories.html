@@ -50,7 +50,7 @@
                   <ion-col class="categories_col">{{item.barcode}}</ion-col>
                   <ion-col class="categories_col">{{item.name}}</ion-col>
                   <ion-col class="categories_col">{{item.price}}</ion-col>
-                  <ion-col class="categories_col">{{item.available}}</ion-col>
+                  <ion-col class="categories_col">{{item.BAL_QTY}}</ion-col>
                   <ion-col><button color="mygreen" class="buttonStyleShadow" ion-button strong round (click)="AddToCartPopUp()" [hidden]="noneSelected(item)">Add to Cart</button></ion-col>
                 </ion-row>
               </ion-grid> 
@@ -61,62 +61,3 @@
     </ion-row>
   </ion-grid>
 </ion-content>
-
-<!--<ion-header>
-  <ion-navbar></ion-navbar>
-  <ion-toolbar color="secondary">
-    <ion-grid>
-      <ion-row>
-        <ion-col>
-          <ion-searchbar placeholder="Category" (ionInput)="filterByCategory($event)"></ion-searchbar>
-        </ion-col>
-        <ion-col>
-          <ion-searchbar placeholder="Brand" (ionInput)="filterByBrand($event)"></ion-searchbar>
-        </ion-col>
-        <ion-col>
-          <ion-searchbar placeholder="Code" (ionInput)="filterByProductCode($event)"></ion-searchbar>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col>
-          <ion-searchbar placeholder="Description" (ionInput)="filterByProductDescription($event)"></ion-searchbar>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content class="roboto">
-  <ion-grid class="CategoryGrid">
-    <ion-row style="color: white;background-color: #dc88ec">
-      <ion-col><h6><B>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Category</B></h6></ion-col>
-      <ion-col><h6><B>&nbsp;&nbsp;&nbsp;&nbsp;Brand</B></h6></ion-col>
-      <ion-col><h6><B>Code</B></h6></ion-col>
-      <ion-col><h6><B>Description</B></h6></ion-col>
-      <ion-col><h6><B>Price (Dhs)</B></h6></ion-col>
-      <ion-col></ion-col>
-    </ion-row>
-    <ion-row >
-      <ion-col style="padding:0px;">
-        <ion-scroll style="width:100%;height:400px" scrollY="true">
-          <ion-list scroll="true">
-            <ion-item *ngFor="let item of filteredProducts" (click)="itemSelected($event,item)">
-              <ion-grid>
-                <ion-row style="font-size: 15px;font-family: Helvetica;">
-                  <ion-col>{{item.category}}</ion-col>
-                  <ion-col>{{item.brand}}</ion-col>
-                  <ion-col>{{item.code}}</ion-col>
-                  <ion-col>&nbsp;&nbsp;&nbsp;{{item.name}}</ion-col>
-                  <ion-col >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{item.price}}</ion-col>
-                  <ion-col><button color="danger" ion-button round (click)="AddToCartPopUp()" [hidden]="noneSelected(item)"><ion-icon name="add"></ion-icon></button></ion-col>
-                </ion-row>
-              </ion-grid> 
-            </ion-item>
-          </ion-list>
-        </ion-scroll> 
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content>
--->
-  
