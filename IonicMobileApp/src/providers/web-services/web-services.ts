@@ -31,9 +31,15 @@ export class WebServicesProvider {
     });
   }
 
-  getAllProducts() {
+  getLoggedinUserDetails(user){
     return new Promise(resolve => {
-      this.http.get(apiUrl + '/product/full_all').subscribe(res => resolve(res.json()))
+      this.http.get(apiUrl + '/store/details/login=' + '"'  + user + '"').subscribe(res => resolve(res.json())) 
+    })
+  }
+
+  getAllProducts(storename) {
+    return new Promise(resolve => {
+      this.http.get(apiUrl + '/product/full_all_new/storename=' + '"'  + storename + '"').subscribe(res => resolve(res.json()))
     })
   }
 

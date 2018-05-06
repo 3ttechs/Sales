@@ -13,7 +13,7 @@ export class SummaryPage {
   loading: any;
   private shoppingList: any;
 
-  private summaryPageObject = {subTotal:0,VAT:0,Discount:0,Total:0};
+  private summaryPageObject = {subTotal:0,VAT:0,Discount:0,Total:0,TaxOption:3};
   private customerName: string='';
   private customerPhone: string='';
   private customerVatNo: string='';
@@ -82,32 +82,39 @@ export class SummaryPage {
         this.summaryPageObject.VAT = 0;
         this.summarySubItem = [];
 		
-
         this.shoppingList.forEach(element => {
           this.summaryPageObject.subTotal += Number(element.amount);
           this.summaryPageObject.VAT += Number(element.Vat);
-          this.summarySubItem.push({
-            id: element.id,
-            product_code: element.code,
-            product_category: element.category,
-            product_name: element.name,
-            product_name_arabic: element.name,
-            product_brand: element.brand,
-            product_type: element.product_type,
-            product_coo: element.coo,
-            product_price: element.price,
-            quantity: Number(element.qty),
-            vat: Number(Number(element.price) * Number(element.qty) * 0.05),
-            discount: Number(element.discount),
-            amount: Number(element.amount)});
         });
-
-        this.summaryItem.items = this.summarySubItem;
-
       }).catch(err=>console.log(err));
 
       this.loading.dismiss();
     });
+  }
+
+  addSubItems(){
+    this.summarySubItem = [];
+    var itemLevelVat = 0;
+		
+    this.shoppingList.forEach(element => {
+      itemLevelVat = this.summaryPageObject.TaxOption==1?0:Number(Number(element.price) * Number(element.qty) * 0.05);
+      this.summarySubItem.push({
+        id: element.id,
+        product_code: element.code,
+        product_category: element.category,
+        product_name: element.name,
+        product_name_arabic: element.name,
+        product_brand: element.brand,
+        product_type: element.product_type,
+        product_coo: element.coo,
+        product_price: element.price,
+        quantity: Number(element.qty),
+        vat: itemLevelVat,
+        discount: Number(element.discount),
+        amount: this.summaryPageObject.TaxOption==2?Number(element.amount -itemLevelVat):Number(element.amount)});
+    });
+
+    this.summaryItem.items = this.summarySubItem;
   }
 
   PlaceOrder(){
@@ -120,14 +127,16 @@ export class SummaryPage {
       this.summaryItem.invoice.customer_name = this.customerName;
       this.summaryItem.invoice.customer_phone = this.customerPhone;
       this.summaryItem.invoice.customer_vat_no = this.customerVatNo;
-      this.summaryItem.invoice.sub_total = Number(this.summaryPageObject.subTotal);
-      this.summaryItem.invoice.vat = Number(this.summaryPageObject.VAT);
+      this.summaryItem.invoice.sub_total = this.summaryPageObject.TaxOption==2?Number(this.summaryPageObject.subTotal-this.summaryPageObject.VAT):Number(this.summaryPageObject.subTotal);
+      this.summaryItem.invoice.vat = this.summaryPageObject.TaxOption==1?0:Number(this.summaryPageObject.VAT);
       this.summaryItem.invoice.discount = Number(this.summaryPageObject.Discount);
-      this.summaryItem.invoice.total = Number(Number(this.summaryPageObject.subTotal) - Number(this.summaryPageObject.Discount));
-	  console.log(this.summaryItem.invoice.total);
+      this.summaryItem.invoice.total = this.summaryPageObject.TaxOption==3?Number(this.summaryPageObject.subTotal + this.summaryPageObject.VAT - this.summaryPageObject.Discount):Number(this.summaryPageObject.subTotal - this.summaryPageObject.Discount);
       this.summaryItem.invoice.notes = this.customerNotes;
       this.summaryItem.invoice.payment_mode = Number(this.paymentMode);
 
+      this.addSubItems();
+
+      console.log(this.summaryItem);
       this.webService.placeOrder(this.summaryItem).then(result => {
         this.invoiceNumber = String(result);
 
@@ -144,9 +153,6 @@ export class SummaryPage {
 
         this.navCtrl.parent.select(0);
       }).catch(err=>{console.log(err); this.loading.dismiss();});
-
-      //to be removed
-      this.shoppingCart.clearCart();
 
     });
   }

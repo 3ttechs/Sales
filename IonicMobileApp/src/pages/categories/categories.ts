@@ -13,8 +13,9 @@ export class CategoriesPage {
   loading: any;
   public products: any;
   public filteredProducts: any;
-  private filterValues = {category:'',brand:'',pcode:'',pname:''};
+  private filterValues = {category:'',brand:'',pcode:'',barcode:'',pname:''};
   private selectedItem: any;
+  private storeName = '';
 
   constructor(public app: App, 
     public navCtrl: NavController, 
@@ -25,6 +26,7 @@ export class CategoriesPage {
   }
 
   ionViewDidLoad() {
+    this.storeName = localStorage.getItem("store");
     if(localStorage.getItem("token")) {
       this.doFetchAllProducts();
     }
@@ -36,9 +38,10 @@ export class CategoriesPage {
     });
 
     this.loading.present().then(()=>{
-      this.webService.getAllProducts().then(result => {
+      this.webService.getAllProducts(this.storeName).then(result => {
         this.products = result;
         this.filteredProducts = result;
+        console.log(result);
         this.loading.dismiss();
       });
     });
@@ -87,6 +90,15 @@ export class CategoriesPage {
     this.filterItems();
   }
 
+  filterByProductBarcode(event){
+    // set val to the value of the searchbar
+    let val = event.target.value==null?'':event.target.value;
+    //Updating new value to the filterValues
+    this.filterValues.barcode = val;
+    //Call common method to filter the list
+    this.filterItems();
+  }
+
   filterByProductDescription(event){
     // set val to the value of the searchbar
     let val = event.target.value==null?'':event.target.value;
@@ -102,6 +114,7 @@ export class CategoriesPage {
         item.category.toLowerCase().indexOf(this.filterValues.category.toLowerCase()) > -1 &&
         item.brand.toLowerCase().indexOf(this.filterValues.brand.toLowerCase()) > -1 &&
         item.code.toLowerCase().indexOf(this.filterValues.pcode.toLowerCase()) > -1 &&
+        item.code.toLowerCase().indexOf(this.filterValues.barcode.toLowerCase()) > -1 &&
         item.name.toLowerCase().indexOf(this.filterValues.pname.toLowerCase()) > -1
       );
     })
@@ -148,7 +161,7 @@ export class CategoriesPage {
 
   addItemToCart(){
     this.selectedItem.Vat = String((Number(this.selectedItem.price) * Number(this.selectedItem.qty)) * 0.05);
-    this.selectedItem.amount = String((Number(this.selectedItem.price) * Number(this.selectedItem.qty)) + Number(this.selectedItem.Vat) - Number(this.selectedItem.discount));
+    this.selectedItem.amount = String(Number(this.selectedItem.price) * Number(this.selectedItem.qty));
 
     this.loading = this.loadingCtrl.create({
       content: 'Adding item...'

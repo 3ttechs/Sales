@@ -13,20 +13,33 @@
         <ion-grid>
           <ion-row>
             <ion-col class="summarylabels"><h3>Sub Total (Dhs)</h3></ion-col>
-            <ion-col class="summarylabels"><h3>{{this.summaryPageObject.subTotal.toFixed(3)}}</h3></ion-col>
+            <ion-col class="summarylabels"><h3>{{this.summaryPageObject.TaxOption==2?(this.summaryPageObject.subTotal-this.summaryPageObject.VAT).toFixed(3):this.summaryPageObject.subTotal.toFixed(3)}}</h3></ion-col>
             <ion-col class="summarylabels"><h3>Payment Mode</h3></ion-col>
             <ion-col class="userinputs1">
               <ion-select style="padding-left:0px;" [(ngModel)]="paymentMode">
                 <ion-option value="1" selected="true">Cash</ion-option>
                 <ion-option value="2">Card</ion-option>
+                <ion-option value="3">Bank</ion-option>
               </ion-select>
             </ion-col>
           </ion-row>
           <ion-row>
-            <ion-col class="summarylabels"><h3>VAT (Dhs)</h3></ion-col>
-            <ion-col class="summarylabels"><h3>{{this.summaryPageObject.VAT.toFixed(3)}}</h3></ion-col>
+            <ion-col class="summarylabels"><h3>Tax Option</h3></ion-col>
+            <ion-col class="userinputs1">
+              <ion-select style="padding-left:0px;" [(ngModel)]="this.summaryPageObject.TaxOption">
+                <ion-option value="1">Non taxable</ion-option>
+                <ion-option value="2">Taxable - VAT Inclusive</ion-option>
+                <ion-option value="3" selected="true">Taxable - 5% Extra VAT</ion-option>
+              </ion-select>
+            </ion-col>
             <ion-col class="summarylabels"><h3>Discount (Dhs)</h3></ion-col>
             <ion-col class="userinputs1"><ion-input style="width:100%;" id="rounded2" class="values"  type="number" [(ngModel)]="this.summaryPageObject.Discount" placeholder="{{discount}}"></ion-input></ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col class="summarylabels"><h3>VAT (Dhs)</h3></ion-col>
+            <ion-col class="summarylabels"><h3>{{this.summaryPageObject.TaxOption==1?0:this.summaryPageObject.VAT.toFixed(3)}}</h3></ion-col>
+            <ion-col class="summarylabels"></ion-col>
+            <ion-col class="summarylabels"></ion-col>
           </ion-row>
           <ion-row>
             <ion-col class="divider"></ion-col>
@@ -43,7 +56,7 @@
             <ion-col class="divider"></ion-col>
           </ion-row>
           <ion-row>
-            <ion-col class="summarylabels"><h1>Total (Dhs) : {{(this.summaryPageObject.subTotal - this.summaryPageObject.Discount).toFixed(3)}}</h1></ion-col>
+            <ion-col class="summarylabels"><h1>Total (Dhs) : {{this.summaryPageObject.TaxOption==3?(this.summaryPageObject.subTotal + this.summaryPageObject.VAT - this.summaryPageObject.Discount).toFixed(3):(this.summaryPageObject.subTotal - this.summaryPageObject.Discount).toFixed(3)}}</h1></ion-col>
             <ion-col><button ion-button class="buttonShadow" color="primary" block (click)="PlaceOrder()" [hidden]="noneSelected()">Place Order</button></ion-col>
           </ion-row>
         </ion-grid>
@@ -52,71 +65,3 @@
     </ion-row>
   </ion-grid>
 </ion-content>
-
-<!--
-<ion-content class="primary">
-  <ion-grid class="summaryPage">
-  
-  
-    <ion-row>
-	      <ion-col col-1><ion-label class="labels" color="primary"></ion-label></ion-col>	
-
-      <ion-col col-2><ion-label class="labels" color="primary" >Sub Total (Dhs)</ion-label></ion-col> 
-      <ion-col col-3><ion-label class="labels" color="primary" fixed>{{this.summaryPageObject.subTotal.toFixed(3)}}</ion-label></ion-col>
-
-      <ion-col col-2><ion-label class="labels" color="primary">Payment Mode</ion-label></ion-col> 
-	    <ion-col col-2 id="rounded2" class="values" color="primary">
-        <ion-select style="padding-left:0px;" [(ngModel)]="paymentMode">
-          <ion-option value="1" selected="true">Cash</ion-option>
-          <ion-option value="2">Card</ion-option>
-        </ion-select>
-      </ion-col>
-
-    </ion-row>
-    <ion-row>
-      <ion-col col-1><ion-label class="labels" color="primary"></ion-label></ion-col>	
-      <ion-col col-2><ion-label class="labels" color="primary" fixed>VAT (Dhs)</ion-label></ion-col> 
-      <ion-col col-3><ion-label class="labels" color="primary" fixed>{{this.summaryPageObject.VAT.toFixed(3)}}</ion-label></ion-col>
-	  
-	        <ion-col col-2><ion-label class="labels" color="primary" >Discount (Dhs) </ion-label></ion-col> 
-      <ion-col col-2><ion-input id="rounded2" class="values"  type="number" [(ngModel)]="this.summaryPageObject.Discount" placeholder="{{discount}}"></ion-input></ion-col>
-
-
-
-    </ion-row>
-
-	
-    <ion-row>
-	
-      <ion-col col-1><ion-label class="labels" color="primary"></ion-label></ion-col>
-      <ion-col col-3><ion-input id="rounded2" class="values" type="text" placeholder="Customer Name" [(ngModel)]="customerName"></ion-input></ion-col>
-      <ion-col col-3><ion-input id="rounded2" class="values" type="text" placeholder="Customer Phone" [(ngModel)]="customerPhone"></ion-input></ion-col>
-      <ion-col col-3><ion-input id="rounded2" class="values" type="text" placeholder="Customer VAT" [(ngModel)] = "customerVatNo"></ion-input></ion-col>
-
-    </ion-row>
-
-	
-	
-    <ion-row>
-	
-      <ion-col col-1><ion-label class="labels" color="primary"></ion-label></ion-col>
-      <ion-col col-9><ion-input id="rounded" class="values" type="text" placeholder="Customer Notes" [(ngModel)] = "customerNotes"></ion-input></ion-col>
-
-    </ion-row>
-
-    <ion-row>
-	      <ion-col col-1><ion-label class="labels" color="primary"></ion-label></ion-col>
-      <ion-col col-3><ion-label   class="labels" color="primary">Total (Dhs)</ion-label></ion-col> 
-      <ion-col col-3><ion-label  style="font-size: 50px;"  color="primary" >{{(this.summaryPageObject.subTotal - this.summaryPageObject.Discount).toFixed(3)}}</ion-label></ion-col>
-	
-
-    </ion-row>
-	
-	
-    <ion-row>
-        <ion-col col-4></ion-col>
-        <ion-col col-4><br/><br/><button ion-button color="primary" block (click)="PlaceOrder()" [hidden]="noneSelected()">Place Order</button></ion-col>
-        <ion-col col-4></ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content>-->
