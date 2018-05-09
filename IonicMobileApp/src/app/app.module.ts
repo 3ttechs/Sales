@@ -15,6 +15,7 @@ import { CategoriesPage } from '../pages/categories/categories';
 import { ShoppingCartProvider } from '../providers/shopping-cart/shopping-cart';
 import { CartPage } from '../pages/cart/cart';
 import { AboutPage } from '../pages/about/about';
+import { SettingsPage } from '../pages/settings/settings';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { AboutPage } from '../pages/about/about';
     CategoriesPage,
     SummaryPage,
     CartPage,
-    AboutPage
+    AboutPage,
+    SettingsPage
   ],
   imports: [
     BrowserModule,
@@ -41,7 +43,8 @@ import { AboutPage } from '../pages/about/about';
     CategoriesPage,
     SummaryPage,
     CartPage,
-    AboutPage
+    AboutPage,
+    SettingsPage
   ],
   providers: [
     StatusBar,

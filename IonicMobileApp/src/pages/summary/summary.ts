@@ -97,7 +97,7 @@ export class SummaryPage {
     var itemLevelVat = 0;
 		
     this.shoppingList.forEach(element => {
-      itemLevelVat = this.summaryPageObject.TaxOption==1?0:Number(Number(element.price) * Number(element.qty) * 0.05);
+      itemLevelVat = this.summaryPageObject.TaxOption==1?0:element.Vat;
       this.summarySubItem.push({
         id: element.id,
         product_code: element.code,
@@ -111,7 +111,7 @@ export class SummaryPage {
         quantity: Number(element.qty),
         vat: itemLevelVat,
         discount: Number(element.discount),
-        amount: this.summaryPageObject.TaxOption==2?Number(element.amount -itemLevelVat):Number(element.amount)});
+        amount: this.summaryPageObject.TaxOption==2?Number(element.amount -itemLevelVat):this.summaryPageObject.TaxOption==3?Number(element.amount) + itemLevelVat:Number(element.amount)});
     });
 
     this.summaryItem.items = this.summarySubItem;

@@ -3,6 +3,7 @@ import { NavController, LoadingController, ToastController } from 'ionic-angular
 import { WebServicesProvider } from '../../providers/web-services/web-services';
 import { ProductHomePage } from '../product-home/product-home';
 import { AlertController } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
 
 @Component({
   selector: 'page-login',
@@ -14,33 +15,48 @@ export class LoginPage {
   loginData = { login:'', password:'' };
   data: any;
 
+  private serverHost = '';
+  private printerHost = '';
+
   constructor(
     public navCtrl: NavController, 
     public webService: WebServicesProvider, 
     public loadingCtrl: LoadingController, 
     private toastCtrl: ToastController,
-    public alertCtrl: AlertController) {  
+    public alertCtrl: AlertController,
+    public storage: Storage) {  
+  }
+
+  ionViewDidLoad() {
+    //this.serverHost = localStorage.getItem("serverHost");
+    //this.printerHost = localStorage.getItem("printerHost");
+    this.storage.get('serverHost').then((val)=>{this.serverHost = val;});
+    this.storage.get('printerHost').then((val)=>{this.printerHost =  val;});
   }
 
   doLogin() {
-    this.showLoader();
-    this.webService.login(this.loginData).then((result) => {
-      this.loading.dismiss();
-      this.data = result;
-      console.log(result);
-      if(result ===1){
-        localStorage.setItem('token', this.data);
-        localStorage.setItem('user',this.loginData.login);
-        this.getLoggedinUserDetails(this.loginData.login);
-        this.navCtrl.setRoot(ProductHomePage);
-      }
-      else{
-        this.showAlert();
-      }
-    }, (err) => {
-      this.loading.dismiss();
-      this.presentToast(err);
-    });
+    if(!this.serverHost  || !this.printerHost ){
+      this.showAlert();
+    }
+    else{
+      this.showLoader();
+      this.webService.login(this.loginData).then((result) => {
+        this.loading.dismiss();
+        this.data = result;
+        if(result ===1){
+          localStorage.setItem('token', this.data);
+          localStorage.setItem('user',this.loginData.login);
+          this.getLoggedinUserDetails(this.loginData.login);
+          this.navCtrl.setRoot(ProductHomePage);
+        }
+        else{
+          this.showWarning();
+        }
+      }, (err) => {
+        this.loading.dismiss();
+        this.presentToast(err);
+      });
+    } 
   }
 
   getLoggedinUserDetails(user){
@@ -72,10 +88,18 @@ export class LoginPage {
     toast.present();
   }
   
-  showAlert() {
+  showWarning() {
     let alert = this.alertCtrl.create({
       //title: 'Login Error!',
       subTitle: 'Wrong Login or Password.',
+      buttons: ['OK']
+    });
+    alert.present();
+  }
+
+  showAlert() {
+    let alert = this.alertCtrl.create({
+      subTitle: 'Please configure Host address first.',
       buttons: ['OK']
     });
     alert.present();

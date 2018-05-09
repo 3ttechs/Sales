@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title><H2>ARD AL ZAAFARAN TRADING L.L.C</H2></ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-label color="primary" stacked>Server Host</ion-label>
+    <ion-input type="text" placeholder="192.168.1.1:5000" [(ngModel)] = "serverHost"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label color="primary" stacked>Printer Host</ion-label>
+    <ion-input type="text" placeholder="192.168.1.2:5000" [(ngModel)] = "printerHost"></ion-input>
+  </ion-item>
+  <ion-item>
+    <button ion-button class="buttonShadow" style="width: 150px;" color="primary" block (click)="SaveSettings()">Save Settings</button>
+  </ion-item>
+</ion-content>
