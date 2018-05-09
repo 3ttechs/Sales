@@ -1,16 +1,18 @@
-//import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import 'rxjs/add/operator/map';
+import { Storage } from '@ionic/storage';
 
-
-let apiUrl = 'http://localhost:5000';
+let serverUrl = 'http://';
+let printUrl = 'http://';
 
 @Injectable()
 export class WebServicesProvider {
 
-  constructor(public http: Http) {
+  constructor(public storage: Storage, public http: Http) {
     console.log('Hello WebServicesProvider Provider');
+    this.storage.get('serverHost').then((val)=>{serverUrl += val;});
+    this.storage.get('printerHost').then((val)=>{printUrl +=  val;});
   }
 
   login(credentials) {
@@ -19,10 +21,9 @@ export class WebServicesProvider {
         headers.append('Accept', 'application/json');
         headers.append('Content-Type', 'application/json');
 
-        //let postParams = {"login": "Abdul","password":"abdul"}
         let postParams = {"login": credentials.login,"password": credentials.password}
 
-        this.http.post(apiUrl+'/sales_person/login', postParams, {headers: headers})
+        this.http.post(serverUrl +'/sales_person/login', postParams, {headers: headers})
           .subscribe(res => {
             resolve(res.json());
           }, (err) => {
@@ -33,25 +34,25 @@ export class WebServicesProvider {
 
   getLoggedinUserDetails(user){
     return new Promise(resolve => {
-      this.http.get(apiUrl + '/store/details/login=' + '"'  + user + '"').subscribe(res => resolve(res.json())) 
+      this.http.get(serverUrl + '/store/details/login=' + '"'  + user + '"').subscribe(res => resolve(res.json())) 
     })
   }
 
   getAllProducts(storename) {
     return new Promise(resolve => {
-      this.http.get(apiUrl + '/product/full_all_new/storename=' + '"'  + storename + '"').subscribe(res => resolve(res.json()))
+      this.http.get(serverUrl + '/product/full_all_new/storename=' + '"'  + storename + '"').subscribe(res => resolve(res.json()))
     })
   }
 
   getAllProductsByCategory(category) {
     return new Promise(resolve => {
-      this.http.get(apiUrl + '/product/category=' + '"'  + category + '"').subscribe(res => resolve(res.json())) 
+      this.http.get(serverUrl + '/product/category=' + '"'  + category + '"').subscribe(res => resolve(res.json())) 
     })
   }
 
   getProductDetailsByCode(productCode){
     return new Promise(resolve => {
-      this.http.get(apiUrl + '/product/code=' + '"'  + productCode + '"').subscribe(res => resolve(res.json()))
+      this.http.get(serverUrl + '/product/code=' + '"'  + productCode + '"').subscribe(res => resolve(res.json()))
     })
   }
 
@@ -59,16 +60,8 @@ export class WebServicesProvider {
     return new Promise((resolve, reject) => {
         let headers = new Headers();
         headers.append('X-Auth-Token', localStorage.getItem('token'));
-
-        /*this.http.post(apiUrl+'logout', {}, {headers: headers})
-          .subscribe(res => {
-            localStorage.clear();
-          }, (err) => {
-            reject(err);
-          });*/
-
-          localStorage.clear();  //TODO : need to replace this with actual logout web sevice call
-          resolve("true");
+        localStorage.clear();  //TODO : need to replace this with actual logout web sevice call
+        resolve("true");
     });
   }
 
@@ -80,7 +73,7 @@ export class WebServicesProvider {
 
       console.log(JSON.stringify(summaryItem));
 
-      this.http.post(apiUrl+'/invoice/add', JSON.stringify(summaryItem), {headers: headers})
+      this.http.post(serverUrl+'/invoice/add', JSON.stringify(summaryItem), {headers: headers})
         .subscribe(res => {
           resolve(res.json());
         }, (err) => {
@@ -92,7 +85,7 @@ export class WebServicesProvider {
 
   printOrder(invoiceNumber){
     return new Promise((resolve,reject) =>{
-      this.http.get(apiUrl + '/invoice_print/invoice_no=' + invoiceNumber)
+      this.http.get(printUrl + '/invoice_print/invoice_no=' + invoiceNumber)
         .subscribe(res=>{
           resolve(res.json());
         },(err) => {
