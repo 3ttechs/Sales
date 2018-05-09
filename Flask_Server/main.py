@@ -4,7 +4,7 @@ pyinstaller main.py
 '''
 
 import sqlite3
-from flask import Flask, request,json,send_from_directory,Response,render_template,send_file
+from flask import Flask, request,json,send_from_directory,Response,render_template,send_file, url_for
 import logging, os, subprocess
 from  db_utilities import *
 import pdfkit
@@ -18,7 +18,7 @@ acrobat_reader= 'C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32.
 
 config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf)
 
-app = Flask(__name__)
+app = Flask(__name__,static_url_path = "", static_folder = "static")
 
 #http://localhost:5000/product/all
 @app.route('/product/all', methods=['GET'])
@@ -124,7 +124,7 @@ def invoice_print_by_id(invoice_no):
     query = 'select total from invoice where id = '+ invoice_no
     total_string = json.loads(json.dumps(run_query(query)))
     total_string = num2words(total_string[0]['total']).title()
-    data = render_template('invoice.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items,total_string=total_string)
+    data = render_template('invoice_new.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items,total_string=total_string)
     s = "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     pdf_filename = "invoice_"+ "".join(random.sample(s, 10))+'.pdf'
     print(pdf_filename)
@@ -600,8 +600,9 @@ def store_details(login):
 
 #http://localhost:5000/product/full_all_new/storename='SharjaStore'
 @app.route('/product/full_all_new/storename=<storename>', methods=['GET'])
-def full_available_all(storename):
+def full_all_new(storename):
     query = 'select pm.id,pm.code,pm.barcode,pm.name,pm.category,pm.brand,pm.product_type,pm.coo,pm.price,ifnull(A.GRN_QTY,0)+ifnull(E.RET_QTY,0)+ifnull(C.TRF_IN_QTY,0)-ifnull(B.TRF_OUT_QTY,0)-ifnull(D.INV_QTY,0) BAL_QTY from product_master pm left join ( select sku,sum(qtyreceived) GRN_QTY from receipt_header rh,receipt_details rd where rh.receiptkey=rd.receiptkey and rh.storename="SharjaStore" and rh.status=1 group by sku ) A on pm.code=A.sku LEFT JOIN ( select sku,sum(quantity) TRF_OUT_QTY from transfer_header th,transfer_details td where th.documentno=td.documentno and th.transferfrom="SharjaStore" group by sku ) B on pm.code=B.sku LEFT JOIN ( select sku,sum(quantity) TRF_IN_QTY from transfer_header th,transfer_details td where th.documentno=td.documentno and th.transferto="SharjaStore" group by sku ) C  on pm.code=C.sku LEFT JOIN ( select product_code,sum(quantity)  INV_QTY from invoice inv , items it where inv.id = it.invoice_no and inv.storename="SharjaStore" group by product_code) D  on pm.code=D.product_code LEFT JOIN ( select sku,sum(quantity) RET_QTY from returned_items where storename= '+ storename +' group by sku) E  on pm.code=E.sku; '
+    
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
