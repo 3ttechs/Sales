@@ -21,7 +21,7 @@ acrobat_reader= 'C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32.
 site='main'
 config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf)
 
-app = Flask(__name__,static_url_path = "", static_folder = "static")
+app = Flask(__name__)
 
 
 #http://localhost:5000/product/all
@@ -121,6 +121,7 @@ def invoice_items_by_id(invoice_no):
 #http://localhost:5001/invoice_print/invoice_no=1
 @app.route('/invoice_print/invoice_no=<invoice_no>', methods=['GET'])
 def get_invoice_data(invoice_no):
+    basedir = os.path.abspath(os.path.dirname(__file__))
     url = 'http://'+main_server_host+':'+main_server_port+ '/invoice/get_invoice_header/invoice_no='+invoice_no
     invoice_header = requests.get(url).json()
     url = 'http://'+main_server_host+':'+main_server_port+ '/invoice/get_invoice_items/invoice_no='+invoice_no
@@ -129,15 +130,13 @@ def get_invoice_data(invoice_no):
     url = 'http://'+main_server_host+':'+main_server_port+ '/invoice/get_invoice_total/invoice_no='+invoice_no
     total_string = requests.get(url).json()
     total_string = num2words(total_string[0]['total']).title()
-    data = render_template('invoice_new.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items,total_string=total_string)
+    data = render_template('invoice_new.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items,total_string=total_string,basedir=basedir)
     s = "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     pdf_filename = "invoice_"+ "".join(random.sample(s, 10))+'.pdf'
-    print(pdf_filename)
     pdfkit.from_string(data, 'temp/'+pdf_filename, configuration=config)
     #os.startfile('invoice.pdf')
     # AcroRd32.exe /t filename.pdf printername drivername portname
     acroread = acrobat_reader +' /H /T'
-    print (acroread)
     printer=""
     cmd = '%s %s' % (acroread, 'temp/'+pdf_filename)
     #print (cmd)
@@ -208,7 +207,8 @@ def invoice_print_by_id1(invoice_no):
   "total": 25,
   "payment_mode": 1,
   "status": 1,
-  "notes": "-"
+  "notes": "-",
+  "storename":"Sharja Stores"
   },
   "items": [
     {
@@ -262,9 +262,12 @@ def invoice_add():
     total = data['invoice']['total']
     payment_mode = data['invoice']['payment_mode']
     status = data['invoice']['status']
+    status = 0
     notes = data['invoice']['notes']
+    storename = data['invoice']['storename']
+    #storename='Sharja Stores'
 
-    query = "INSERT INTO invoice (invoice_date, invoice_time,  sales_person_code,customer_name,customer_phone,customer_vat_no,sub_total,discount,vat,total,payment_mode,status,notes) VALUES (date(),time(),'%s','%s','%s','%s',%f,%f,%f,%f,%d , %d,'%s' )"% (sales_person_code,customer_name,customer_phone,customer_vat_no,sub_total,discount,vat,total,payment_mode,status,notes)
+    query = "INSERT INTO invoice (invoice_date, invoice_time,  sales_person_code,customer_name,customer_phone,customer_vat_no,sub_total,discount,vat,total,payment_mode,status,notes,storename) VALUES (date(),time(),'%s','%s','%s','%s',%f,%f,%f,%f,%d , %d,'%s','%s' )"% (sales_person_code,customer_name,customer_phone,customer_vat_no,sub_total,discount,vat,total,payment_mode,status,notes,storename)
     print(query)
     run_insert_query(query)
     invoice_no = run_select_query('SELECT MAX(id) FROM invoice')[0][0]
@@ -285,8 +288,6 @@ def invoice_add():
         discount = float(data['items'][i]['discount'])
         amount = float(data['items'][i]['amount'])
         query = "INSERT INTO items (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,discount,amount,vat) VALUES  ('%s','%s','%s','%s','%s','%s','%s',%f,'%s',%f,%f,%f,%f)"% (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,discount,amount,vat)
-        #query = "INSERT INTO items (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,discount,amount) VALUES  ('%s','%s','%s','%s','%s','%s','%s',%f,'%s',%f,%f,%f)"% (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,discount,amount)
-        print(query)
         run_insert_query(query)
 
     return  str(invoice_no), 200
