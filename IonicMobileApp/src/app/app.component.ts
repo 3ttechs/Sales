@@ -21,6 +21,7 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       splashScreen.hide();
+      //localStorage.clear(); //not sure if this is a right place and will work.
     });
 
     this.pages = [

@@ -13,7 +13,7 @@
         <ion-grid>
           <ion-row>
             <ion-col class="summarylabels"><h3>Sub Total (Dhs)</h3></ion-col>
-            <ion-col class="summarylabels"><h3>{{this.summaryPageObject.TaxOption==2?(this.summaryPageObject.subTotal-this.summaryPageObject.VAT).toFixed(3):this.summaryPageObject.subTotal.toFixed(3)}}</h3></ion-col>
+            <ion-col class="summarylabels"><h3>{{(this.summaryPageObject.TaxOption==2?(this.summaryPageObject.subTotal-this.summaryPageObject.VAT):this.summaryPageObject.subTotal) | number : '1.2-2'}}</h3></ion-col>
             <ion-col class="summarylabels"><h3>Payment Mode</h3></ion-col>
             <ion-col class="userinputs1">
               <ion-select style="padding-left:0px;" [(ngModel)]="paymentMode">
@@ -37,7 +37,7 @@
           </ion-row>
           <ion-row>
             <ion-col class="summarylabels"><h3>VAT (Dhs)</h3></ion-col>
-            <ion-col class="summarylabels"><h3>{{this.summaryPageObject.TaxOption==1?0:this.summaryPageObject.VAT.toFixed(3)}}</h3></ion-col>
+            <ion-col class="summarylabels"><h3>{{(this.summaryPageObject.TaxOption==1?0:this.summaryPageObject.VAT) | number : '1.2-2'}}</h3></ion-col>
             <ion-col class="summarylabels"></ion-col>
             <ion-col class="summarylabels"></ion-col>
           </ion-row>
@@ -56,7 +56,8 @@
             <ion-col class="divider"></ion-col>
           </ion-row>
           <ion-row>
-            <ion-col class="summarylabels"><h1>Total (Dhs) : {{this.summaryPageObject.TaxOption==3?(this.summaryPageObject.subTotal + this.summaryPageObject.VAT - this.summaryPageObject.Discount).toFixed(3):(this.summaryPageObject.subTotal - this.summaryPageObject.Discount).toFixed(3)}}</h1></ion-col>
+            
+            <ion-col class="summarylabels"><h1>Total (Dhs) : {{(this.summaryPageObject.TaxOption==3?(this.summaryPageObject.subTotal + this.summaryPageObject.VAT - this.summaryPageObject.Discount):(this.summaryPageObject.subTotal - this.summaryPageObject.Discount)) | number : '1.2-2'}}</h1></ion-col>
             <ion-col><button ion-button class="buttonShadow" color="primary" block (click)="PlaceOrder()" [hidden]="noneSelected()">Place Order</button></ion-col>
           </ion-row>
         </ion-grid>

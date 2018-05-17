@@ -27,6 +27,7 @@ export class CartPage {
   }
 
   ionViewWillLeave(){
+    if(this.shoppingList)
     this.shoppingList.forEach(element => {
       element.Vat = Number(element.price) * Number(element.qty) * 0.05;
       element.amount = Number(element.price) * Number(element.qty);

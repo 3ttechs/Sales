@@ -35,7 +35,8 @@ export class SummaryPage {
       total: 0,
       payment_mode: 1,
       status: 1,
-      notes: "-"
+      notes: "-",
+      storename: ""
       },
     items: []
   };
@@ -133,6 +134,7 @@ export class SummaryPage {
       this.summaryItem.invoice.total = this.summaryPageObject.TaxOption==3?Number(this.summaryPageObject.subTotal + this.summaryPageObject.VAT - this.summaryPageObject.Discount):Number(this.summaryPageObject.subTotal - this.summaryPageObject.Discount);
       this.summaryItem.invoice.notes = this.customerNotes;
       this.summaryItem.invoice.payment_mode = Number(this.paymentMode);
+      this.summaryItem.invoice.storename = localStorage.getItem("store");
 
       this.addSubItems();
 
