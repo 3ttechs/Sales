@@ -26,6 +26,9 @@ export class ProductHomePage {
     if(!localStorage.getItem("token")) {
       navCtrl.setRoot(LoginPage);
     }
+    else{
+      this.storeName = localStorage.getItem("store");
+    }
   }
 
   logout() {
@@ -66,7 +69,6 @@ export class ProductHomePage {
     console.log('ionViewDidLoad ProductHomePage');
     this.userName = localStorage.getItem("user");
     this.storeName = localStorage.getItem("store");
-    
   }
 
 }
