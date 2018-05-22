@@ -8,10 +8,10 @@ from flask import Flask, request,json,send_from_directory,Response,render_templa
 import logging, os, subprocess
 from  db_utilities import *
 import pdfkit
-from num2words import num2words
 import random
 import requests
-
+import inflect
+import datetime
 print_server_port = ""
 print_server_port=""
 main_server_port = ""
@@ -117,6 +117,7 @@ def invoice_items_by_id(invoice_no):
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
+
 # call main server get rest api to get invoice data
 #http://localhost:5001/invoice_print/invoice_no=1
 @app.route('/invoice_print/invoice_no=<invoice_no>', methods=['GET'])
@@ -129,20 +130,29 @@ def get_invoice_data(invoice_no):
     num_items = len(invoice_items)
     url = 'http://'+main_server_host+':'+main_server_port+ '/invoice/get_invoice_total/invoice_no='+invoice_no
     total_string = requests.get(url).json()
-    total_string = num2words(total_string[0]['total']).title()
-    data = render_template('invoice_new.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items,total_string=total_string,basedir=basedir)
+    p = inflect.engine()
+    number_val = total_string[0]['total']
+    number_dec = int(str(round(number_val - int(number_val),2))[2:])
+    total_string = (p.number_to_words(int(number_val) ) + ' dhirhams and '+ p.number_to_words(number_dec ) +' fills').title()
+    inv_date = datetime.datetime.strptime(invoice_header[0]['invoice_date'], "%Y-%m-%d").strftime("%d-%m-%Y")
+
     s = "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+    data = render_template('invoice_customer.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items,total_string=total_string,basedir=basedir,inv_date=inv_date)
     pdf_filename = "invoice_"+ "".join(random.sample(s, 10))+'.pdf'
     pdfkit.from_string(data, 'temp/'+pdf_filename, configuration=config)
-    #os.startfile('invoice.pdf')
-    # AcroRd32.exe /t filename.pdf printername drivername portname
     acroread = acrobat_reader +' /H /T'
-    printer=""
     cmd = '%s %s' % (acroread, 'temp/'+pdf_filename)
-    #print (cmd)
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    #stdout, stderr = proc.communicate()
-    #exit_code = proc.wait()
+
+
+    data = render_template('invoice_merchant.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items,total_string=total_string,basedir=basedir,inv_date=inv_date)
+    pdf_filename = "invoice_"+ "".join(random.sample(s, 10))+'.pdf'
+    pdfkit.from_string(data, 'temp/'+pdf_filename, configuration=config)
+    acroread = acrobat_reader +' /H /T'
+    cmd = '%s %s' % (acroread, 'temp/'+pdf_filename)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
     return '1', 200
 
 # service to get invoice data from db
@@ -174,16 +184,16 @@ def invoice_print_by_id1(invoice_no):
     num_items = len(invoice_items)
     query = 'select total from invoice where id = '+ invoice_no
     total_string = json.loads(json.dumps(run_query(query)))
-    total_string = num2words(total_string[0]['total']).title()
+    #total_string = num2words(total_string[0]['total']).title()
     data = render_template('invoice_new.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items,total_string=total_string)
     s = "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     pdf_filename = "invoice_"+ "".join(random.sample(s, 10))+'.pdf'
-    print(pdf_filename)
+    #print(pdf_filename)
     pdfkit.from_string(data, 'temp/'+pdf_filename, configuration=config)
     #os.startfile('invoice.pdf')
     # AcroRd32.exe /t filename.pdf printername drivername portname
     acroread = acrobat_reader +' /H /T'
-    print (acroread)
+    #print (acroread)
     printer=""
     cmd = '%s %s' % (acroread, 'temp/'+pdf_filename)
     #print (cmd)
@@ -250,16 +260,15 @@ def invoice_print_by_id1(invoice_no):
 @app.route('/invoice/add', methods=['POST'])
 def invoice_add():
     data = json.loads(request.data)
-    print(data)
 
     sales_person_code = data['invoice']['sales_person_code']
     customer_name = data['invoice']['customer_name']
     customer_phone=data['invoice']['customer_phone']
     customer_vat_no =data['invoice']['customer_vat_no']
-    sub_total = data['invoice']['sub_total']
-    discount = data['invoice']['discount']
-    vat= data['invoice']['vat']
-    total = data['invoice']['total']
+    sub_total = round(data['invoice']['sub_total'],2)
+    discount = round(data['invoice']['discount'],2)
+    vat= round(data['invoice']['vat'],2)
+    total = round(data['invoice']['total'],2)
     payment_mode = data['invoice']['payment_mode']
     status = data['invoice']['status']
     status = 0
@@ -268,7 +277,6 @@ def invoice_add():
     #storename='Sharja Stores'
 
     query = "INSERT INTO invoice (invoice_date, invoice_time,  sales_person_code,customer_name,customer_phone,customer_vat_no,sub_total,discount,vat,total,payment_mode,status,notes,storename) VALUES (date(),time(),'%s','%s','%s','%s',%f,%f,%f,%f,%d , %d,'%s','%s' )"% (sales_person_code,customer_name,customer_phone,customer_vat_no,sub_total,discount,vat,total,payment_mode,status,notes,storename)
-    print(query)
     run_insert_query(query)
     invoice_no = run_select_query('SELECT MAX(id) FROM invoice')[0][0]
 
@@ -283,10 +291,9 @@ def invoice_add():
         product_coo = data['items'][i]['product_coo']
         product_price = float(data['items'][i]['product_price'])
         quantity = float(data['items'][i]['quantity'])
-        vat = float(data['items'][i]['vat'])
-        print('vat: ',vat)
-        discount = float(data['items'][i]['discount'])
-        amount = float(data['items'][i]['amount'])
+        vat = round(float(data['items'][i]['vat']),2)
+        discount = round(float(data['items'][i]['discount']),2)
+        amount = round(float(data['items'][i]['amount']),2)
         query = "INSERT INTO items (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,discount,amount,vat) VALUES  ('%s','%s','%s','%s','%s','%s','%s',%f,'%s',%f,%f,%f,%f)"% (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,discount,amount,vat)
         run_insert_query(query)
 
@@ -394,7 +401,6 @@ def product_delete(code):
 @app.route('/stock/add', methods=['POST'])
 def stock_add():
     data = json.loads(request.data)
-    print(data)
 
     stock_entry_date = data['stock']['stock_entry_date']
     product_code=data['stock']['product_code']
@@ -492,7 +498,6 @@ def report(report_type,from_date,to_date,file_type):
         invoice_date_list = run_query(query)
         report_data =[]
         for invoice_date in invoice_date_list:
-            print (invoice_date['invoice_date'])
             query = 'select "" as type, invoice_date ,' \
                     'round(sub_total,2) as sub_total,' \
                     'round(discount,2) as discount, ' \
@@ -516,7 +521,6 @@ def report(report_type,from_date,to_date,file_type):
         sales_person_list = run_query(query)
         report_data =[]
         for sales_person in sales_person_list:
-            print (sales_person['sales_person_code'])
             query = 'select "" as type, sales_person_code, invoice_date ,' \
                     'round(sub_total,2) as sub_total,' \
                     'round(discount,2) as discount, ' \
@@ -541,7 +545,6 @@ def report(report_type,from_date,to_date,file_type):
         payment_mode_list = run_query(query)
         report_data =[]
         for payment_mode in payment_mode_list:
-            print (payment_mode['payment_mode'])
             query = 'select "" as type, payment_mode, invoice_date ,' \
                     'round(sub_total,2) as sub_total,' \
                     'round(discount,2) as discount, ' \
@@ -566,7 +569,6 @@ def report(report_type,from_date,to_date,file_type):
         category_list = run_query(query)
         report_data = []
         for category in category_list:
-            print(category['category'])
             query = 'select "" as type,items.product_category as category, invoice.invoice_date , ' \
                     'round(invoice.sub_total,2) as sub_total,' \
                     'round(invoice.discount,2) as discount, ' \
@@ -638,7 +640,6 @@ def sales_person_login():
 def admin_login():
     data = json.loads(request.data)
     query = 'select count(*) as count from admin_lookup where login = "'+ data['login'] +'" and password = "' +data['password']+'"'
-    print(query)
     result = run_query(query)
     count = result[0]['count']
     return str(count), 200
@@ -647,17 +648,25 @@ def admin_login():
 @app.route('/store/details/login=<login>', methods=['GET'])
 def store_details(login):
     query = 'select inv_stores.storeid, inv_stores.storename, inv_stores.addressone,inv_stores.addresstwo, inv_stores.city, inv_stores.zip, inv_stores.phone from inv_stores, user_store_map, sales_person_master where sales_person_master.login = ' +login + ' and sales_person_master.id = user_store_map.userid and inv_stores.storeid = user_store_map.storeid; '
-    print(query)
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
 
-
+#http://zaafran.dyndns:5000/product/full_all_new/storename='SharjaStore'
 #http://localhost:5000/product/full_all_new/storename='SharjaStore'
 @app.route('/product/full_all_new/storename=<storename>', methods=['GET'])
 def full_all_new(storename):
-    query = 'select pm.id,pm.code,pm.barcode,pm.name,pm.category,pm.brand,pm.product_type,pm.coo,pm.price,ifnull(A.GRN_QTY,0)+ifnull(E.RET_QTY,0)+ifnull(C.TRF_IN_QTY,0)-ifnull(B.TRF_OUT_QTY,0)-ifnull(D.INV_QTY,0) BAL_QTY from product_master pm left join ( select sku,sum(qtyreceived) GRN_QTY from receipt_header rh,receipt_details rd where rh.receiptkey=rd.receiptkey and rh.storename="SharjaStore" and rh.status=1 group by sku ) A on pm.code=A.sku LEFT JOIN ( select sku,sum(quantity) TRF_OUT_QTY from transfer_header th,transfer_details td where th.documentno=td.documentno and th.transferfrom="SharjaStore" group by sku ) B on pm.code=B.sku LEFT JOIN ( select sku,sum(quantity) TRF_IN_QTY from transfer_header th,transfer_details td where th.documentno=td.documentno and th.transferto="SharjaStore" group by sku ) C  on pm.code=C.sku LEFT JOIN ( select product_code,sum(quantity)  INV_QTY from invoice inv , items it where inv.id = it.invoice_no and inv.storename="SharjaStore" group by product_code) D  on pm.code=D.product_code LEFT JOIN ( select sku,sum(quantity) RET_QTY from returned_items where storename= '+ storename +' group by sku) E  on pm.code=E.sku; '
-    
+    #query = 'select pm.id,pm.code,pm.barcode,pm.name,pm.category,pm.brand,pm.price,ifnull(A.GRN_QTY,0)+ifnull(E.RET_QTY,0)+ifnull(C.TRF_IN_QTY,0)-ifnull(B.TRF_OUT_QTY,0)-ifnull(D.INV_QTY,0) BAL_QTY from product_master pm left join ( select sku,sum(qtyreceived) GRN_QTY from receipt_header rh,receipt_details rd where rh.receiptkey=rd.receiptkey and rh.storename="SharjaStore" and rh.status=1 group by sku ) A on pm.code=A.sku LEFT JOIN ( select sku,sum(quantity) TRF_OUT_QTY from transfer_header th,transfer_details td where th.documentno=td.documentno and th.transferfrom="SharjaStore" group by sku ) B on pm.code=B.sku LEFT JOIN ( select sku,sum(quantity) TRF_IN_QTY from transfer_header th,transfer_details td where th.documentno=td.documentno and th.transferto="SharjaStore" group by sku ) C  on pm.code=C.sku LEFT JOIN ( select product_code,sum(quantity)  INV_QTY from invoice inv , items it where inv.id = it.invoice_no and inv.storename="SharjaStore" group by product_code) D  on pm.code=D.product_code LEFT JOIN ( select sku,sum(quantity) RET_QTY from returned_items where storename= '+ storename +' group by sku) E  on pm.code=E.sku; '
+    query = 'select pm.id,pm.code,pm.barcode,pm.name,pm.category,pm.brand,pm.product_type,pm.coo,pm.price,0 as BAL_QTY  from product_master as pm; '
+    json_output = json.dumps(run_query(query))
+    return json_output, 200
+
+#http://zaafran.dyndns:5000/product/full_all_new/storename='SharjaStore'
+#http://localhost:5000/product/full_all_new/storename='SharjaStore',code='31'
+@app.route('/product/full_all_filtered/storename=<storename>,code=<code>', methods=['GET'])
+def full_all_filtered(storename):
+    query = 'select pm.id,pm.code,pm.barcode,pm.name,pm.category,pm.brand,pm.price,ifnull(A.GRN_QTY,0)+ifnull(E.RET_QTY,0)+ifnull(C.TRF_IN_QTY,0)-ifnull(B.TRF_OUT_QTY,0)-ifnull(D.INV_QTY,0) BAL_QTY from product_master pm left join ( select sku,sum(qtyreceived) GRN_QTY from receipt_header rh,receipt_details rd where rh.receiptkey=rd.receiptkey and rh.storename="SharjaStore" and rh.status=1 group by sku ) A on pm.code=A.sku LEFT JOIN ( select sku,sum(quantity) TRF_OUT_QTY from transfer_header th,transfer_details td where th.documentno=td.documentno and th.transferfrom="SharjaStore" group by sku ) B on pm.code=B.sku LEFT JOIN ( select sku,sum(quantity) TRF_IN_QTY from transfer_header th,transfer_details td where th.documentno=td.documentno and th.transferto="SharjaStore" group by sku ) C  on pm.code=C.sku LEFT JOIN ( select product_code,sum(quantity)  INV_QTY from invoice inv , items it where inv.id = it.invoice_no and inv.storename="SharjaStore" group by product_code) D  on pm.code=D.product_code LEFT JOIN ( select sku,sum(quantity) RET_QTY from returned_items where storename= '+ storename +' group by sku) E  on pm.code=E.sku where pm.code like '33%'; '
+    #query = 'select pm.id,pm.code,pm.barcode,pm.name,pm.category,pm.brand,pm.product_type,pm.coo,pm.price,0 as BAL_QTY  from product_master as pm where code like "31"; '
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
