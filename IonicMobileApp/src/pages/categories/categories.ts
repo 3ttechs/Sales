@@ -123,21 +123,20 @@ export class CategoriesPage {
   AddToCartPopUp() {
     let alert = this.alertCtrl.create({
       title: 'Code: ' + this.selectedItem.code,
-      subTitle: 'Please enter Quantity.',
+      subTitle: 'Please enter Quantity and Price.',
       inputs: [
         {
           name: 'qty',
           placeholder: 'Quantity',
           type: 'number',
           value: '1'
-        }
-        /*,
+        },
         {
-          name: 'discount',
-          placeholder: 'Discount',
+          name: 'price',
+          placeholder: 'Unit Price',
           type: 'number',
           value: "0"
-        }*/
+        }
       ],
       buttons: [
         {
@@ -151,6 +150,7 @@ export class CategoriesPage {
             //this.selectedItem.discount = data.discount <=0?0:data.discount;
             this.selectedItem.discount = 0;
             this.selectedItem.qty = data.qty <=0?1:data.qty; 
+            this.selectedItem.price = data.price <0?0:data.price; 
             this.addItemToCart();
           }
         }
