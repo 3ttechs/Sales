@@ -10,15 +10,19 @@ from  db_utilities import *
 import pdfkit
 from num2words import num2words
 import random
+import requests
 
-host = "localhost"
-port="5000"
+print_server_port = ""
+print_server_port=""
+main_server_port = ""
+main_server_port=""
 wkhtmltopdf= 'C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'
 acrobat_reader= 'C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32.exe'
-
+site='main'
 config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf)
 
-app = Flask(__name__,static_url_path = "", static_folder = "static")
+app = Flask(__name__)
+
 
 #http://localhost:5000/product/all
 @app.route('/product/all', methods=['GET'])
@@ -113,9 +117,56 @@ def invoice_items_by_id(invoice_no):
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
-#http://localhost:5000/invoice_print/invoice_no=1
+# call main server get rest api to get invoice data
+#http://localhost:5001/invoice_print/invoice_no=1
 @app.route('/invoice_print/invoice_no=<invoice_no>', methods=['GET'])
-def invoice_print_by_id(invoice_no):
+def get_invoice_data(invoice_no):
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    url = 'http://'+main_server_host+':'+main_server_port+ '/invoice/get_invoice_header/invoice_no='+invoice_no
+    invoice_header = requests.get(url).json()
+    url = 'http://'+main_server_host+':'+main_server_port+ '/invoice/get_invoice_items/invoice_no='+invoice_no
+    invoice_items = requests.get(url).json()
+    num_items = len(invoice_items)
+    url = 'http://'+main_server_host+':'+main_server_port+ '/invoice/get_invoice_total/invoice_no='+invoice_no
+    total_string = requests.get(url).json()
+    total_string = num2words(total_string[0]['total']).title()
+    data = render_template('invoice_new.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items,total_string=total_string,basedir=basedir)
+    s = "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    pdf_filename = "invoice_"+ "".join(random.sample(s, 10))+'.pdf'
+    pdfkit.from_string(data, 'temp/'+pdf_filename, configuration=config)
+    #os.startfile('invoice.pdf')
+    # AcroRd32.exe /t filename.pdf printername drivername portname
+    acroread = acrobat_reader +' /H /T'
+    printer=""
+    cmd = '%s %s' % (acroread, 'temp/'+pdf_filename)
+    #print (cmd)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    #stdout, stderr = proc.communicate()
+    #exit_code = proc.wait()
+    return '1', 200
+
+# service to get invoice data from db
+#http://localhost:5000/invoice/get_invoice_header/invoice_no=1
+@app.route('/invoice/get_invoice_header/invoice_no=<invoice_no>', methods=['GET'])
+def get_invoice_header(invoice_no):
+    query = 'select * from invoice where id = '+ invoice_no
+    return json.dumps(run_query(query)), 200
+
+#http://localhost:5000/invoice/get_invoice_items/invoice_no=1
+@app.route('/invoice/get_invoice_items/invoice_no=<invoice_no>', methods=['GET'])
+def get_invoice_items(invoice_no):
+    query = 'select * from items where invoice_no  = '+ invoice_no
+    return json.dumps(run_query(query)), 200
+
+#http://localhost:5000/invoice/get_invoice_total/invoice_no=1
+@app.route('/invoice/get_invoice_total/invoice_no=<invoice_no>', methods=['GET'])
+def get_invoice_total(invoice_no):
+    query = 'select total from invoice where id = '+ invoice_no
+    return json.dumps(run_query(query)), 200
+
+#http://localhost:5000/invoice_print_old/invoice_no=1
+@app.route('/invoice_print_old/invoice_no=<invoice_no>', methods=['GET'])
+def invoice_print_by_id1(invoice_no):
     query = 'select * from invoice where id = '+ invoice_no
     invoice_header = json.loads(json.dumps(run_query(query)))
     query = 'select * from items where invoice_no  = '+ invoice_no
@@ -156,7 +207,8 @@ def invoice_print_by_id(invoice_no):
   "total": 25,
   "payment_mode": 1,
   "status": 1,
-  "notes": "-"
+  "notes": "-",
+  "storename":"Sharja Stores"
   },
   "items": [
     {
@@ -210,9 +262,12 @@ def invoice_add():
     total = data['invoice']['total']
     payment_mode = data['invoice']['payment_mode']
     status = data['invoice']['status']
+    status = 0
     notes = data['invoice']['notes']
+    storename = data['invoice']['storename']
+    #storename='Sharja Stores'
 
-    query = "INSERT INTO invoice (invoice_date, invoice_time,  sales_person_code,customer_name,customer_phone,customer_vat_no,sub_total,discount,vat,total,payment_mode,status,notes) VALUES (date(),time(),'%s','%s','%s','%s',%f,%f,%f,%f,%d , %d,'%s' )"% (sales_person_code,customer_name,customer_phone,customer_vat_no,sub_total,discount,vat,total,payment_mode,status,notes)
+    query = "INSERT INTO invoice (invoice_date, invoice_time,  sales_person_code,customer_name,customer_phone,customer_vat_no,sub_total,discount,vat,total,payment_mode,status,notes,storename) VALUES (date(),time(),'%s','%s','%s','%s',%f,%f,%f,%f,%d , %d,'%s','%s' )"% (sales_person_code,customer_name,customer_phone,customer_vat_no,sub_total,discount,vat,total,payment_mode,status,notes,storename)
     print(query)
     run_insert_query(query)
     invoice_no = run_select_query('SELECT MAX(id) FROM invoice')[0][0]
@@ -226,13 +281,13 @@ def invoice_add():
         product_brand = data['items'][i]['product_brand']
         product_type = data['items'][i]['product_type']
         product_coo = data['items'][i]['product_coo']
-        product_price = data['items'][i]['product_price']
-        quantity = data['items'][i]['quantity']
-        vat = data['items'][i]['vat']
-        discount = data['items'][i]['discount']
-        amount = data['items'][i]['amount']
+        product_price = float(data['items'][i]['product_price'])
+        quantity = float(data['items'][i]['quantity'])
+        vat = float(data['items'][i]['vat'])
+        print('vat: ',vat)
+        discount = float(data['items'][i]['discount'])
+        amount = float(data['items'][i]['amount'])
         query = "INSERT INTO items (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,discount,amount,vat) VALUES  ('%s','%s','%s','%s','%s','%s','%s',%f,'%s',%f,%f,%f,%f)"% (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,discount,amount,vat)
-        print(query)
         run_insert_query(query)
 
     return  str(invoice_no), 200
@@ -606,8 +661,6 @@ def full_all_new(storename):
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
-
-
 @app.route('/')
 def home():
     return('Smart Shopper Application')
@@ -669,14 +722,20 @@ def load_properties(filepath, sep=':', comment_char='#'):
                 props[key] = value
     return props
 
-
 if __name__ == '__main__':
     props = load_properties('config_file.txt')
     for prop in props:
-        if(prop=='host'): host =props[prop]
-        if(prop=='port'): port =props[prop]
+        if(prop=='site'): site =props[prop]
+        if(prop=='main_server_host'): main_server_host =props[prop]
+        if(prop=='main_server_port'): main_server_port =props[prop]
+
+        if(prop=='print_server_host'): print_server_host =props[prop]
+        if(prop=='print_server_port'): print_server_port =props[prop]
+
         if(prop=='wkhtmltopdf'): wkhtmltopdf =props[prop]
         if(prop=='acrobat_reader'): acrobat_reader =props[prop]
 
-    #app.run(host=host, port=port)
-    app.run(host='localhost', port=5000)
+    if(site=='main'):
+        app.run(host=main_server_host, port=main_server_port)
+    elif(site=='print'):
+        app.run(host=print_server_host, port=print_server_port)

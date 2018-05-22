@@ -1,4 +1,7 @@
-host: "localhost"
-port: 5000
+site: "main"
+main_server_host: "localhost"
+main_server_port: 5000
+print_server_host: "localhost"
+print_server_port: 5001
 wkhtmltopdf: "C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe"
 acrobat_reader: "C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32.exe"
