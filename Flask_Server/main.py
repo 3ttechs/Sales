@@ -51,7 +51,7 @@ def stock_full_all():
 def product_category_all():
     query = 'select distinct category from product_master order by category'
     aa= run_query(query)
-    aa.insert(0,{'product_type': "All"})
+    aa.insert(0,{'category': "All"})
     json_output = json.dumps(aa)
     return json_output, 200
 
@@ -60,7 +60,7 @@ def product_category_all():
 def product_brand_all():
     query = 'select distinct brand from product_master order by brand'
     aa= run_query(query)
-    aa.insert(0,{'product_type': "All"})
+    aa.insert(0,{'brand': "All"})
     json_output = json.dumps(aa)
     return json_output, 200
 
@@ -667,28 +667,28 @@ def full_all_new(storename):
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
-
+#http://localhost:5000/product/full_all_filtered/storename=%22MAIN%20SHOP%22,category=%22All%22,brand=%22All%22,product_type=%22All%22,barcode=%22%22,description=%22%22,code=%2231%22
 #http://localhost:5000/product/full_all_filtered/storename='MAIN%20SHOP',category='All',brand='All',product_type='All',barcode='',description='',code='31'
 @app.route('/product/full_all_filtered/storename=<storename>,category=<category>,brand=<brand>,product_type=<product_type>,barcode=<barcode>,description=<description>,code=<code>', methods=['GET'])
 def full_all_filtered(storename,category,brand,product_type,code,barcode,description):
-    code = code.replace("'", "%")
-    barcode = barcode.replace("'", "%")
-    description = description.replace("'", "%")
-    category = category.replace("'", "")
-    brand = brand.replace("'", "")
-    product_type = product_type.replace("'", "")
+    code = code.replace('"', '')
+    barcode = barcode.replace('"', '')
+    description = description.replace('"', '')
+    category = category.replace('"', '')
+    brand = brand.replace('"', '')
+    product_type = product_type.replace('"', '')
 
-    q = ' where (pm.code like "'+ code +'" or pm.code is NULL ) and '
-    q = q+' (pm.barcode like "'+barcode+ '" or pm.barcode is NULL ) and '
-    q = q+' (pm.name like "'+ description +'" or pm.name is NULL ) '
+    q = ' where (pm.code like "%'+ code +'%" or pm.code is NULL ) and '
+    q = q+' (pm.barcode like "%'+barcode+ '%" or pm.barcode is NULL ) and '
+    q = q+' (pm.name like "%'+ description +'%" or pm.name is NULL ) '
 
     print('*'+category+'*')
-    if (category != 'All'):
-        q=q+' and pm.category = "'+ category+'"'
-    if (brand!='All'):
-        q=q+' and pm.brand = "'+ brand+ '"'
-    if (product_type!='All'):
-        q=q+' and pm.product_type = "'+ product_type+'"'
+    if (category != "All"):
+        q=q+' and pm.category = '+ category+''
+    if (brand!="All"):
+        q=q+' and pm.brand = '+ brand+ ''
+    if (product_type!="All"):
+        q=q+' and pm.product_type = '+ product_type+''
 
     query = 'select pm.id,pm.code,pm.barcode,pm.name,pm.category,pm.brand,pm.price,ifnull(A.GRN_QTY,0)+ifnull(E.RET_QTY,0)+ifnull(C.TRF_IN_QTY,0)-ifnull(B.TRF_OUT_QTY,0)-ifnull(D.INV_QTY,0) BAL_QTY from product_master pm left join ( select sku,sum(qtyreceived) GRN_QTY from receipt_header rh,receipt_details rd where rh.receiptkey=rd.receiptkey and rh.storename="SharjaStore" and rh.status=1 group by sku ) A on pm.code=A.sku LEFT JOIN ( select sku,sum(quantity) TRF_OUT_QTY from transfer_header th,transfer_details td where th.documentno=td.documentno and th.transferfrom="SharjaStore" group by sku ) B on pm.code=B.sku LEFT JOIN ( select sku,sum(quantity) TRF_IN_QTY from transfer_header th,transfer_details td where th.documentno=td.documentno and th.transferto="SharjaStore" group by sku ) C  on pm.code=C.sku LEFT JOIN ( select product_code,sum(quantity)  INV_QTY from invoice inv , items it where inv.id = it.invoice_no and inv.storename="SharjaStore" group by product_code) D  on pm.code=D.product_code LEFT JOIN ( select sku,sum(quantity) RET_QTY from returned_items where storename= '+ storename +' group by sku) E  on pm.code=E.sku ' +q+' limit 100; '
     json_output = json.dumps(run_query(query))
