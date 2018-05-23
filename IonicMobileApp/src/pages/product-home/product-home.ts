@@ -45,7 +45,7 @@ export class ProductHomePage {
 
   showLoader(){
     this.loading = this.loadingCtrl.create({
-        content: 'Please wait...'
+        //content: 'Please wait...'
     });
     this.loading.present();
   }
@@ -59,14 +59,14 @@ export class ProductHomePage {
     });
 
     toast.onDidDismiss(() => {
-      console.log('Dismissed toast');
+      //console.log('Dismissed toast');
     });
 
     toast.present();
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad ProductHomePage');
+    //console.log('ionViewDidLoad ProductHomePage');
     this.userName = localStorage.getItem("user");
     this.storeName = localStorage.getItem("store");
   }
