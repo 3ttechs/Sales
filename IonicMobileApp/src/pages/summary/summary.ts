@@ -72,7 +72,7 @@ export class SummaryPage {
 
   calculateSummary(){
     this.loading = this.loadingCtrl.create({
-      content: 'Calculating totals...'
+      //content: 'Calculating totals...'
     });
 
     this.loading.present().then(()=>{
@@ -120,7 +120,7 @@ export class SummaryPage {
 
   PlaceOrder(){
     this.loading = this.loadingCtrl.create({
-      content: 'Placing order...'
+      //content: 'Placing order...'
     });
 
     this.loading.present().then(()=>{

@@ -54,7 +54,7 @@ export class CartPage {
 
   getItemsFromCart(){
     this.loading = this.loadingCtrl.create({
-      content: 'Fetching Cart Items...'
+      //content: 'Fetching Cart Items...'
     });
 
     this.loading.present().then(()=>{
@@ -68,7 +68,7 @@ export class CartPage {
   //Need to discuss this logic. Can either wait for hard delete from storage and pull latest records or do soft delete and later delete from storage
   removeFromCart($event,cartItem){
     this.loading = this.loadingCtrl.create({
-      content: 'Fetching Cart Items...'
+      //content: 'Fetching Cart Items...'
     });
 
     //Removing local cashed copy to reflect the change immediatly.
@@ -79,7 +79,7 @@ export class CartPage {
       }
       return true;
     });
-    console.log(filteredShoppingList);
+    //console.log(filteredShoppingList);
     this.shoppingList = filteredShoppingList;
     
     //Removing from the storage for permanent removal.
@@ -93,7 +93,7 @@ export class CartPage {
 
   UpdateCart(){
     this.loading = this.loadingCtrl.create({
-      content: 'Updating Cart Items...'
+      //content: 'Updating Cart Items...'
     });
 
     //We are replacing storage cart item with the updated cart item

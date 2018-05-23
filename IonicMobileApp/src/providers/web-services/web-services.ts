@@ -10,7 +10,6 @@ let printUrl = 'http://';
 export class WebServicesProvider {
 
   constructor(public storage: Storage, public http: Http) {
-    console.log('Hello WebServicesProvider Provider');
     this.storage.get('serverHost').then((val)=>{serverUrl += val;});
     this.storage.get('printerHost').then((val)=>{printUrl +=  val;});
   }
@@ -38,9 +37,27 @@ export class WebServicesProvider {
     })
   }
 
-  getAllProducts(storename) {
+  getAllProducts(storename,category,brand,ptype,pcode,barcode,pname) {
     return new Promise(resolve => {
-      this.http.get(serverUrl + '/product/full_all_new/storename=' + '"'  + storename + '"').subscribe(res => resolve(res.json()))
+      this.http.get(serverUrl + '/product/full_all_filtered/storename=' + '"'  + storename + '",category=' + '"'  + category + '",brand=' + '"'  + brand + '",product_type=' + '"'  + ptype + '",barcode=' + '"'  + barcode + '",description=' + '"'  + pname + '",code=' + '"'  + pcode + '"').subscribe(res => resolve(res.json()))
+    })
+  }
+
+  getAllCategories(){
+    return new Promise(resolve => {
+      this.http.get(serverUrl + '/product_category/all').subscribe(res => resolve(res.json()))
+    })
+  }
+
+  getAllBrands(){
+    return new Promise(resolve => {
+      this.http.get(serverUrl + '/product_brand/all').subscribe(res => resolve(res.json()))
+    })
+  }
+
+  getAllProductTypes(){
+    return new Promise(resolve => {
+      this.http.get(serverUrl + '/product_type/all').subscribe(res => resolve(res.json()))
     })
   }
 
@@ -70,8 +87,6 @@ export class WebServicesProvider {
       let headers = new Headers();
       headers.append('Accept', 'application/json');
       headers.append('Content-Type', 'application/json');
-
-      console.log(JSON.stringify(summaryItem));
 
       this.http.post(serverUrl+'/invoice/add', JSON.stringify(summaryItem), {headers: headers})
         .subscribe(res => {

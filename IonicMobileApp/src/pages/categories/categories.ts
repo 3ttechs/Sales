@@ -12,10 +12,12 @@ export class CategoriesPage {
 
   loading: any;
   public products: any;
-  public filteredProducts: any;
-  private filterValues = {category:'',brand:'',pcode:'',barcode:'',pname:''};
+  private filterValues = {category:'All',brand:'All',productType:'All',pcode:'',barcode:'',pname:''};
   private selectedItem: any;
   private storeName = '';
+  private categoryList: any;
+  private brandList: any;
+  private productTypeList: any;
 
   constructor(public app: App, 
     public navCtrl: NavController, 
@@ -28,24 +30,72 @@ export class CategoriesPage {
   ionViewDidLoad() {
     this.storeName = localStorage.getItem("store");
     if(localStorage.getItem("token")) {
-      this.doFetchAllProducts();
+      this.fetchCategories();
     }
+  }
+
+  fetchCategories(){
+    this.loading = this.loadingCtrl.create({
+      //content: 'Fetching Categories...'
+    });
+
+    this.loading.present().then(()=>{
+      this.webService.getAllCategories().then(result => {
+        this.categoryList = result;
+        this.loading.dismiss();
+        this.fetchBrands();
+      });
+    });
+  }
+
+  fetchBrands(){
+    this.loading = this.loadingCtrl.create({
+      //content: 'Fetching Brands...'
+    });
+
+    this.loading.present().then(()=>{
+      //console.log('Categories being fetched');
+      this.webService.getAllBrands().then(result => {
+        this.brandList = result;
+        this.loading.dismiss();
+        this.fetchProductTypes();
+      });
+    });
+  }
+
+  fetchProductTypes(){
+    this.loading = this.loadingCtrl.create({
+      //content: 'Fetching Product Types...'
+    });
+
+    this.loading.present().then(()=>{
+      this.webService.getAllProductTypes().then(result => {
+        this.productTypeList = result;
+        this.loading.dismiss();
+        this.doFetchAllProducts();
+      });
+    });
+  }
+
+  search() {
+    this.doFetchAllProducts();
   }
 
   doFetchAllProducts() {
     this.loading = this.loadingCtrl.create({
-      content: 'Fetching Products...'
+      //content: 'Fetching Products...'
     });
 
     this.loading.present().then(()=>{
-      this.webService.getAllProducts(this.storeName).then(result => {
+      this.webService.getAllProducts(this.storeName,this.filterValues.category,this.filterValues.brand,this.filterValues.productType,this.filterValues.pcode,this.filterValues.barcode,this.filterValues.pname).then(result => {
         this.products = result;
-        this.filteredProducts = result;
-        console.log(result);
+        //console.log(result);
         this.loading.dismiss();
       });
     });
   }
+
+
 
   //if non selected, disable the add to cart button
   noneSelected(item){
@@ -61,63 +111,6 @@ export class CategoriesPage {
 
   itemSelected($event, item){
     this.selectedItem = item;
-  }
-
-  filterByCategory(event){
-    // set val to the value of the searchbar
-    let val = event.target.value==null?'':event.target.value;
-    //Updating new value to the filterValues
-    this.filterValues.category = val;
-    //Call common method to filter the list
-    this.filterItems();
-  }
-
-  filterByBrand(event){
-    // set val to the value of the searchbar
-    let val = event.target.value==null?'':event.target.value;
-    //Updating new value to the filterValues
-    this.filterValues.brand = val;
-    //Call common method to filter the list
-    this.filterItems();
-  }
-
-  filterByProductCode(event){
-    // set val to the value of the searchbar
-    let val = event.target.value==null?'':event.target.value;
-    //Updating new value to the filterValues
-    this.filterValues.pcode = val;
-    //Call common method to filter the list
-    this.filterItems();
-  }
-
-  filterByProductBarcode(event){
-    // set val to the value of the searchbar
-    let val = event.target.value==null?'':event.target.value;
-    //Updating new value to the filterValues
-    this.filterValues.barcode = val;
-    //Call common method to filter the list
-    this.filterItems();
-  }
-
-  filterByProductDescription(event){
-    // set val to the value of the searchbar
-    let val = event.target.value==null?'':event.target.value;
-    //Updating new value to the filterValues
-    this.filterValues.pname = val;
-    //Call common method to filter the list
-    this.filterItems();
-  }
-
-  filterItems(){
-    this.filteredProducts = this.products.filter((item) => {
-      return (
-        item.category.toLowerCase().indexOf(this.filterValues.category.toLowerCase()) > -1 &&
-        item.brand.toLowerCase().indexOf(this.filterValues.brand.toLowerCase()) > -1 &&
-        item.code.toLowerCase().indexOf(this.filterValues.pcode.toLowerCase()) > -1 &&
-        item.code.toLowerCase().indexOf(this.filterValues.barcode.toLowerCase()) > -1 &&
-        item.name.toLowerCase().indexOf(this.filterValues.pname.toLowerCase()) > -1
-      );
-    })
   }
 
   AddToCartPopUp() {
@@ -147,7 +140,6 @@ export class CategoriesPage {
         {
           text: 'Add',
           handler: data => {
-            //this.selectedItem.discount = data.discount <=0?0:data.discount;
             this.selectedItem.discount = 0;
             this.selectedItem.qty = data.qty <=0?1:data.qty; 
             this.selectedItem.price = data.price <0?0:data.price; 
@@ -164,7 +156,7 @@ export class CategoriesPage {
     this.selectedItem.amount = String(Number(this.selectedItem.price) * Number(this.selectedItem.qty));
 
     this.loading = this.loadingCtrl.create({
-      content: 'Adding item...'
+      //content: 'Adding item...'
     });
 
     this.loading.present().then(()=>{

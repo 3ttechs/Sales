@@ -16,7 +16,7 @@
 
 .categories_col{
     padding-top: 10px;
-    font-size: 17px;
+    font-size: 13px;
 }
 
 ion-item:hover { 
@@ -29,4 +29,20 @@ ion-item:hover {
 
 .button-inner{
     font-family: "Roboto" !important;
+}
+
+.userinputsselect{
+    font-size: 10px;
+    background-color: white;
+    border-radius: 10px;
+    margin:5px 15px 5px 5px;
+    color: color($colors,primary);
+}
+.userinputs{
+    font-size: 10px;
+    background-color: white;
+    border-radius: 10px;
+    margin: 5px;
+    height: 43px;
+    color: color($colors,primary);
 }
