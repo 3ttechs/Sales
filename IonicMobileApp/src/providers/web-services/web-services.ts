@@ -5,6 +5,8 @@ import { Storage } from '@ionic/storage';
 
 let serverUrl = 'http://';
 let printUrl = 'http://';
+let printerName = '';
+
 
 @Injectable()
 export class WebServicesProvider {
@@ -12,6 +14,7 @@ export class WebServicesProvider {
   constructor(public storage: Storage, public http: Http) {
     this.storage.get('serverHost').then((val)=>{serverUrl += val;});
     this.storage.get('printerHost').then((val)=>{printUrl +=  val;});
+    this.storage.get('printerName').then((val)=>{printerName +=  val;});
   }
 
   login(credentials) {
@@ -100,7 +103,7 @@ export class WebServicesProvider {
 
   printOrder(invoiceNumber){
     return new Promise((resolve,reject) =>{
-      this.http.get(printUrl + '/invoice_print/invoice_no=' + invoiceNumber)
+      this.http.get(printUrl + '/invoice_print/invoice_no=' + invoiceNumber + ',printer="' +printerName+ '"')
         .subscribe(res=>{
           resolve(res.json());
         },(err) => {

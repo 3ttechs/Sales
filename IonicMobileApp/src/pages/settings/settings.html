@@ -17,6 +17,10 @@
     <ion-input type="text" placeholder="192.168.1.2:5000" [(ngModel)] = "printerHost"></ion-input>
   </ion-item>
   <ion-item>
+    <ion-label color="primary" stacked>Printer Name</ion-label>
+    <ion-input type="text" placeholder="printer1" [(ngModel)] = "printerName"></ion-input>
+  </ion-item>  
+  <ion-item>
     <button ion-button class="buttonShadow" style="width: 150px;" color="primary" block (click)="SaveSettings()">Save Settings</button>
   </ion-item>
 </ion-content>

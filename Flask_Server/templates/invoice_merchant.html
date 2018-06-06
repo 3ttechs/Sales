@@ -1,0 +1,212 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Invoice</title>
+
+    <style>
+    .invoice-box {
+        max-width: 1000px;
+        margin: auto;
+        padding: 30px;
+        border: 1px solid #eee;
+        box-shadow: 0 0 10px rgba(0, 0, 0, .15);
+        font-size: 25px;
+        line-height: 30px;
+        font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+        color: #555;
+
+    }
+
+    .invoice-box table {
+        width: 100%;
+        line-height: inherit;
+        text-align: left;
+    }
+
+    .invoice-box table td {
+        padding: 5px;
+        vertical-align: top;
+    }
+
+    .invoice-box table tr td:nth-child(2) {
+        text-align: right;
+    }
+
+    .invoice-box table tr.top table td {
+        padding-bottom: 20px;
+    }
+
+    .invoice-box table tr.top table td.title {
+        font-size: 45px;
+        line-height: 45px;
+        color: #333;
+    }
+
+    .invoice-box table tr.information table td {
+        font-size: 10px;
+    }
+
+    .invoice-box table tr.heading td {
+            font-size: 18px;
+        background: #eee;
+        border-bottom: 1px solid #ddd;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    .invoice-box table tr.details td {
+        padding-bottom: 20px;
+    }
+
+    .invoice-box table tr.item td{
+        border-bottom: 1px solid #eee;
+    }
+
+    .invoice-box table tr.item.last td {
+        border-bottom: none;
+    }
+
+    .invoice-box table tr.total td:nth-child(2) {
+        border-top: 2px solid #eee;
+        font-weight: bold;
+    }
+
+    @media only screen and (max-width: 600px) {
+        .invoice-box table tr.top table td {
+            width: 100%;
+            display: block;
+            text-align: center;
+        }
+
+        .invoice-box table tr.information table td {
+            width: 100%;
+            display: block;
+            text-align: center;
+            font-size: 5px;
+        }
+    }
+
+    /** RTL **/
+    .rtl {
+        direction: rtl;
+        font-family: Tahoma, 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+    }
+
+    .rtl table {
+        text-align: right;
+    }
+
+    .rtl table tr td:nth-child(2) {
+        text-align: left;
+    }
+    </style>
+</head>
+
+<body>
+
+
+    <table>
+        <tr><td><img src= "{{basedir}}/static/Invoice_Header.jpg" height="317" width="1226"/></td></tr>
+
+
+
+        </table>
+
+
+        <div class="invoice-box">
+
+            <table cellpadding="0" cellspacing="0">
+                <tr><td colspan = 7><U><center>MERCHANT COPY</center></U></td></tr>
+
+            <tr><td colspan = 3 >Store: {{invoice_header['storename']}}</td>
+                <td  colspan = 4>Customer : Mr./M/s {{invoice_header['customer_name']}}</td></tr>
+
+            <tr><td  colspan = 3>Invoice No : {{invoice_header['id']}} </td>
+             <td  colspan = 4>Phone:  {{invoice_header['customer_phone']}}</td></tr>
+
+            <tr><td  colspan = 3>Date: {{ inv_date }}</td>
+             <td  colspan = 4>VAT No : {{invoice_header['customer_vat_no']}}</td></tr>
+
+            <tr class="heading" >
+                <td width="10px" align = 'center'>No.</td>
+                <td align = 'center'>Description</td>
+                <td width="100px" align = 'center'>Qty.</td>
+                <td width="100px" align = 'center'>Rate</td>
+                <td width="100px" align = 'center'>Taxable <br>Amount</td>
+                <td width="100px" align = 'center'>Tax <br>Amount</td>
+                <td width="130px" align = 'center'>Total <br>Amount</td>
+            </tr>
+
+            {% for i in range(num_items) %}
+
+            <tr class="item">
+                <td>{{ i+1 }}</td>
+                <td style="text-align:left;">{{ invoice_items[i]['product_name'] }}</td>
+                <td>{{ invoice_items[i]['quantity'] }}</td>
+                <td>{{ invoice_items[i]['product_price'] }}</td>
+
+                <td>{{ '%0.2f'| format(invoice_items[i]['product_price'] * invoice_items[i]['quantity'])    }}</td>
+                <td>{{ '%0.2f'| format(invoice_items[i]['vat']) }}</td>
+                <td>{{ '%0.2f'| format((invoice_items[i]['product_price'] * invoice_items[i]['quantity']) + invoice_items[i]['vat']) }}</td>
+
+            </tr>
+                {% endfor %}
+                <tr ><td colspan = 7>&nbsp;</td></tr>
+            <tr class="item">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td >Sub Total</td>
+                <td>{{ invoice_header["vat"] }}</td>
+                <td>{{ '%0.2f'| format(invoice_header["sub_total"] + invoice_header["vat"]) }}</td>
+            </tr>
+            <tr class="item">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>Discount</td>
+                <td></td>
+                <td>{{ invoice_header["discount"] }}</td>
+            </tr>
+            <tr class="item">
+                <td colspan = '4'>{{total_string}}</td>
+                <td style="text-align:left;">Total</td>
+                <td></td>
+                <td><B>{{ invoice_header["total"] }}</B></td>
+            </tr>
+                <tr><td colspan = 7>&nbsp;</td></tr>
+
+                            <tr><td colspan = 3>Receiver's Sign</td>
+                <td  colspan = 4>For ARD AL ZAAFARAN TRADING</td></tr>
+                <tr><td  colspan = 11>Note :{{invoice_header['notes']}}</td></tr>
+
+        </table>
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </td></tr>
+                <tr><td><img src="{{basedir}}/static/Invoice_Footer.jpg" height="163" width="1226"/></td></tr>
+    </table>
+
+
+
+
+
+</body>
+</html>

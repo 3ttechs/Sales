@@ -19,10 +19,14 @@ main_server_port=""
 wkhtmltopdf= 'C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'
 acrobat_reader= 'C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32.exe'
 site='main'
+
 config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf)
+options = {
+    'footer-center': 'Page [page] of [topage]'
+}
+
 
 app = Flask(__name__)
-
 
 #http://localhost:5000/product/all
 @app.route('/product/all', methods=['GET'])
@@ -125,9 +129,11 @@ def invoice_items_by_id(invoice_no):
 
 
 # call main server get rest api to get invoice data
-#http://localhost:5001/invoice_print/invoice_no=1
-@app.route('/invoice_print/invoice_no=<invoice_no>', methods=['GET'])
-def get_invoice_data(invoice_no):
+#http://localhost:5001/invoice_print/invoice_no=1,printer="Microsoft XPS Document Writer"
+#http://localhost:5001/invoice_print/invoice_no=1,printer="Microsoft Print to PDF"
+
+@app.route('/invoice_print/invoice_no=<invoice_no>,printer=<printer_name>', methods=['GET'])
+def get_invoice_data(invoice_no,printer_name):
     basedir = os.path.abspath(os.path.dirname(__file__))
     url = 'http://'+main_server_host+':'+main_server_port+ '/invoice/get_invoice_header/invoice_no='+invoice_no
     invoice_header = requests.get(url).json()
@@ -146,17 +152,17 @@ def get_invoice_data(invoice_no):
 
     data = render_template('invoice_customer.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items,total_string=total_string,basedir=basedir,inv_date=inv_date)
     pdf_filename = "invoice_"+ "".join(random.sample(s, 10))+'.pdf'
-    pdfkit.from_string(data, 'temp/'+pdf_filename, configuration=config)
+    pdfkit.from_string(data, 'temp/'+pdf_filename, configuration=config,options=options)
     acroread = acrobat_reader +' /H /T'
-    cmd = '%s %s' % (acroread, 'temp/'+pdf_filename)
+    cmd = '%s %s' % (acroread, 'temp/'+pdf_filename +' '+printer_name)
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
     data = render_template('invoice_merchant.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items,total_string=total_string,basedir=basedir,inv_date=inv_date)
     pdf_filename = "invoice_"+ "".join(random.sample(s, 10))+'.pdf'
-    pdfkit.from_string(data, 'temp/'+pdf_filename, configuration=config)
+    pdfkit.from_string(data, 'temp/'+pdf_filename, configuration=config,options=options)
     acroread = acrobat_reader +' /H /T'
-    cmd = '%s %s' % (acroread, 'temp/'+pdf_filename)
+    cmd = '%s %s' % (acroread, 'temp/'+pdf_filename+' '+printer_name)
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     return '1', 200
@@ -620,7 +626,6 @@ def report(report_type,from_date,to_date,file_type):
         fp.close()
         return send_file('temp/file.csv', as_attachment=True),200
 
-
     json_output = json.dumps(report_data)
     return json_output, 200
 
@@ -688,7 +693,7 @@ def full_all_filtered(storename,category,brand,product_type,code,barcode,descrip
     if (product_type!="All"):
         q=q+' and pm.product_type = "'+ product_type+'"'
 
-    query = 'select pm.id,pm.code,pm.product_type,pm.barcode,pm.name,pm.category,pm.brand,pm.price,ifnull(A.GRN_QTY,0)+ifnull(E.RET_QTY,0)+ifnull(C.TRF_IN_QTY,0)-ifnull(B.TRF_OUT_QTY,0)-ifnull(D.INV_QTY,0) BAL_QTY from product_master pm left join ( select sku,sum(qtyreceived) GRN_QTY from receipt_header rh,receipt_details rd where rh.receiptkey=rd.receiptkey and rh.storename="SharjaStore" and rh.status=1 group by sku ) A on pm.code=A.sku LEFT JOIN ( select sku,sum(quantity) TRF_OUT_QTY from transfer_header th,transfer_details td where th.documentno=td.documentno and th.transferfrom="SharjaStore" group by sku ) B on pm.code=B.sku LEFT JOIN ( select sku,sum(quantity) TRF_IN_QTY from transfer_header th,transfer_details td where th.documentno=td.documentno and th.transferto="SharjaStore" group by sku ) C  on pm.code=C.sku LEFT JOIN ( select product_code,sum(quantity)  INV_QTY from invoice inv , items it where inv.id = it.invoice_no and inv.storename="SharjaStore" group by product_code) D  on pm.code=D.product_code LEFT JOIN ( select sku,sum(quantity) RET_QTY from returned_items where storename= '+ storename +' group by sku) E  on pm.code=E.sku ' +q+' limit 5; '
+    query = 'select pm.id,pm.coo, pm.code,pm.product_type,pm.barcode,pm.name,pm.category,pm.brand,pm.price,ifnull(A.GRN_QTY,0)+ifnull(E.RET_QTY,0)+ifnull(C.TRF_IN_QTY,0)-ifnull(B.TRF_OUT_QTY,0)-ifnull(D.INV_QTY,0) BAL_QTY from product_master pm left join ( select sku,sum(qtyreceived) GRN_QTY from receipt_header rh,receipt_details rd where rh.receiptkey=rd.receiptkey and rh.storename="SharjaStore" and rh.status=1 group by sku ) A on pm.code=A.sku LEFT JOIN ( select sku,sum(quantity) TRF_OUT_QTY from transfer_header th,transfer_details td where th.documentno=td.documentno and th.transferfrom="SharjaStore" group by sku ) B on pm.code=B.sku LEFT JOIN ( select sku,sum(quantity) TRF_IN_QTY from transfer_header th,transfer_details td where th.documentno=td.documentno and th.transferto="SharjaStore" group by sku ) C  on pm.code=C.sku LEFT JOIN ( select product_code,sum(quantity)  INV_QTY from invoice inv , items it where inv.id = it.invoice_no and inv.storename="SharjaStore" group by product_code) D  on pm.code=D.product_code LEFT JOIN ( select sku,sum(quantity) RET_QTY from returned_items where storename= '+ storename +' group by sku) E  on pm.code=E.sku ' +q+' limit 50; '
     json_output = json.dumps(run_query(query))
     return json_output, 200
 
