@@ -17,8 +17,24 @@ print_server_port=""
 main_server_port = ""
 main_server_port=""
 wkhtmltopdf= 'C:/Program Files/wkhtmltopdf/bin/wkhtmltopdf.exe'
-acrobat_reader= 'C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32.exe'
+acrobat_reader= "C:/Program Files (x86)/Adobe/Acrobat Reader DC/Reader/AcroRd32.exe"
 site='main'
+
+printer_name_1= ""
+printer_driver_1= ""
+printer_host_1= ""
+printer_name_2= ""
+printer_driver_2= ""
+printer_host_2= ""
+printer_name_3= ""
+printer_driver_3= ""
+printer_host_3= ""
+printer_name_4= ""
+printer_driver_4= ""
+printer_host_4= ""
+printer_name_5= ""
+printer_driver_5= ""
+printer_host_5= ""
 
 config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf)
 options = {
@@ -129,8 +145,10 @@ def invoice_items_by_id(invoice_no):
 
 
 # call main server get rest api to get invoice data
-#http://localhost:5001/invoice_print/invoice_no=1,printer="Microsoft XPS Document Writer"
-#http://localhost:5001/invoice_print/invoice_no=1,printer="Microsoft Print to PDF"
+#http://localhost:5001/invoice_print/invoice_no=12,printer="Microsoft XPS Document Writer"
+#http://localhost:5001/invoice_print/invoice_no=12,printer="Microsoft Print to PDF"
+#http://localhost:5001/invoice_print/invoice_no=12,printer="OFFICE"
+
 
 @app.route('/invoice_print/invoice_no=<invoice_no>,printer=<printer_name>', methods=['GET'])
 def get_invoice_data(invoice_no,printer_name):
@@ -149,20 +167,46 @@ def get_invoice_data(invoice_no,printer_name):
     inv_date = datetime.datetime.strptime(invoice_header[0]['invoice_date'], "%Y-%m-%d").strftime("%d-%m-%Y")
 
     s = "abcdefghijklmnopqrstuvwxyz01234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    printer_driver =""
+    printer_host =""
+    print('printer_name_1 : ',printer_name_1)
+    print('printer_name : ',printer_name)
+
+    if(printer_name==printer_name_1):
+        printer_driver=printer_driver_1
+        printer_host=printer_host_1
+
+    if(printer_name==printer_name_2):
+        printer_driver=printer_driver_2
+        printer_host=printer_host_2
+
+    if(printer_name==printer_name_3):
+        printer_driver=printer_driver_3
+        printer_host=printer_host_3
+
+    if(printer_name==printer_name_4):
+        printer_driver=printer_driver_4
+        printer_host=printer_host_4
+
+    if(printer_name==printer_name_5):
+        printer_driver=printer_driver_5
+        printer_host=printer_host_5
 
     data = render_template('invoice_customer.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items,total_string=total_string,basedir=basedir,inv_date=inv_date)
     pdf_filename = "invoice_"+ "".join(random.sample(s, 10))+'.pdf'
     pdfkit.from_string(data, 'temp/'+pdf_filename, configuration=config,options=options)
-    acroread = acrobat_reader +' /H /T'
-    cmd = '%s %s' % (acroread, 'temp/'+pdf_filename +' '+printer_name)
+    acroread = acrobat_reader +' /H /T /N'
+    cmd = '%s %s' % (acroread, '.\\temp/'+pdf_filename +' '+printer_name+' '+printer_driver+' '+printer_host)
+    print(cmd)
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
     data = render_template('invoice_merchant.html', invoice_header=invoice_header[0],invoice_items=invoice_items, num_items=num_items,total_string=total_string,basedir=basedir,inv_date=inv_date)
     pdf_filename = "invoice_"+ "".join(random.sample(s, 10))+'.pdf'
     pdfkit.from_string(data, 'temp/'+pdf_filename, configuration=config,options=options)
-    acroread = acrobat_reader +' /H /T'
-    cmd = '%s %s' % (acroread, 'temp/'+pdf_filename+' '+printer_name)
+    acroread = acrobat_reader +' /H /T /N'
+    cmd = '%s %s' % (acroread, '.\\temp/'+pdf_filename+' '+printer_name+' '+printer_driver+' '+printer_host)
+	print(cmd)
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     return '1', 200
@@ -771,6 +815,28 @@ if __name__ == '__main__':
 
         if(prop=='wkhtmltopdf'): wkhtmltopdf =props[prop]
         if(prop=='acrobat_reader'): acrobat_reader =props[prop]
+
+
+        if(prop=='printer_name_1'): printer_name_1 ='"'+props[prop]+'"'
+        if(prop=='printer_driver_1'): printer_driver_1 ='"'+props[prop]+'"'
+        if(prop=='printer_host_1'): printer_host_1 ='"'+props[prop]+'"'
+
+        if(prop=='printer_name_2'): printer_name_2 ='"'+props[prop]+'"'
+        if(prop=='printer_driver_2'): printer_driver_2 ='"'+props[prop]+'"'
+        if(prop=='printer_host_2'): printer_host_2 ='"'+props[prop]+'"'
+
+        if(prop=='printer_name_3'): printer_name_3 ='"'+props[prop]+'"'
+        if(prop=='printer_driver_3'): printer_driver_3 ='"'+props[prop]+'"'
+        if(prop=='printer_host_3'): printer_host_3 ='"'+props[prop]+'"'
+
+        if(prop=='printer_name_4'): printer_name_4 ='"'+props[prop]+'"'
+        if(prop=='printer_driver_4'): printer_driver_4 ='"'+props[prop]+'"'
+        if(prop=='printer_host_4'): printer_host_4 ='"'+props[prop]+'"'
+
+        if(prop=='printer_name_5'): printer_name_5 ='"'+props[prop]+'"'
+        if(prop=='printer_driver_5'): printer_driver_5 ='"'+props[prop]+'"'
+        if(prop=='printer_host_5'): printer_host_5 ='"'+props[prop]+'"'
+
 
     if(site=='main'):
         app.run(host=main_server_host, port=main_server_port)
