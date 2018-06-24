@@ -116,19 +116,31 @@ export class CategoriesPage {
   AddToCartPopUp() {
     let alert = this.alertCtrl.create({
       title: 'Code: ' + this.selectedItem.code,
-      subTitle: 'Please enter Quantity and Price.',
+      subTitle: 'Please enter details.',
       inputs: [
         {
+          name: 'ptype',
+          placeholder: 'Price Type',
+          type: 'text'
+          //value: '1'
+        },
+        {
+          name: 'price',
+          placeholder: 'Price',
+          type: 'number',
+          value: "0"
+        },
+        {
           name: 'qty',
-          placeholder: 'Quantity',
+          placeholder: 'Bill Qty',
           type: 'number',
           value: '1'
         },
         {
-          name: 'price',
-          placeholder: 'Unit Price',
-          type: 'number',
-          value: "0"
+          name: 'sqty',
+          placeholder: 'Sold Qty',
+          type: 'number'
+          //value: '1'
         }
       ],
       buttons: [
