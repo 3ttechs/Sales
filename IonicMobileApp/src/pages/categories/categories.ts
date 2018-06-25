@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, App, LoadingController } from 'ionic-angular';
+import { Modal, NavController, App, LoadingController, ModalController } from 'ionic-angular';
 import { WebServicesProvider } from '../../providers/web-services/web-services';
 import { ShoppingCartProvider } from '../../providers/shopping-cart/shopping-cart';
 import { AlertController } from 'ionic-angular';
@@ -24,7 +24,8 @@ export class CategoriesPage {
     public webService: WebServicesProvider, 
     public loadingCtrl: LoadingController,
     private shoppingCart: ShoppingCartProvider,
-    public alertCtrl: AlertController) {
+    public alertCtrl: AlertController,
+    public modalCtrl: ModalController) {
   }
 
   ionViewDidLoad() {
@@ -113,54 +114,34 @@ export class CategoriesPage {
     this.selectedItem = item;
   }
 
-  AddToCartPopUp() {
-    let alert = this.alertCtrl.create({
-      title: 'Code: ' + this.selectedItem.code,
-      subTitle: 'Please enter details.',
-      inputs: [
-        {
-          name: 'ptype',
-          placeholder: 'Price Type',
-          type: 'text'
-          //value: '1'
-        },
-        {
-          name: 'price',
-          placeholder: 'Price',
-          type: 'number',
-          value: "0"
-        },
-        {
-          name: 'qty',
-          placeholder: 'Bill Qty',
-          type: 'number',
-          value: '1'
-        },
-        {
-          name: 'sqty',
-          placeholder: 'Sold Qty',
-          type: 'number'
-          //value: '1'
+  AddToCartPage()
+  {
+    const myData = {
+      productCode: this.selectedItem.code,
+      price: this.selectedItem.price
+    };
+    const categoriesPopup: Modal = this.modalCtrl.create('CategoryPopupPage',{data:myData});
+    categoriesPopup.present();
+
+    categoriesPopup.onDidDismiss((data)=>{
+      if(data != null){
+        this.selectedItem.discount = 0;
+        this.selectedItem.qty = data.billQty <=0?1:data.billQty; 
+        this.selectedItem.soldQty = data.soldQty<=0?1:data.soldQty;
+
+        if(data.priceType ==1){ //unit price, no change
+          this.selectedItem.price = data.price <0?0:data.price; 
         }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          handler: data => {
-          }
-        },
-        {
-          text: 'Add',
-          handler: data => {
-            this.selectedItem.discount = 0;
-            this.selectedItem.qty = data.qty <=0?1:data.qty; 
-            this.selectedItem.price = data.price <0?0:data.price; 
-            this.addItemToCart();
-          }
+        else if (data.priceType ==2){ //Dozen rate : price = price/12
+          this.selectedItem.price = data.price <0?0:data.price/12; 
         }
-      ]
+        else { //Total amount : price = price/qty
+          this.selectedItem.price = data.price <0?0:data.price/this.selectedItem.qty; 
+        }
+
+        this.addItemToCart();
+      }
     });
-    alert.present();
   }
 
   addItemToCart(){
@@ -173,7 +154,7 @@ export class CategoriesPage {
 
     this.loading.present().then(()=>{
       this.shoppingCart.addItemToCart(this.selectedItem);
-	  this.selectedItem = null;
+	    this.selectedItem = null;
       this.loading.dismiss();
     });
   }

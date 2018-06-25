@@ -78,7 +78,7 @@
                   <ion-col class="categories_col">{{item.name}}</ion-col>
                   <ion-col class="categories_col">{{item.price | number : '1.2-2'}}</ion-col>
                   <ion-col class="categories_col">{{item.BAL_QTY}}</ion-col>
-                  <ion-col><button color="mygreen" class="buttonStyleShadow" ion-button strong round (click)="AddToCartPopUp()" [hidden]="noneSelected(item)">Add to Cart</button></ion-col>
+                  <ion-col><button color="mygreen" class="buttonStyleShadow" ion-button strong round (click)="AddToCartPage()" [hidden]="noneSelected(item)">Add to Cart</button></ion-col>
                 </ion-row>
               </ion-grid> 
             </ion-item>

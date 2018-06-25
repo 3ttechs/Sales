@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Add to Cart</ion-title>
+    <ion-buttons>
+      <button ion-button (click)="closePopup()">Close</button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <h3>Code : {{this.productCode}}</h3>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        Please enter Quantity and Price.
+      </ion-col>
+    </ion-row>
+    <ion-row><ion-col><br><br></ion-col></ion-row>
+    <ion-row>
+      <ion-col>Price Type</ion-col>
+      <ion-col>
+        <ion-select style="padding-left:0px;" [(ngModel)]="popupObj.priceType">
+          <ion-option value="1" selected="true">Unit Price</ion-option>
+          <ion-option value="2">Dozen Rate</ion-option>
+          <ion-option value="3">Total Amount</ion-option>
+        </ion-select>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>Price</ion-col>
+      <ion-col><ion-input type="text" placeholder="Price" [(ngModel)]="popupObj.price"></ion-input></ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>Bill Qty</ion-col>
+      <ion-col><ion-input type="text" placeholder="Bill Qty" [(ngModel)]="popupObj.billQty"></ion-input></ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>Sold Qty (Optional)</ion-col>
+      <ion-col><ion-input type="text" placeholder="Sold Qty" [(ngModel)]="popupObj.soldQty"></ion-input></ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col><button ion-button (click)="AddToCart()">Add</button></ion-col>
+      <ion-col></ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

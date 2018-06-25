@@ -78,7 +78,6 @@ export class SummaryPage {
     this.loading.present().then(()=>{
       this.shoppingCart.getItemsFromCart().then(result => {
         this.shoppingList = result["items"];
-
         this.summaryPageObject.subTotal = 0;
         this.summaryPageObject.VAT = 0;
         this.summarySubItem = [];
@@ -110,6 +109,7 @@ export class SummaryPage {
         product_coo: element.coo,
         product_price: element.price,
         quantity: Number(element.qty),
+        sold_quantity: Number(element.soldQty),
         vat: itemLevelVat,
         discount: Number(element.discount),
         amount: this.summaryPageObject.TaxOption==2?Number(element.amount -itemLevelVat):this.summaryPageObject.TaxOption==3?Number(element.amount) + itemLevelVat:Number(element.amount)});

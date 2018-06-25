@@ -46,3 +46,11 @@ ion-item:hover {
     height: 43px;
     color: color($colors,primary);
 }
+
+.modal-wrapper {
+    left: calc(50% - (450px/2));
+    top: calc(50% - (450px/2));
+    position: absolute;
+    width: 450px;
+    height: 450px;
+};
