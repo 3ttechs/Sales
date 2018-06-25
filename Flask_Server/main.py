@@ -206,9 +206,8 @@ def get_invoice_data(invoice_no,printer_name):
     pdfkit.from_string(data, 'temp/'+pdf_filename, configuration=config,options=options)
     acroread = acrobat_reader +' /H /T /N'
     cmd = '%s %s' % (acroread, '.\\temp/'+pdf_filename+' '+printer_name+' '+printer_driver+' '+printer_host)
-	print(cmd)
+    print(cmd)
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
     return '1', 200
 
 # service to get invoice data from db
@@ -288,6 +287,7 @@ def invoice_print_by_id1(invoice_no):
       "product_coo": "India",
       "product_price": 2.54,
       "quantity": 12,
+      "sold_quantity": 12,
       "vat": 1.0,
       "discount": 0.02,
       "amount": 25
@@ -303,6 +303,7 @@ def invoice_print_by_id1(invoice_no):
       "product_coo": "India",
       "product_price": 2.54,
       "quantity": 12,
+      "sold_quantity": 12,      
       "vat": 1.0,
       "discount": 0.02,
       "amount": 25
@@ -347,10 +348,12 @@ def invoice_add():
         product_coo = data['items'][i]['product_coo']
         product_price = float(data['items'][i]['product_price'])
         quantity = float(data['items'][i]['quantity'])
+        sold_quantity = float(data['items'][i]['sold_quantity'])
+
         vat = round(float(data['items'][i]['vat']),2)
         discount = round(float(data['items'][i]['discount']),2)
         amount = round(float(data['items'][i]['amount']),2)
-        query = "INSERT INTO items (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,discount,amount,vat) VALUES  ('%s','%s','%s','%s','%s','%s','%s',%f,'%s',%f,%f,%f,%f)"% (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,discount,amount,vat)
+        query = "INSERT INTO items (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,sold_quantity,discount,amount,vat) VALUES  ('%s','%s','%s','%s','%s','%s','%s',%f,'%s',%f,%f,%f,%f)"% (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,sold_quantity,discount,amount,vat)
         run_insert_query(query)
 
     return  str(invoice_no), 200
