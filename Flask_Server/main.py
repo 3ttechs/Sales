@@ -349,11 +349,12 @@ def invoice_add():
         product_price = float(data['items'][i]['product_price'])
         quantity = float(data['items'][i]['quantity'])
         sold_quantity = float(data['items'][i]['sold_quantity'])
+        #sold_quantity =101
 
         vat = round(float(data['items'][i]['vat']),2)
         discount = round(float(data['items'][i]['discount']),2)
         amount = round(float(data['items'][i]['amount']),2)
-        query = "INSERT INTO items (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,sold_quantity,discount,amount,vat) VALUES  ('%s','%s','%s','%s','%s','%s','%s',%f,'%s',%f,%f,%f,%f)"% (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,sold_quantity,discount,amount,vat)
+        query = "INSERT INTO items (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,sold_quantity,discount,amount,vat) VALUES  ('%s','%s','%s','%s','%s','%s','%s',%f,'%s',%f,%f,%f,%f,%f)"% (invoice_no,product_code,product_category,product_name,product_name_arabic,product_brand,product_type,product_price,product_coo,quantity,sold_quantity,discount,amount,vat)
         run_insert_query(query)
 
     return  str(invoice_no), 200
