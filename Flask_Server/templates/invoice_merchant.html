@@ -6,7 +6,7 @@
 
     <style>
     .invoice-box {
-        max-width: 1000px;
+        max-width: 1350px;
         margin: auto;
         padding: 30px;
         border: 1px solid #eee;
@@ -116,17 +116,17 @@
 
         <div class="invoice-box">
 
-            <table cellpadding="0" cellspacing="0">
-                <tr><td colspan = 7><U><center>MERCHANT COPY</center></U></td></tr>
+            <tr><td colspan = 3 >Customer : Mr./M/s {{invoice_header['customer_name']}}</td>
+                <td  colspan = 4>Branch: {{invoice_header['storename']}}</td></tr>
 
-            <tr><td colspan = 3 >Store: {{invoice_header['storename']}}</td>
-                <td  colspan = 4>Customer : Mr./M/s {{invoice_header['customer_name']}}</td></tr>
+            <tr><td  colspan = 3>Phone:  {{invoice_header['customer_phone']}} </td>
+             <td  colspan = 4>User: {{invoice_header['sales_person_code']}}</td></tr>
 
-            <tr><td  colspan = 3>Invoice No : {{invoice_header['id']}} </td>
-             <td  colspan = 4>Phone:  {{invoice_header['customer_phone']}}</td></tr>
+            <tr><td  colspan = 3>VAT No : {{invoice_header['customer_vat_no']}}</td>
+             <td  colspan = 4>Date: {{ inv_date }}</td></tr>
 
-            <tr><td  colspan = 3>Date: {{ inv_date }}</td>
-             <td  colspan = 4>VAT No : {{invoice_header['customer_vat_no']}}</td></tr>
+            <tr><td  colspan = 3></td>
+             <td  colspan = 4>Invoice No : {{invoice_header['id']}}</td></tr>
 
             <tr class="heading" >
                 <td width="10px" align = 'center'>No.</td>
