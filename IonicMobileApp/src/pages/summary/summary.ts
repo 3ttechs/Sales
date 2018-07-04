@@ -151,12 +151,21 @@ export class SummaryPage {
         //Show the invoice number popup
         this.showAlert();
 
+        this.clearMemory();
+
         this.loading.dismiss();
 
         this.navCtrl.parent.select(0);
       }).catch(err=>{console.log(err); this.loading.dismiss();});
 
     });
+  }
+
+  clearMemory(){
+    this.customerName = '';
+    this.customerPhone = '';
+    this.customerVatNo = '';
+    this.customerNotes = '';
   }
 
   showAlert() {
