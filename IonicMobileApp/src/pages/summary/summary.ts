@@ -138,7 +138,7 @@ export class SummaryPage {
 
       this.addSubItems();
 
-      console.log(this.summaryItem);
+      //console.log(this.summaryItem);
       this.webService.placeOrder(this.summaryItem).then(result => {
         this.invoiceNumber = String(result);
 
@@ -165,5 +165,7 @@ export class SummaryPage {
       buttons: ['OK']
     });
     alert.present();
+
+	
   }
 }

@@ -133,10 +133,10 @@ export class CategoriesPage {
           this.selectedItem.price = data.price <0?0:data.price; 
         }
         else if (data.priceType ==2){ //Dozen rate : price = price/12
-          this.selectedItem.price = data.price <0?0:data.price/12; 
+          this.selectedItem.price = data.price <0?0:Number(data.price/12).toFixed(2); 
         }
         else { //Total amount : price = price/qty
-          this.selectedItem.price = data.price <0?0:data.price/this.selectedItem.qty; 
+          this.selectedItem.price = data.price <0?0:Number(data.price/this.selectedItem.qty).toFixed(2);  
         }
 
         this.addItemToCart();
